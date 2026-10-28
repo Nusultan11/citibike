@@ -5,6 +5,10 @@ Bronze → Silver Parquet и quarantine → почасовой Gold → PostgreS
 Next.js Dashboard. Реальный апрель 2026: **3 860 371** допустимая опубликованная
 поездка из четырёх CSV. [Агрегированные доказательства](docs/evidence/f1-202604.json)
 содержат checksum, reconciliation и измерения; сырые поездки в Git не включены.
+Исторический Silver F2 охватывает **2024-10 — 2026-09**: 104 CSV, **92 076 567**
+канонических строк из **92 085 994** входных. [EDA](docs/evidence/f2-analysis.md) и
+[машинное evidence](docs/evidence/f2-history.json) содержат полный source inventory,
+версионирование, dispositions, GBFS и измеренные ресурсы.
 Состояние этапов — только в [ROADMAP.md, §6](ROADMAP.md#6-журнал-реализации).
 
 ## Требования и установка
@@ -211,6 +215,20 @@ uv run --locked python -m citibike.history profile --inventory $inventory
 uv run --locked python -m citibike.ingestion.gbfs --count 3
 ```
 
+Проверенная inventory исходного прогона:
+`data/inventory/807194651725833df9977f9cee4a0635a0f9c37fdad4201d9e61e7143227be1f/inventory.json`.
+Повторный discovery 2026-10-28 16:17 UTC подтвердил тот же scope и те же objects/ETags.
+
+F1 Dashboard сохраняет свой source-only результат апреля **3 860 371**. В глобальной
+F2 партиции апрельского архива accepted **3 860 342**: 29 строк конфликтуют с
+майским источником и находятся в quarantine. В мае также исключены 483 exact
+duplicates апрельских записей. Обе версии имеют отдельный provenance; F2 не меняет
+активную F1 публикацию. Повторная raw-to-UI регрессия:
+
+```sh
+uv run --locked python -m citibike.verify --result data/processed/69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284 --output docs/evidence/f2-f1-regression.json
+```
+
 `--ranged` использует до четырёх resumable HTTP Range запросов к тому же
 официальному URL, с проверкой каждого блока и итогового ZIP. Без флага используется
 последовательный GET. `--period YYYY-MM` позволяет повторить только неудавшийся
@@ -284,8 +302,8 @@ CI дополнительно проходит CLI-протокол на 24 ма
 агрегированные доказательства, без исходных ZIP/Parquet и секретов.
 
 F1 проверен на апреле 2026; F2 расширяет локальный исторический Silver и добавляет
-реальные GBFS collections. Итоговый фактический охват и DoD фиксируются в журнале
-и evidence после полного прогона. Dashboard пока показывает F1, без карт,
+реальные GBFS collections. Фактический охват и результаты зафиксированы в журнале
+и evidence полного прогона. Dashboard пока показывает F1, без карт,
 исторических витрин F3, ML, рекомендаций и заявлений о production SLA.
 Требования: [PROJECT_SPEC.md](PROJECT_SPEC.md), архитектура:
 [ARCHITECTURE.md](ARCHITECTURE.md), проверки: [OPERATIONS.md](OPERATIONS.md).

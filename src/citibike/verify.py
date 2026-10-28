@@ -43,7 +43,15 @@ class MetricHTML(HTMLParser):
             self.text.append(data)
 
 
-def verify(result: Path, api: str, web: str, recompute: bool = False) -> dict[str, Any]:
+def verify(
+    result: Path,
+    api: str,
+    web: str,
+    recompute: bool = False,
+    *,
+    evidence_path: Path | None = None,
+) -> dict[str, Any]:
+    evidence_output = evidence_path or Path("docs/evidence/f1-202604.json")
     quality = json.loads((result / "quality.json").read_text(encoding="utf-8"))
     source = quality["source"]
     version = quality["dataset_id"]
@@ -186,7 +194,8 @@ def verify(result: Path, api: str, web: str, recompute: bool = False) -> dict[st
             "uv run --locked python -m citibike.pipeline "
             f"--period {source['period']} --url {source['source_url']}",
             f"uv run --locked python -m citibike.verify --result {result.as_posix()} "
-            "--output docs/evidence/f1-202604.json --recompute-baseline",
+            f"--output {evidence_output.as_posix()} "
+            "--recompute-baseline",
         ],
     }
 
@@ -199,7 +208,13 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--recompute-baseline", action="store_true")
     args = parser.parse_args()
-    evidence = verify(args.result, args.api_url, args.web_url, args.recompute_baseline)
+    evidence = verify(
+        args.result,
+        args.api_url,
+        args.web_url,
+        args.recompute_baseline,
+        evidence_path=args.output,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(evidence, ensure_ascii=False, indent=2), encoding="utf-8"

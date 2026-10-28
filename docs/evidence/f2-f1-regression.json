@@ -1,0 +1,342 @@
+{
+  "stage": "F1",
+  "source": {
+    "source": "Citi Bike Trip History (official NYC)",
+    "source_url": "https://s3.amazonaws.com/tripdata/202604-citibike-tripdata.zip",
+    "scope": "NYC",
+    "period": "2026-04",
+    "checksum": "fefc1fca369818baeb9206792e02a098b71b59f263064b6627b42317965e2ffb",
+    "bytes": 164592563,
+    "retrieved_at": "2026-10-28T10:11:52.012794Z",
+    "source_modified_at": "Mon, 04 May 2026 19:04:39 GMT",
+    "etag": "\"eb6ce6ba4fea17e0ce63aa82ccd0122b-10\"",
+    "csv_files": [
+      {
+        "path": "202604-citibike-tripdata-part1.csv",
+        "bytes": 188712300,
+        "crc32": "89164343",
+        "columns": [
+          "ride_id",
+          "rideable_type",
+          "started_at",
+          "ended_at",
+          "start_station_name",
+          "start_station_id",
+          "end_station_name",
+          "end_station_id",
+          "start_lat",
+          "start_lng",
+          "end_lat",
+          "end_lng",
+          "member_casual"
+        ]
+      },
+      {
+        "path": "202604-citibike-tripdata-part2.csv",
+        "bytes": 188279572,
+        "crc32": "1dbb96b0",
+        "columns": [
+          "ride_id",
+          "rideable_type",
+          "started_at",
+          "ended_at",
+          "start_station_name",
+          "start_station_id",
+          "end_station_name",
+          "end_station_id",
+          "start_lat",
+          "start_lng",
+          "end_lat",
+          "end_lng",
+          "member_casual"
+        ]
+      },
+      {
+        "path": "202604-citibike-tripdata-part3.csv",
+        "bytes": 187986980,
+        "crc32": "e9a8bfe3",
+        "columns": [
+          "ride_id",
+          "rideable_type",
+          "started_at",
+          "ended_at",
+          "start_station_name",
+          "start_station_id",
+          "end_station_name",
+          "end_station_id",
+          "start_lat",
+          "start_lng",
+          "end_lat",
+          "end_lng",
+          "member_casual"
+        ]
+      },
+      {
+        "path": "202604-citibike-tripdata-part4.csv",
+        "bytes": 188564748,
+        "crc32": "dae5d85f",
+        "columns": [
+          "ride_id",
+          "rideable_type",
+          "started_at",
+          "ended_at",
+          "start_station_name",
+          "start_station_id",
+          "end_station_name",
+          "end_station_id",
+          "start_lat",
+          "start_lng",
+          "end_lat",
+          "end_lng",
+          "member_casual"
+        ]
+      }
+    ],
+    "zip_entries": [
+      {
+        "path": "202604-citibike-tripdata-part1.csv",
+        "bytes": 188712300,
+        "compressed_bytes": 41566248,
+        "kind": "csv"
+      },
+      {
+        "path": "202604-citibike-tripdata-part2.csv",
+        "bytes": 188279572,
+        "compressed_bytes": 41187724,
+        "kind": "csv"
+      },
+      {
+        "path": "202604-citibike-tripdata-part3.csv",
+        "bytes": 187986980,
+        "compressed_bytes": 41192901,
+        "kind": "csv"
+      },
+      {
+        "path": "202604-citibike-tripdata-part4.csv",
+        "bytes": 188564748,
+        "compressed_bytes": 40645092,
+        "kind": "csv"
+      }
+    ],
+    "access_policy": "https://citibikenyc.com/data-sharing-policy"
+  },
+  "publication_id": "69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284",
+  "pipeline_version": "f1.0.0",
+  "verified_at": "2026-10-28T17:23:59.032894+00:00",
+  "filters": {
+    "scope": "NYC",
+    "timezone": "America/New_York",
+    "start": "2026-04-01T04:00:00+00:00",
+    "end": "2026-05-01T04:00:00+00:00",
+    "interval": "[start,end)"
+  },
+  "stage_values": {
+    "independent_raw_csv": 3860371,
+    "silver": 3860371,
+    "gold": 3860371,
+    "postgresql": 3860371,
+    "api_kpi": 3860371,
+    "api_hourly_sum": 3860371,
+    "dashboard_attribute": 3860371,
+    "dashboard_visible_text": 3860371
+  },
+  "independent_baseline": {
+    "algorithm": "stdlib csv + zoneinfo fold roundtrip + disk SQLite; independent of Gold helpers",
+    "source_checksum": "fefc1fca369818baeb9206792e02a098b71b59f263064b6627b42317965e2ffb",
+    "period": "2026-04",
+    "period_start": "2026-04-01T04:00:00+00:00",
+    "period_end": "2026-05-01T04:00:00+00:00",
+    "input_rows": 3860371,
+    "dispositions": {
+      "accepted": 3860371
+    },
+    "files": [
+      {
+        "file": "202604-citibike-tripdata-part1.csv",
+        "input_rows": 965093,
+        "sha256_uncompressed": "4708425c8614ffc956e18e99fe888f4408ef00fe1431c133f0b6f96eceda83d6",
+        "dispositions": {
+          "accepted": 965093
+        }
+      },
+      {
+        "file": "202604-citibike-tripdata-part2.csv",
+        "input_rows": 965093,
+        "sha256_uncompressed": "28850681a43eabf1ab54c3c81c2c9c920217d98f82e946cefaf9de601c4559c1",
+        "dispositions": {
+          "accepted": 965093
+        }
+      },
+      {
+        "file": "202604-citibike-tripdata-part3.csv",
+        "input_rows": 965093,
+        "sha256_uncompressed": "b9c4f16179497ae3a998b22c0e2d8bbfd997bdba02831bcd429ffc3e2b8a0024",
+        "dispositions": {
+          "accepted": 965093
+        }
+      },
+      {
+        "file": "202604-citibike-tripdata-part4.csv",
+        "input_rows": 965092,
+        "sha256_uncompressed": "50aeff55d9d690f467831956c6b55fa203149e5b7b98fceba6a80a09fa357879",
+        "dispositions": {
+          "accepted": 965092
+        }
+      }
+    ],
+    "canonical_rows_all": 3860371,
+    "completed_published_rides": 3860371,
+    "critical_reason_counts": {},
+    "elapsed_seconds": 299.765,
+    "sqlite_cache_mb": 32
+  },
+  "quality": {
+    "input_rows": 3860371,
+    "dispositions": {
+      "accepted": 3860371
+    },
+    "files": [
+      {
+        "file": "202604-citibike-tripdata-part1.csv",
+        "input_rows": 965093,
+        "dispositions": {
+          "accepted": 965093
+        }
+      },
+      {
+        "file": "202604-citibike-tripdata-part2.csv",
+        "input_rows": 965093,
+        "dispositions": {
+          "accepted": 965093
+        }
+      },
+      {
+        "file": "202604-citibike-tripdata-part3.csv",
+        "input_rows": 965093,
+        "dispositions": {
+          "accepted": 965093
+        }
+      },
+      {
+        "file": "202604-citibike-tripdata-part4.csv",
+        "input_rows": 965092,
+        "dispositions": {
+          "accepted": 965092
+        }
+      }
+    ],
+    "metrics": {
+      "canonical_rides": 3860371,
+      "known_start_station_rides": 3858432,
+      "known_end_station_rides": 3849873,
+      "completed_published_rides": 3860371
+    },
+    "reason_counts": {
+      "missing_end_station": 10498,
+      "long_duration": 766,
+      "missing_coordinates": 12177,
+      "missing_start_station": 1939
+    },
+    "raw_missing_fields": {
+      "ride_id": 0,
+      "rideable_type": 0,
+      "started_at": 0,
+      "ended_at": 0,
+      "start_station_name": 1939,
+      "start_station_id": 1939,
+      "end_station_name": 9886,
+      "end_station_id": 10498,
+      "start_lat": 1939,
+      "start_lng": 1939,
+      "end_lat": 10473,
+      "end_lng": 10473,
+      "member_casual": 0
+    },
+    "raw_categories": {
+      "rideable_type": {
+        "classic_bike": 1069771,
+        "electric_bike": 2790600
+      },
+      "member_casual": {
+        "member": 3245467,
+        "casual": 614904
+      }
+    },
+    "profile": {
+      "start_min": "2026-04-01T04:00:02.969000+00:00",
+      "start_max": "2026-05-01T03:59:58.765000+00:00",
+      "duration_min": 60.039,
+      "duration_max": 90055.014,
+      "warning_rows": 12232
+    },
+    "quality_status": "warning",
+    "rules": {
+      "identity": "Exact duplicates: first file/row; all conflicting IDs quarantined",
+      "eligibility": "ID, valid unambiguous NY times; end>=start and end<=retrieved_at",
+      "station_missing": "Accepted for ride count; excluded only from respective station metric",
+      "duration": "No extra duration cutoff; short/long durations flagged, not removed",
+      "scope": "Official NYC archive selection; JC excluded as scope, not a quality error"
+    }
+  },
+  "artifact_checksums": {
+    "quarantine.parquet": "e4c58cfd691789fb64a11cc8e0f1e56213f3530a2eb15cadb5a35898d2dd678e",
+    "ride_hours.parquet": "d23f2f88c744c9af55a574dceefc97955403117bd3619b7cb6abb47d3b62e627",
+    "row_ledger.parquet": "df9701b63082fdc5d41294440ff544fc1f59f36a910a2ea75845f5fcb71bb573",
+    "silver.parquet": "3a482fdf2e71f8b3bdd4ed3c3e43e3ee500e566bc7c4b44b2b164dfcae6575f1",
+    "station_hours.parquet": "24112f1b09066082a3e7e13b2cfa2ccf038e2f55936399afe9612858abc86817"
+  },
+  "artifact_bytes": {
+    "quarantine.parquet": 887,
+    "ride_hours.parquet": 6780,
+    "row_ledger.parquet": 185518700,
+    "silver.parquet": 633810637,
+    "station_hours.parquet": 4405050
+  },
+  "processing": {
+    "elapsed_seconds": 232.171,
+    "duckdb_memory_limit": "512MB",
+    "threads": 2,
+    "peak_rss": "NOT VERIFIED; configured engine limit is not a process peak measurement",
+    "note": "Processing and independent baseline ran concurrently; no speedup or SLA claim"
+  },
+  "api_metadata": {
+    "publication_id": "69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284",
+    "source": "Citi Bike Trip History (official NYC)",
+    "source_url": "https://s3.amazonaws.com/tripdata/202604-citibike-tripdata.zip",
+    "source_version": "fefc1fca369818baeb9206792e02a098b71b59f263064b6627b42317965e2ffb",
+    "pipeline_version": "f1.0.0",
+    "scope": "NYC",
+    "timezone": "America/New_York",
+    "period_start": "2026-04-01T04:00:00Z",
+    "period_end": "2026-05-01T04:00:00Z",
+    "data_as_of": "2026-05-02T02:26:24.773000Z",
+    "retrieved_at": "2026-10-28T10:11:52.012794Z",
+    "published_at": "2026-10-28T10:28:15.037037Z",
+    "quality_status": "warning",
+    "input_rows": 3860371,
+    "canonical_rows": 3860371,
+    "excluded_rows": 0,
+    "quality_counts": {
+      "accepted": 3860371
+    },
+    "reason_counts": {
+      "long_duration": 766,
+      "missing_coordinates": 12177,
+      "missing_end_station": 10498,
+      "missing_start_station": 1939
+    },
+    "coverage": {
+      "canonical_rides": 3860371,
+      "known_end_station_rides": 3849873,
+      "completed_published_rides": 3860371,
+      "known_start_station_rides": 3858432
+    }
+  },
+  "ui_visible_metric": "3 860 371",
+  "source_policy": "https://citibikenyc.com/data-sharing-policy",
+  "privacy": "Aggregated non-commercial verification only; no raw rides or personal data are redistributed",
+  "reproduce": [
+    "uv run --locked python -m citibike.pipeline --period 2026-04 --url https://s3.amazonaws.com/tripdata/202604-citibike-tripdata.zip",
+    "uv run --locked python -m citibike.verify --result data/processed/69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284 --output docs/evidence/f2-f1-regression.json --recompute-baseline"
+  ]
+}

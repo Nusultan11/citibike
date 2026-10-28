@@ -522,7 +522,7 @@ def analytical_markdown(report: dict[str, Any], target: Path) -> None:
             "исключения, drift и GBFS timestamps."
         ),
         "",
-        "| Месяц | CSV | Вход | Канонические | Исключения | Пропущенные часы |",
+        "| Архив NYC | CSV | Вход | Канонические | Исключения | Пропущенные часы |",
         "|---|---:|---:|---:|---:|---:|",
     ]
     for month in monthly:
@@ -588,6 +588,17 @@ def analytical_markdown(report: dict[str, Any], target: Path) -> None:
         f"Итоговые dispositions: {report['dispositions']}. "
         f"Cross-source: {report['cross_source']}.",
         "Reason flags могут пересекаться; их сумма не равна числу исключённых строк.",
+        "Межархивная коррекция accepted rows: "
+        + (
+            "; ".join(
+                f"{m['period']}: {m['base_dispositions'].get('accepted', 0)} → "
+                f"{m['dispositions'].get('accepted', 0)}"
+                for m in monthly
+                if m["base_dispositions"] != m["dispositions"]
+            )
+            or "нет"
+        )
+        + ". Числа в таблице относятся к source partitions, не к витрине F3.",
         "",
         "GBFS и исторические соединения",
         "",
@@ -611,11 +622,26 @@ def analytical_markdown(report: dict[str, Any], target: Path) -> None:
         "Архивные workers отдельно записывают wall time, OS peak RSS и output bytes. "
         "Повторы и incremental runs записаны в evidence.",
         (
+            "Первый запуск включал failed attempts и cached recovery; чистый cold "
+            "end-to-end benchmark не измерен. RSS относится к отдельным процессам; "
+            "общий concurrent RAM не измерялся. Две ранние подготовки не имеют "
+            "отдельного base-phase RSS; сохранён RSS соответствующих attempts. "
+            "Engine memory limit не равен OS peak RSS."
+        ),
+        (
             "Результаты относятся к выбранным источникам и "
             "наблюдённым GBFS-сборам; они не доказывают скрытый "
             "спрос, круглосуточную доступность или production SLA."
         ),
         "",
+        (
+            "Источники: [официальный inventory](https://s3.amazonaws.com/tripdata), "
+            "[GBFS discovery](https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json), "
+            "[GBFS 2.3](https://github.com/MobilityData/gbfs/blob/v2.3/gbfs.md), "
+            "[Data Sharing Policy](https://citibikenyc.com/data-sharing-policy)."
+            if report["data_mode"] == "real_official"
+            else "Controlled fixtures: официальные feeds не запрашивались."
+        ),
     ]
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(rows), encoding="utf-8")
