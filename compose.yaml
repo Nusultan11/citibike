@@ -1,5 +1,21 @@
 name: bikeflow
 services:
+  db:
+    image: postgres:17@sha256:31ba9c94a03ada9988f2bb493a22a75eef3a185884533e5cdbcd498ea835b08f
+    environment:
+      POSTGRES_DB: ${PGDATABASE:-bikeflow}
+      POSTGRES_USER: ${PGUSER:-bikeflow}
+      POSTGRES_PASSWORD: ${PGPASSWORD:?Set PGPASSWORD in the environment or local .env}
+    ports:
+      - "127.0.0.1:${PGPORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/citibike/serving/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
   api:
     build:
       context: .
@@ -8,6 +24,11 @@ services:
       BIKEFLOW_API_HOST: 0.0.0.0
       BIKEFLOW_API_PORT: "8000"
       BIKEFLOW_API_LOG_LEVEL: ${BIKEFLOW_API_LOG_LEVEL:-info}
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: ${PGDATABASE:-bikeflow}
+      PGUSER: ${PGUSER:-bikeflow}
+      PGPASSWORD: ${PGPASSWORD:?Set PGPASSWORD in the environment or local .env}
     ports:
       - "127.0.0.1:${BIKEFLOW_API_PORT:-8000}:8000"
     healthcheck:
@@ -35,3 +56,5 @@ services:
       timeout: 4s
       retries: 12
       start_period: 10s
+volumes:
+  postgres_data:

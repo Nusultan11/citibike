@@ -1,13 +1,22 @@
-"""API liveness and consistent error responses; no data dependencies."""
+"""API liveness, read-only published metrics and consistent JSON errors."""
 
 from http import HTTPStatus
-from typing import Literal
+from typing import Annotated, Literal
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
+
+from citibike.serving.db import DatabaseUnavailable
+from citibike.serving.models import (
+    KpiResponse,
+    PublicationResponse,
+    QueryFilters,
+    SeriesResponse,
+)
+from citibike.serving.read import InvalidFilter, get_kpi, get_publication, get_series
 
 
 class HealthResponse(BaseModel):
@@ -34,6 +43,32 @@ def create_app() -> FastAPI:
     @application.get("/health", response_model=HealthResponse)
     async def health() -> HealthResponse:
         return HealthResponse()
+
+    @application.get("/v1/publication", response_model=PublicationResponse)
+    def publication() -> PublicationResponse:
+        return get_publication()
+
+    @application.get("/v1/kpi", response_model=KpiResponse)
+    def kpi(filters: Annotated[QueryFilters, Query()]) -> KpiResponse:
+        return get_kpi(filters)
+
+    @application.get("/v1/timeseries", response_model=SeriesResponse)
+    def timeseries(filters: Annotated[QueryFilters, Query()]) -> SeriesResponse:
+        return get_series(filters)
+
+    @application.exception_handler(DatabaseUnavailable)
+    async def handle_database_error(
+        _request: Request, _exc: DatabaseUnavailable
+    ) -> JSONResponse:
+        return error_response(
+            503, "database_unavailable", "Serving database unavailable"
+        )
+
+    @application.exception_handler(InvalidFilter)
+    async def handle_filter_error(
+        _request: Request, exc: InvalidFilter
+    ) -> JSONResponse:
+        return error_response(422, "invalid_filter", str(exc))
 
     @application.exception_handler(HTTPException)
     async def handle_http_error(_request: Request, exc: HTTPException) -> JSONResponse:

@@ -21,6 +21,7 @@ jobs:
       - run: uv run --locked ruff format --check .
       - run: uv run --locked mypy
       - run: uv run --locked pytest -q tests/unit
+      - run: uv run --locked pytest -q tests/data_contracts
       - run: uv build
   frontend:
     runs-on: ubuntu-24.04
@@ -48,12 +49,29 @@ jobs:
         with:
           version: "0.12.1"
       - run: uv sync --locked
+      - name: Generate ephemeral database password
+        run: |
+          password=$(uv run --locked python -c 'import secrets; print(secrets.token_hex(24))')
+          echo "::add-mask::$password"
+          echo "PGPASSWORD=$password" >> "$GITHUB_ENV"
       - run: docker compose config --quiet
       - run: docker compose build
       - run: docker compose up -d --wait --wait-timeout 120
-      - run: uv run --locked python tests/integration/smoke.py
+      - run: uv run --locked python tests/integration/smoke.py --expect-data empty
+      - run: uv run --locked pytest -q tests/integration/test_serving.py
+      - run: uv run --locked python -m tests.fixtures --output .cache/f1-fixture.zip
+      - run: uv run --locked python -m citibike.pipeline --period 2026-04 --fixture .cache/f1-fixture.zip --data-dir .cache/f1
+      - run: uv run --locked python tests/integration/smoke.py --expected-count 4
+      - run: uv run --locked python tests/integration/smoke.py --expected-count 3 --start-date 2026-04-01 --end-date 2026-04-02
+      - run: uv run --locked python tests/integration/smoke.py --expect-data error --start-date 2026-04-02 --end-date 2026-04-01
       - run: docker compose stop api
-      - run: uv run --locked python tests/integration/smoke.py --expect-api unavailable
+      - run: uv run --locked python tests/integration/smoke.py --expect-api unavailable --expect-data unavailable
+      - run: docker compose up -d --wait --wait-timeout 120
+      - run: uv run --locked python tests/integration/smoke.py --expected-count 4
+      - run: docker compose stop db
+      - run: uv run --locked python tests/integration/smoke.py --expect-data unavailable
+      - run: docker compose up -d --wait --wait-timeout 120
+      - run: uv run --locked python tests/integration/smoke.py --expected-count 4
       - name: Logs
         if: always()
         run: docker compose logs --no-color
