@@ -13,8 +13,10 @@ Next.js Dashboard. Реальный апрель 2026: **3 860 371** допус�
 - Node.js 24.18.0, npm 11.16.0; зависимости web закреплены в npm lockfile.
 - Docker с Linux containers и Compose с поддержкой `--wait`.
 - Сеть для первой установки и загрузки архива, свободные порты 5432/8000/3000.
-- Нужен диск под ZIP, распакованный CSV, DuckDB spill и Parquet. Движок ограничен
-  512 MB и двумя потоками; это не измерение peak RSS процесса.
+- Нужен диск под ZIP, распакованный CSV, DuckDB spill и Parquet. F1 использует
+  лимит DuckDB 512 MB, F2 — до 2 GB и два потока; это не peak RSS процесса.
+  Полный F2 — длительный batch: только ZIP выбранных 24 месяцев занимают 17.39 GB,
+  дополнительно нужны Silver, независимые identity partitions и рабочий диск.
 
 Из корня репозитория:
 
@@ -189,6 +191,89 @@ upstream deprecation warning об httpx; он не скрыт. Wheel/sdist со�
 отказ и recovery API/БД. Полный архив на каждом PR не загружается. Наличие workflow
 не доказывает успех CI: реальные run/SHA записываются в журнал.
 
+## F2: исторический слой и GBFS
+
+Официальный ListObjects inventory на 2026-10-28 содержит 178 объектов. Последние
+24 опубликованных полных NYC месяца — **2024-10 — 2026-09**; JC исключён.
+Inventory перечисляет всю опубликованную историю, но скачиваются только выбранные
+24 месяца. Для каждого ZIP проверяются pinned ETag/размер, SHA-256, CRC и все CSV;
+отсутствующий объект блокирует публикацию. `listed` ещё не означает `verified`.
+
+Команды из корня, PowerShell (первый discovery возвращает путь inventory):
+
+```powershell
+$inventory = uv run --locked python -m citibike.history inventory
+uv run --locked python -m citibike.history ingest --inventory $inventory --ranged
+uv run --locked python -m citibike.history build --inventory $inventory
+uv run --locked python -m citibike.history verify --inventory $inventory
+uv run --locked python -m citibike.history profile --inventory $inventory
+uv run --locked python -m citibike.ingestion.gbfs --count 3
+```
+
+`--ranged` использует до четырёх resumable HTTP Range запросов к тому же
+официальному URL, с проверкой каждого блока и итогового ZIP. Без флага используется
+последовательный GET. `--period YYYY-MM` позволяет повторить только неудавшийся
+месяц из выбранного окна. После восстановления выполните полный `ingest` ещё раз:
+неизменные проверенные объекты переиспользуются. `build --wait-seconds 14400`
+может ожидать receipts при параллельном ingest; обычный build не ожидает.
+
+Повтор `build` проверяет hashes и не перерабатывает неизменные source/pipeline
+версии. Чтобы обнаружить переиздание у источника, выполните новый `inventory`,
+затем те же `ingest/build/verify` с новым путём. Изменённый ZIP получает отдельную
+immutable Bronze version. Пересчитываются его Silver и глобальные ID-конфликты;
+зависимости включают старые и новые месяцы начала/окончания поездок. Неизменные
+эффективные партиции переиспользуются. Контролируемый тест изменения источника
+лежит в [fixture evidence](docs/evidence/f2-incremental-fixture.json) и явно
+отделён от реальной истории.
+
+Локальные артефакты (в Git не включаются):
+
+- `data/inventory/<id>/`: исходные XML listing и manifest; `objects/`, `receipts/`
+  содержат результаты фактической проверки.
+- `data/bronze/NYC/<sha256>/`: неизменяемый ZIP и source manifest.
+- `data/f2/processed/<id>/`: versioned базовые Silver, ledger и quarantine.
+  Mapping определяется реальными CSV headers; неизвестная схема блокирует месяц.
+- `data/f2/auxiliary/`, `audits/`, `states/`, `failures/`: полные EDA-профили,
+  независимый CSV/ZoneInfo/SQLite baseline, row-decision hashes, состояние и ошибки.
+- `data/f2/silver/<id>/`: итоговые canonical Silver, полный ledger и quarantine
+  с source/schema/pipeline lineage. Базовая версия `f2.0.0`, итоговая публикация
+  `f2.0.0-silver.2`; исправление итогового слоя не требует повторного raw transform.
+- `data/f2/snapshots/<id>/manifest.json`, `data/f2/active.json`: проверенный набор
+  всех 24 партиций и атомарно заменяемый указатель. Ошибка до активации сохраняет
+  предыдущую публикацию. F1 PostgreSQL/API/UI продолжают обслуживать апрель 2026.
+- `data/gbfs/bronze/<collection_id>/`: оригинальные discovery/information/status
+  JSON, received/source timestamps, TTL и checksums. Нормализация `f2-gbfs-2`
+  находится в `data/gbfs/silver/f2-gbfs-2/`; history — в `data/gbfs/station_history/`.
+
+Каждая входная CSV-строка имеет ровно один disposition. Независимый аудит проходит
+весь raw и сравнивает per-CSV counts, метрики и hash упорядоченных row decisions;
+межмесячные решения дополнительно сверяются на независимо вычисленных
+fingerprints. Редкие пики и неизвестные категории сохраняются с flags. Критические
+нарушения schema/grain/count/checksum/reconciliation блокируют публикацию;
+допустимые пропуски и неполное station coverage дают warning.
+
+GBFS URLs берутся динамически из официального discovery. Реально получена версия
+2.3; mapping 3.0 проверяется fixtures. Poll ограничен 1–120 collections и двумя
+часами, учитывает station-status TTL, timeout и backoff. Счётчик `0` сохраняется;
+неизвестное значение, отсутствие снимка и stale не превращаются в ноль. Для
+положительного TTL применяется консервативное истечение по TTL, для TTL=0
+требуется refresh и действует предел freshness 300 секунд. Stale не означает
+нарушение провайдером пяти минут GBFS: наш положительный TTL gate строже.
+
+`dim_station_history` использует только наблюдённые свежие information feeds,
+интервалы `[valid_from,valid_to)` без перекрытий и обратного заполнения. Станции
+GBFS и trip station aliases различаются; неоднозначные aliases не соединяются.
+Длительные промежутки между collections остаются неизвестными. Weather и
+историческая train/serve availability отсутствуют; ML и витрины F3 не создаются.
+
+`verify` проверяет уже опубликованный snapshot без изменения active pointer;
+`profile` формирует те же агрегированные отчёты. Полные профили остаются локально,
+компактные результаты — `docs/evidence/f2-history.json` и `f2-analysis.md`.
+Время и OS peak RSS записываются отдельно для worker attempts и publication;
+cache/retry не выдаются за холодный запуск. Лимит DuckDB не является измерением RSS.
+CI дополнительно проходит CLI-протокол на 24 маленьких синтетических месяцах:
+первый build, unchanged repeat, verification и one-changed-source rebuild.
+
 ## Источник и границы
 
 [Citi Bike System Data](https://citibikenyc.com/system-data) и
@@ -197,8 +282,9 @@ upstream deprecation warning об httpx; он не скрыт. Wheel/sdist со�
 полноты; запрещено пытаться идентифицировать пользователей. В Git — код и
 агрегированные доказательства, без исходных ZIP/Parquet и секретов.
 
-F1 проверен на одном современном месяце; historical schema inventory, обновление
-объекта у источника, расширенная EDA/quality и incremental preprocessing — F2.
-Карты, GBFS snapshots, ML, рекомендации и production SLA здесь не реализованы.
+F1 проверен на апреле 2026; F2 расширяет локальный исторический Silver и добавляет
+реальные GBFS collections. Итоговый фактический охват и DoD фиксируются в журнале
+и evidence после полного прогона. Dashboard пока показывает F1, без карт,
+исторических витрин F3, ML, рекомендаций и заявлений о production SLA.
 Требования: [PROJECT_SPEC.md](PROJECT_SPEC.md), архитектура:
 [ARCHITECTURE.md](ARCHITECTURE.md), проверки: [OPERATIONS.md](OPERATIONS.md).

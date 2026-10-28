@@ -23,7 +23,15 @@ from citibike.ingestion.archive import SourceManifest, checksum
 from citibike.quality.rules import critical_reasons
 
 
-def process(source: Path, root: Path) -> Path:
+def process(
+    source: Path,
+    root: Path,
+    *,
+    pipeline_version: str = PIPELINE_VERSION,
+    memory_limit_mb: int = 512,
+) -> Path:
+    if not 256 <= memory_limit_mb <= 2048:
+        raise ValueError("Memory limit must be between 256 and 2048 MB")
     manifest = SourceManifest.model_validate_json(
         (source / "manifest.json").read_text(encoding="utf-8")
     )
@@ -33,7 +41,7 @@ def process(source: Path, root: Path) -> Path:
         if set(csv_object.columns) != set(FIELDS):
             raise ValueError(f"Unsupported source schema in {csv_object.path}")
     start, end = period_bounds(manifest.period)
-    dataset_id = version_id(manifest.checksum)
+    dataset_id = version_id(manifest.checksum, pipeline_version)
     destination = root / "processed" / dataset_id
     if destination.exists():
         verify_artifacts(destination)
@@ -46,7 +54,10 @@ def process(source: Path, root: Path) -> Path:
         staging.mkdir()
         db = duckdb.connect(str(Path(working) / "transform.duckdb"))
         try:
-            db.execute("SET memory_limit='512MB'; SET threads=2; SET TimeZone='UTC'")
+            db.execute(
+                f"SET memory_limit='{memory_limit_mb}MB'; "
+                "SET threads=2; SET TimeZone='UTC'"
+            )
             db.execute("SET temp_directory = ?", [str(Path(working) / "spill")])
             db.execute(
                 """
@@ -87,6 +98,8 @@ def process(source: Path, root: Path) -> Path:
                     files.append({"file": csv_object.path, "input_rows": count[0]})
                     path.unlink()
             total = sum(item["input_rows"] for item in files)
+            if pipeline_version != PIPELINE_VERSION:
+                db.execute("SET preserve_insertion_order=false")
             if total == 0:
                 raise ValueError("Empty source cannot be published")
             # Inspect the unchanged input before applying acceptance/canonicalization.
@@ -199,7 +212,7 @@ def process(source: Path, root: Path) -> Path:
             db.execute(
                 "UPDATE silver SET schema_version=?,pipeline_version=?,"
                 "processed_at_utc=?",
-                [SCHEMA_VERSION, PIPELINE_VERSION, datetime.now(UTC)],
+                [SCHEMA_VERSION, pipeline_version, datetime.now(UTC)],
             )
             dispositions = dict(
                 db.execute(
@@ -253,7 +266,7 @@ def process(source: Path, root: Path) -> Path:
             )
             report = {
                 "dataset_id": dataset_id,
-                "pipeline_version": PIPELINE_VERSION,
+                "pipeline_version": pipeline_version,
                 "schema_version": SCHEMA_VERSION,
                 "source": manifest.model_dump(mode="json"),
                 "period_start": start.isoformat(),
@@ -279,7 +292,7 @@ def process(source: Path, root: Path) -> Path:
                 if profile[5] or len(dispositions) > 1
                 else "pass",
                 "elapsed_seconds": round(time.monotonic() - before, 3),
-                "memory_limit": "512MB",
+                "memory_limit": f"{memory_limit_mb}MB",
                 "threads": 2,
                 "rules": {
                     "identity": "Exact duplicates: first file/row; "

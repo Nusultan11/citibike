@@ -34,5 +34,5 @@ def period_bounds(period: str) -> tuple[datetime, datetime]:
     return start.astimezone(UTC), end.astimezone(UTC)
 
 
-def version_id(source_checksum: str) -> str:
-    return hashlib.sha256(f"{source_checksum}:{PIPELINE_VERSION}".encode()).hexdigest()
+def version_id(source_checksum: str, pipeline_version: str = PIPELINE_VERSION) -> str:
+    return hashlib.sha256(f"{source_checksum}:{pipeline_version}".encode()).hexdigest()

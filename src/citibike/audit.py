@@ -19,6 +19,8 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 from zoneinfo import ZoneInfo
 
+import duckdb
+
 _COLUMNS = (
     "ride_id",
     "rideable_type",
@@ -61,7 +63,9 @@ def micros(value: datetime) -> int:
     return delta.days * 86_400_000_000 + delta.seconds * 1_000_000 + delta.microseconds
 
 
-def audit_archive(source: Path, work: Path) -> dict[str, Any]:
+def audit_archive(
+    source: Path, work: Path, *, export_dir: Path | None = None
+) -> dict[str, Any]:
     before = time.monotonic()
     manifest = json.loads((source / "manifest.json").read_text(encoding="utf-8"))
     archive_path = source / "source.zip"
@@ -196,6 +200,66 @@ def audit_archive(source: Path, work: Path) -> dict[str, Any]:
                 AND start_us>=? AND start_us<?""",
                 (micros(start), micros(end)),
             ).fetchone()[0]
+            decision_digest = hashlib.sha256()
+            for file, number, disposition in db.execute(
+                "SELECT file,n,disposition FROM decisions ORDER BY file,n"
+            ):
+                decision_digest.update(
+                    json.dumps(
+                        [file, number, disposition], separators=(",", ":")
+                    ).encode()
+                    + b"\n"
+                )
+            if export_dir is not None:
+                export_dir.mkdir(parents=True, exist_ok=True)
+                identity_csv = Path(directory) / "identity.csv"
+                with identity_csv.open("w", encoding="utf-8", newline="") as output:
+                    writer = csv.writer(output)
+                    writer.writerow(
+                        [
+                            "source_file",
+                            "source_row_number",
+                            "ride_id",
+                            "record_hash",
+                            "eligible",
+                            "disposition",
+                            "source_object_id",
+                            "period",
+                            "bucket",
+                        ]
+                    )
+                    for file, number, rid, payload, eligible, disposition in db.execute(
+                        "SELECT file,n,ride_id,payload,eligible,disposition FROM"
+                        " decisions WHERE ride_id IS NOT NULL"
+                    ):
+                        bucket = hashlib.sha256(rid.encode()).hexdigest()[0]
+                        writer.writerow(
+                            [
+                                file,
+                                number,
+                                rid,
+                                payload,
+                                eligible,
+                                disposition,
+                                manifest["checksum"],
+                                manifest["period"],
+                                bucket,
+                            ]
+                        )
+                with duckdb.connect() as export:
+                    export.execute("SET memory_limit='256MB'; SET threads=2")
+                    export.execute(
+                        """COPY (SELECT * FROM read_csv($input, header=true,
+                        columns={source_file:'VARCHAR',source_row_number:'BIGINT',ride_id:'VARCHAR',
+                        record_hash:'VARCHAR',eligible:'INTEGER',disposition:'VARCHAR',
+                        source_object_id:'VARCHAR',period:'VARCHAR',bucket:'VARCHAR'}))
+                        TO $output (FORMAT PARQUET, PARTITION_BY(bucket),COMPRESSION
+                        ZSTD)""",
+                        {
+                            "input": str(identity_csv),
+                            "output": str(export_dir / "identity"),
+                        },
+                    )
             return {
                 "algorithm": "stdlib csv + zoneinfo fold roundtrip + disk SQLite; "
                 "independent of Gold helpers",
@@ -209,6 +273,7 @@ def audit_archive(source: Path, work: Path) -> dict[str, Any]:
                 "canonical_rows_all": dispositions.get("accepted", 0),
                 "completed_published_rides": metric,
                 "critical_reason_counts": dict(critical),
+                "row_decision_sha256": decision_digest.hexdigest(),
                 "elapsed_seconds": round(time.monotonic() - before, 3),
                 "sqlite_cache_mb": 32,
             }

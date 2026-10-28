@@ -1,0 +1,36 @@
+{
+  "data_mode": "controlled_fixture",
+  "scope": "24 tiny synthetic months; not real F2 history",
+  "first_snapshot": "805f27f3e788ed213ca85c50eefde35610468b18b73890c5470479b15b2cd151",
+  "changed_snapshot": "3d3e14c9a1fca4c32fdd0b410ca4540788b073730488f8b3979adab036567350",
+  "canonical_before": 24,
+  "canonical_after": 25,
+  "rebuilt_partitions": 1,
+  "reused_partitions": 23,
+  "old_and_new_boundaries_invalidated": "Also covered by test_global_reconciliation_incremental_dependencies_and_rollback",
+  "runs": [
+    {
+      "mode": "first",
+      "snapshot_id": "805f27f3e788ed213ca85c50eefde35610468b18b73890c5470479b15b2cd151",
+      "elapsed_seconds": 9.063,
+      "peak_rss_bytes": 88604672,
+      "rebuilt_partitions": 24,
+      "output_bytes": 309677
+    },
+    {
+      "mode": "unchanged",
+      "snapshot_id": "805f27f3e788ed213ca85c50eefde35610468b18b73890c5470479b15b2cd151",
+      "elapsed_seconds": 0.141,
+      "peak_rss_bytes": 50925568,
+      "rebuilt_partitions": 0
+    },
+    {
+      "mode": "incremental",
+      "snapshot_id": "3d3e14c9a1fca4c32fdd0b410ca4540788b073730488f8b3979adab036567350",
+      "elapsed_seconds": 1.891,
+      "peak_rss_bytes": 79896576,
+      "rebuilt_partitions": 1,
+      "output_bytes": 310136
+    }
+  ]
+}

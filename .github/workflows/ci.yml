@@ -22,6 +22,13 @@ jobs:
       - run: uv run --locked mypy
       - run: uv run --locked pytest -q tests/unit
       - run: uv run --locked pytest -q tests/data_contracts
+      - run: uv run --locked python -m tests.fixtures_history --data-dir .cache/f2-ci
+      - run: uv run --locked python -m citibike.history build --inventory .cache/f2-ci/inventory/controlled.json --data-dir .cache/f2-ci
+      - run: uv run --locked python -m citibike.history build --inventory .cache/f2-ci/inventory/controlled.json --data-dir .cache/f2-ci
+      - run: uv run --locked python -m citibike.history verify --inventory .cache/f2-ci/inventory/controlled.json --data-dir .cache/f2-ci --output .cache/f2-ci-evidence.json --report .cache/f2-ci-analysis.md
+      - run: uv run --locked python -m tests.fixtures_history --data-dir .cache/f2-ci --change-period 2026-04
+      - run: uv run --locked python -m citibike.history build --inventory .cache/f2-ci/inventory/controlled.json --data-dir .cache/f2-ci
+      - run: uv run --locked python -m tests.integration.history_smoke --data-dir .cache/f2-ci
       - run: uv build
   frontend:
     runs-on: ubuntu-24.04

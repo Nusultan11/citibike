@@ -138,11 +138,26 @@ def store_source(
         (staging / "manifest.json").write_text(
             manifest.model_dump_json(indent=2), encoding="utf-8"
         )
-        staging.rename(destination)
+        for attempt in range(4):
+            try:
+                staging.rename(destination)
+                break
+            except PermissionError:
+                # Windows scanners can briefly hold a just-written ZIP open.
+                if destination.exists() or attempt == 3:
+                    raise
+                time.sleep(2**attempt)
     return destination
 
 
-def download(url: str, period: str, root: Path) -> Path:
+def download(
+    url: str,
+    period: str,
+    root: Path,
+    *,
+    expected_etag: str | None = None,
+    expected_bytes: int | None = None,
+) -> Path:
     parts = urlsplit(url)
     expected = f"{period.replace('-', '')}-citibike-tripdata.zip"
     if (
@@ -164,6 +179,10 @@ def download(url: str, period: str, root: Path) -> Path:
             manifest_path.read_text(encoding="utf-8")
         )
         if manifest.source_url == url and manifest.period == period:
+            if expected_etag is not None and manifest.etag != expected_etag:
+                continue  # Reissued object: retain the old content-addressed version.
+            if expected_bytes is not None and manifest.bytes != expected_bytes:
+                continue
             if checksum(manifest_path.parent / "source.zip") != manifest.checksum:
                 raise ValueError("Bronze checksum changed")
             return manifest_path.parent
@@ -173,7 +192,10 @@ def download(url: str, period: str, root: Path) -> Path:
         with httpx.Client(timeout=httpx.Timeout(60, connect=15)) as client:
             for attempt in range(3):
                 try:
-                    with client.stream("GET", url) as response:
+                    request_headers = (
+                        {"If-Match": expected_etag} if expected_etag else {}
+                    )
+                    with client.stream("GET", url, headers=request_headers) as response:
                         response.raise_for_status()
                         count = 0
                         with temporary.open("wb") as output:
@@ -182,9 +204,24 @@ def download(url: str, period: str, root: Path) -> Path:
                                 if count > 2_000_000_000:
                                     raise ValueError("Download exceeds F1 size limit")
                                 output.write(chunk)
+                                if expected_bytes and count % (64 * 1024 * 1024) == 0:
+                                    print(
+                                        f"Downloading {period}: "
+                                        f"{count}/{expected_bytes} bytes",
+                                        flush=True,
+                                    )
                         length = response.headers.get("content-length")
                         if count == 0 or (length is not None and count != int(length)):
                             raise ValueError("Empty or incomplete HTTP object")
+                        if expected_bytes is not None and count != expected_bytes:
+                            raise ValueError(
+                                "Object changed since inventory: byte count"
+                            )
+                        if (
+                            expected_etag
+                            and response.headers.get("etag") != expected_etag
+                        ):
+                            raise ValueError("Object changed since inventory: ETag")
                         return store_source(
                             temporary,
                             root,
