@@ -15,17 +15,42 @@ from citibike.ingestion.gbfs import GBFS_PIPELINE
 from citibike.storage import read_json, write_json
 
 
+def station_join_counts(db: duckdb.DuckDBPyConnection) -> tuple[int, int, int]:
+    # LEFT JOIN retains every input row. A larger output count proves expansion;
+    # no high-cardinality GROUP BY on all historical row keys is necessary.
+    row = db.execute("""SELECT (SELECT count(*) FROM trips),count(*),count(h.station_id)
+        FROM trips t LEFT JOIN station_history h ON t.start_station_id=h.trip_station_id
+        AND t.started_at_utc>=h.valid_from AND t.started_at_utc<h.valid_to
+    """).fetchone()
+    assert row is not None
+    if row[0] != row[1]:
+        raise ValueError("Station history join explosion")
+    return int(row[0]), int(row[2]), 0
+
+
 def gbfs_evidence(root: Path) -> dict[str, Any]:
     collections = []
     for path in sorted(
         (root / "gbfs" / "silver" / GBFS_PIPELINE).glob("*/quality.json")
     ):
         quality = read_json(path)
+        if (
+            quality["collection_id"] != path.parent.name
+            or quality["pipeline_version"] != GBFS_PIPELINE
+        ):
+            raise ValueError("GBFS collection lineage mismatch")
+        if checksum(path.parent / "station_status.parquet") != quality["checksum"]:
+            raise ValueError("GBFS Silver checksum mismatch")
+        bronze = root / "gbfs/bronze" / quality["collection_id"]
+        for name, metadata in quality["manifest"]["feeds"].items():
+            if checksum(bronze / f"{name}.json") != metadata["checksum"]:
+                raise ValueError("GBFS Bronze checksum mismatch")
         collections.append(
             {
                 k: quality[k]
                 for k in [
                     "collection_id",
+                    "pipeline_version",
                     "input_station_ids",
                     "accepted",
                     "invalid",
@@ -36,6 +61,26 @@ def gbfs_evidence(root: Path) -> dict[str, Any]:
                 ]
             }
         )
+        with duckdb.connect() as db:
+            age = db.execute(
+                """SELECT count(*) FILTER (WHERE last_reported IS NULL),
+                quantile_cont(epoch(received_at_utc-last_reported),[0,0.5,0.95,1]),
+                count(*),count(*)-count(DISTINCT (collection_id,station_id)),
+                count(*) FILTER (WHERE collection_id<>$expected)
+                FROM read_parquet($input)""",
+                {
+                    "expected": quality["collection_id"],
+                    "input": str(path.parent / "station_status.parquet"),
+                },
+            ).fetchone()
+            assert age is not None
+            if age[2] != quality["accepted"] or age[3] or age[4]:
+                raise ValueError("GBFS Silver count/grain mismatch")
+            collections[-1]["station_reported_freshness"] = {
+                "unknown_last_reported_rows": age[0],
+                "age_seconds_min_median_p95_max": age[1],
+                "note": "Raw source timestamps retained; large ages stay stale.",
+            }
     gaps = []
     for previous, current in zip(collections, collections[1:], strict=False):
         a = previous["manifest"]["feeds"]["station_status"]
@@ -58,6 +103,9 @@ def gbfs_evidence(root: Path) -> dict[str, Any]:
     history = read_json(history_path) if history_path.exists() else None
     if history:
         history_file = Path(history["path"]) / "dim_station_history.parquet"
+        expected = read_json(history_file.parent / "manifest.json")["checksum"]
+        if checksum(history_file) != expected:
+            raise ValueError("Station history checksum mismatch")
         with duckdb.connect() as db:
             db.read_parquet(str(history_file)).create_view("history")
             grain = db.execute("""SELECT count(*),count(*)-count(DISTINCT
@@ -73,7 +121,12 @@ def gbfs_evidence(root: Path) -> dict[str, Any]:
                     WHERE valid_from<previous_end""").fetchone()
                 assert value is not None
                 overlaps[key] = value[0]
-        if grain[1] or grain[2] or any(overlaps.values()):
+        if (
+            grain[0] != history["intervals"]
+            or grain[1]
+            or grain[2]
+            or any(overlaps.values())
+        ):
             raise ValueError("Station history integrity failed")
         history = {
             **history,
@@ -216,7 +269,7 @@ def evidence(
         "peak_hour_of_week": list(weekly.most_common(1)[0][0]) if weekly else None,
     }
     gbfs = gbfs_evidence(root)
-    join_coverage = {
+    join_coverage: dict[str, Any] = {
         "station_history_available": gbfs["station_history"] is not None,
         "matched_start_rows": 0,
         "multiple_matches": 0,
@@ -240,16 +293,7 @@ def evidence(
                 db.read_parquet(
                     str(Path(partition["path"]) / "silver.parquet")
                 ).create_view("trips", replace=True)
-                row = db.execute("""SELECT count(*) tested_rows,
-                    count(*) FILTER (WHERE n>0) matched,
-                    count(*) FILTER (WHERE n>1) exploded FROM (
-                    SELECT source_object_id,source_file,source_row_number,
-                    count(h.station_id) n
-                    FROM trips t LEFT JOIN station_history h
-                    ON t.start_station_id=h.trip_station_id
-                    AND t.started_at_utc>=h.valid_from
-                    AND t.started_at_utc<h.valid_to GROUP BY 1,2,3)""").fetchone()
-                assert row is not None
+                row = station_join_counts(db)
                 join_coverage["tested_rows"] += row[0]
                 join_coverage["matched_start_rows"] += row[1]
                 join_coverage["multiple_matches"] += row[2]
@@ -283,11 +327,27 @@ def evidence(
             "f2/auxiliary",
             "f2/audits",
             "f2/silver",
+            "f2/snapshots",
             "gbfs",
             "f2/work",
             "downloads",
         ]
     }
+    failed_preparations = []
+    for path in sorted((root / "f2/failures").glob("*.json")):
+        failure = read_json(path)
+        failed_preparations.append(
+            {
+                key: failure.get(key)
+                for key in [
+                    "period",
+                    "source_object_id",
+                    "pipeline_version",
+                    "error_type",
+                    "at",
+                ]
+            }
+        )
     report = {
         "stage": "F2",
         "status": "verified" if real else "verified_fixture",
@@ -337,6 +397,7 @@ def evidence(
             "local_bytes_by_area": disk_bytes,
             "free_disk_bytes_at_report": shutil.disk_usage(root).free,
             "ingest_attempts": ingest_attempts,
+            "failed_preparation_attempts": failed_preparations,
             "base_phase_measurement_missing_periods": [
                 m["period"] for m in monthly if "base_phase" not in m["measurements"]
             ],

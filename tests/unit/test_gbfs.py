@@ -17,6 +17,7 @@ from citibike.ingestion.gbfs import (
     poll,
     rebuild_station_history,
 )
+from citibike.quality.history_report import gbfs_evidence
 from citibike.storage import read_json, write_json
 
 
@@ -172,6 +173,12 @@ def test_real_collection_protocol_history_and_failure_rollback(tmp_path: Path) -
             collect(tmp_path, "invalid", client)
         assert (tmp_path / "gbfs/active.json").read_bytes() == prior
         assert (tmp_path / "gbfs/bronze/invalid/station_status.json").exists()
+        proof = gbfs_evidence(tmp_path)
+        assert len(proof["collections"]) == 2
+        assert proof["station_history"]["tested_intervals"] == 2
+        (tmp_path / "gbfs/bronze/first/station_status.json").write_bytes(b"{}")
+        with pytest.raises(ValueError, match="Bronze checksum"):
+            gbfs_evidence(tmp_path)
 
 
 def test_station_history_gaps_alias_reuse_and_conflicting_observations(

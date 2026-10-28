@@ -330,7 +330,13 @@ def publish_history(
     ):
         raise ValueError("Failed or mixed pipeline versions cannot be published")
     for state in states:
-        verify_artifacts(Path(state["result"]))
+        quality = verify_artifacts(Path(state["result"]))
+        if (
+            quality["source"]["checksum"] != state["source_object_id"]
+            or quality["source"]["period"] != state["period"]
+            or quality["pipeline_version"] != HISTORY_VERSION
+        ):
+            raise ValueError("Historical state lineage mismatch")
         source_zip = root / "bronze/NYC" / state["source_object_id"] / "source.zip"
         if checksum(source_zip) != state["source_object_id"]:
             raise ValueError("Historical Bronze checksum changed")

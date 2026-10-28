@@ -8,7 +8,8 @@ from citibike.processing import history_publish
 from citibike.processing.historical import prepare
 from citibike.processing.schemas import detect
 from citibike.processing.trips import process, verify_artifacts
-from citibike.storage import read_json
+from citibike.quality.history_report import station_join_counts
+from citibike.storage import read_json, write_json
 from tests.fixtures import ride, write_zip
 
 
@@ -35,6 +36,16 @@ def test_global_reconciliation_incremental_dependencies_and_rollback(
     states = [prepare(a, tmp_path), prepare(b, tmp_path)]
     assert prepare(a, tmp_path) == states[0]
     window = ["2026-01", "2026-02"]
+    wrong_reference = tmp_path / "wrong-state.json"
+    write_json(
+        wrong_reference,
+        {**read_json(states[1]), "result": read_json(states[0])["result"]},
+    )
+    with pytest.raises(ValueError, match="state lineage"):
+        history_publish.publish_history(
+            [states[0], wrong_reference], tmp_path, window, required_months=2
+        )
+    assert not (tmp_path / "f2/active.json").exists()
     published = history_publish.publish_history(
         states, tmp_path, window, required_months=2
     )
@@ -145,3 +156,20 @@ def test_modern_categories_are_preserved_without_legacy_guessing(
             "SELECT member_casual,duration_seconds FROM read_parquet(?)",
             [str(result / "silver.parquet")],
         ).fetchone() == ("Subscriber", 0.25)
+
+
+def test_station_join_cardinality_and_no_historical_backfill() -> None:
+    with duckdb.connect() as db:
+        db.execute("""CREATE TABLE trips(start_station_id VARCHAR,
+            started_at_utc TIMESTAMPTZ);
+            INSERT INTO trips VALUES ('001','2026-10-28 10:00:00+00'),
+                ('001','2026-04-01 10:00:00+00'),('unknown','2026-10-28 10:00:00+00');
+            CREATE TABLE station_history(station_id VARCHAR,trip_station_id VARCHAR,
+                valid_from TIMESTAMPTZ,valid_to TIMESTAMPTZ);
+            INSERT INTO station_history VALUES ('A','001',
+                '2026-10-28 10:00:00+00','2026-10-28 11:00:00+00')""")
+        assert station_join_counts(db) == (3, 1, 0)
+        db.execute("""INSERT INTO station_history VALUES ('B','001',
+            '2026-10-28 10:00:00+00','2026-10-28 10:30:00+00')""")
+        with pytest.raises(ValueError, match="join explosion"):
+            station_join_counts(db)
