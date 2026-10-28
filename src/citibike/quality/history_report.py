@@ -1,5 +1,8 @@
 """Compact, source-backed EDA evidence; full monthly profiles stay outside Git."""
 
+import os
+import platform
+import shutil
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
@@ -54,9 +57,31 @@ def gbfs_evidence(root: Path) -> dict[str, Any]:
     history_path = root / "gbfs/station_history/active.json"
     history = read_json(history_path) if history_path.exists() else None
     if history:
+        history_file = Path(history["path"]) / "dim_station_history.parquet"
+        with duckdb.connect() as db:
+            db.read_parquet(str(history_file)).create_view("history")
+            grain = db.execute("""SELECT count(*),count(*)-count(DISTINCT
+                (station_id,valid_from)),count(*) FILTER (WHERE valid_to<=valid_from)
+                FROM history""").fetchone()
+            assert grain is not None
+            overlaps = {}
+            for key in ["station_id", "trip_station_id"]:
+                value = db.execute(f"""SELECT count(*) FROM (
+                    SELECT valid_from,max(valid_to) OVER (PARTITION BY {key}
+                    ORDER BY valid_from ROWS BETWEEN UNBOUNDED PRECEDING AND
+                    1 PRECEDING) previous_end FROM history WHERE {key} IS NOT NULL)
+                    WHERE valid_from<previous_end""").fetchone()
+                assert value is not None
+                overlaps[key] = value[0]
+        if grain[1] or grain[2] or any(overlaps.values()):
+            raise ValueError("Station history integrity failed")
         history = {
             **history,
-            "checksum": checksum(Path(history["path"]) / "dim_station_history.parquet"),
+            "checksum": checksum(history_file),
+            "tested_intervals": grain[0],
+            "duplicate_grain": grain[1],
+            "invalid_intervals": grain[2],
+            "overlaps": overlaps,
         }
     return {
         "collections": collections,
@@ -101,6 +126,7 @@ def evidence(
                 "source_modified_at": source["source_modified_at"],
                 "retrieved_at": source["retrieved_at"],
                 "csv_files": source["csv_files"],
+                "csv_quality": profile["files"],
                 "zip_entries": source["zip_entries"],
                 "schemas": state["schemas"],
                 "input_rows": partition["input_rows"],
@@ -109,6 +135,8 @@ def evidence(
                 "partition_id": partition["partition_id"],
                 "checksums": partition["checksums"],
                 "independent_row_decision_sha256": state["row_decision_sha256"],
+                "base_dispositions": profile["dispositions"],
+                "profile_checksum": checksum(Path(state["profile"])),
                 "measurements": state["measurements"],
                 "raw_missing_fields": profile["raw_missing_fields"],
                 "raw_categories": profile["raw_categories"],
@@ -231,6 +259,35 @@ def evidence(
         m["source_url"].startswith("https://s3.amazonaws.com/tripdata/")
         for m in monthly
     )
+    ingest_attempts = []
+    for path in sorted((root / "inventory/receipts").glob("*.json")):
+        attempt = read_json(path)
+        ingest_attempts.append(
+            {
+                "receipt_id": path.stem,
+                "checked_at": attempt["checked_at"],
+                "complete": attempt["complete"],
+                "availability_counts": dict(
+                    Counter(obj["availability"] for obj in attempt["objects"])
+                ),
+                "recorded_object_seconds": sum(
+                    obj.get("elapsed_seconds", 0) for obj in attempt["objects"]
+                ),
+            }
+        )
+    disk_bytes = {
+        area: sum(p.stat().st_size for p in (root / area).rglob("*") if p.is_file())
+        for area in [
+            "bronze",
+            "f2/processed",
+            "f2/auxiliary",
+            "f2/audits",
+            "f2/silver",
+            "gbfs",
+            "f2/work",
+            "downloads",
+        ]
+    }
     report = {
         "stage": "F2",
         "status": "verified" if real else "verified_fixture",
@@ -272,6 +329,27 @@ def evidence(
         "station_history_join": join_coverage,
         "gbfs": gbfs,
         "measurements": manifest["measurements"],
+        "execution_context": {
+            "platform": platform.platform(),
+            "python": platform.python_version(),
+            "duckdb": duckdb.__version__,
+            "logical_cpus": os.cpu_count(),
+            "local_bytes_by_area": disk_bytes,
+            "free_disk_bytes_at_report": shutil.disk_usage(root).free,
+            "ingest_attempts": ingest_attempts,
+            "base_phase_measurement_missing_periods": [
+                m["period"] for m in monthly if "base_phase" not in m["measurements"]
+            ],
+            "measurement_caveat": (
+                "First execution included failed attempts and cached recovery; "
+                "there is no clean cold end-to-end benchmark. Worker attempts, "
+                "base phases and publication are measured separately. Object "
+                "seconds include cached verifications and repeat receipts; "
+                "do not sum receipts as download wall time. OS peak RSS is "
+                "per process, not aggregate concurrent RAM or DuckDB limit. "
+                "Disk totals include retained attempts, not minimal disk needs."
+            ),
+        },
         "runs": [read_json(p) for p in sorted((root / "f2/runs").glob("*.json"))],
         "weather": {"status": "unavailable", "rows": 0, "join_performed": False},
         "train_serve_availability": (
@@ -288,7 +366,11 @@ def evidence(
         ),
         "rules_evidence_impact_tests": [
             {
-                "evidence": "Raw null rates and missing station counts by month",
+                "evidence": {
+                    "raw_missing_counts": dict(raw_missing),
+                    "route_coverage_rows": findings["route_coverage_rows"],
+                    "denominator": base_rows,
+                },
                 "impact": "Station/route coverage differs from ride count",
                 "rule": (
                     "Keep eligible rides; null stations excluded only from "
@@ -300,9 +382,7 @@ def evidence(
                 ),
             },
             {
-                "evidence": (
-                    "Cross-source variants and independent per-row decision hashes"
-                ),
+                "evidence": manifest["cross_source"],
                 "impact": "Double counting or ambiguous ride identity",
                 "rule": (
                     "Exact payload: earliest eligible month/file/row; "
@@ -312,7 +392,18 @@ def evidence(
                 "incremental_dependencies_and_rollback",
             },
             {
-                "evidence": "Timestamp validity/DST/duration profiles",
+                "evidence": {
+                    "reason_counts": {
+                        key: value
+                        for key, value in reasons.items()
+                        if any(word in key for word in ["time", "duration", "future"])
+                    },
+                    "duration_min_seconds": findings["duration_min_seconds"],
+                    "duration_max_seconds": findings["duration_max_seconds"],
+                    "note": (
+                        "Reason flags overlap; they are not additive row exclusions."
+                    ),
+                },
                 "impact": "Wrong UTC hour or invalid event order",
                 "rule": (
                     "Reject ambiguous/gap/invalid/negative/future; retain "
@@ -324,7 +415,11 @@ def evidence(
                 ),
             },
             {
-                "evidence": "GBFS source/received timestamps and ttl gaps",
+                "evidence": {
+                    "collections": len(gbfs["collections"]),
+                    "gaps": gbfs["gaps"],
+                    "station_history_integrity": gbfs["station_history"],
+                },
                 "impact": "Unknown availability and unsafe historical join",
                 "rule": (
                     "Stale/missing stay explicit; station history begins "
@@ -431,6 +526,7 @@ def analytical_markdown(report: dict[str, Any], target: Path) -> None:
         ),
         f"Итоговые dispositions: {report['dispositions']}. "
         f"Cross-source: {report['cross_source']}.",
+        "Reason flags могут пересекаться; их сумма не равна числу исключённых строк.",
         "",
         "GBFS и исторические соединения",
         "",

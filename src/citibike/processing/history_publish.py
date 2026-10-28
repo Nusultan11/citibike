@@ -204,7 +204,20 @@ def effective_partition(
             db.read_parquet(
                 [str(base / "silver.parquet"), str(base / "quarantine.parquet")],
                 union_by_name=True,
-            ).create_view("available_rows")
+            ).create_view("stored_rows")
+            # A formerly exact duplicate can become a conflict after another
+            # source appears. Its payload equals the retained canonical row;
+            # recover that payload with its own original ledger source keys.
+            db.execute("""CREATE VIEW available_rows AS SELECT * FROM stored_rows
+                UNION ALL BY NAME SELECT s.* EXCLUDE(source_file,source_row_number),
+                b.source_file,b.source_row_number FROM base_silver s
+                JOIN base_ledger b ON s.ride_id=b.ride_id
+                    AND s.record_hash=b.record_hash
+                JOIN edits e ON b.source_object_id=e.source_object_id
+                    AND b.source_file=e.source_file
+                    AND b.source_row_number=e.source_row_number
+                WHERE b.disposition='duplicate_exact' AND e.disposition='conflicting_id'
+            """)
             db.execute(
                 f"""CREATE TABLE quarantine AS SELECT a.* EXCLUDE(
                     disposition,quality_reason_codes,quality_status,pipeline_version,
@@ -344,11 +357,15 @@ def publish_history(
                     raise ValueError("Active historical artifact changed")
         if not activate:
             return destination
+        pointer = root / "f2/active.json"
+        already_active = (
+            pointer.exists() and read_json(pointer)["snapshot_id"] == snapshot_id
+        )
         activate_snapshot(root, {"snapshot_id": snapshot_id, "path": str(destination)})
         write_json(
             root / "f2" / "runs" / f"{time.time_ns()}.json",
             {
-                "mode": "unchanged",
+                "mode": "unchanged" if already_active else "activate_existing",
                 "snapshot_id": snapshot_id,
                 "elapsed_seconds": round(time.monotonic() - before, 3),
                 "peak_rss_bytes": peak_rss_bytes(),

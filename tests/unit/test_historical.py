@@ -20,6 +20,7 @@ def test_global_reconciliation_incremental_dependencies_and_rollback(
         ride(2, started_at="2026-01-31 10:00:00", ended_at="2026-01-31 11:00:00"),
         ride(9, ride_id=""),
     ]
+    first_rows.insert(2, first_rows[1].copy())
     second_rows = [
         first_rows[0],
         {**first_rows[1], "member_casual": "casual"},
@@ -38,9 +39,9 @@ def test_global_reconciliation_incremental_dependencies_and_rollback(
         states, tmp_path, window, required_months=2
     )
     report = read_json(published / "manifest.json")
-    assert report["input_rows"] == 6 and report["canonical_rows"] == 2
+    assert report["input_rows"] == 7 and report["canonical_rows"] == 2
     assert report["cross_source"]["changed_row_counts"] == {
-        "conflicting_id": 2,
+        "conflicting_id": 3,
         "duplicate_exact": 1,
     }
     assert report["cross_source"]["independent_row_mismatches"] == 0
@@ -59,6 +60,12 @@ def test_global_reconciliation_incremental_dependencies_and_rollback(
                 [str(Path(partition["path"]) / "quarantine.parquet")],
             ).fetchone() == (0,)
     active = (tmp_path / "f2/active.json").read_bytes()
+    with duckdb.connect() as db:
+        assert db.execute(
+            "SELECT ride_id,member_casual_raw FROM read_parquet(?) "
+            "WHERE source_file='a.csv' AND source_row_number=3",
+            [str(Path(report["partitions"][0]["path"]) / "quarantine.parquet")],
+        ).fetchone() == (first_rows[1]["ride_id"], first_rows[1]["member_casual"])
     assert (
         history_publish.publish_history(states, tmp_path, window, required_months=2)
         == published
@@ -86,6 +93,9 @@ def test_global_reconciliation_incremental_dependencies_and_rollback(
         revised_states, tmp_path, window, required_months=2
     )
     new = read_json(revised / "manifest.json")
+    runs = [read_json(p) for p in sorted((tmp_path / "f2/runs").glob("*.json"))]
+    assert runs[-1]["mode"] == "activate_existing"
+    assert runs[-1]["rebuilt_partitions"] == 0
     assert new["canonical_rows"] == 3
     assert "2026-03" in new["affected_dependency_months"]
     # Unchanged January source changes because February's conflict was removed.

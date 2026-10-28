@@ -14,6 +14,7 @@ from citibike.ingestion.gbfs import (
     envelope,
     feed_urls,
     normalize,
+    poll,
     rebuild_station_history,
 )
 from citibike.storage import read_json, write_json
@@ -219,3 +220,30 @@ def test_station_history_gaps_alias_reuse_and_conflicting_observations(
     with pytest.raises(ValueError, match="same timestamp"):
         rebuild_station_history(tmp_path)
     assert (tmp_path / "gbfs/station_history/active.json").read_bytes() == previous
+
+
+def test_bounded_poll_respects_status_ttl_and_duration(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destination = tmp_path / "test"
+    write_json(
+        destination / "quality.json",
+        {
+            "quality_counts": {"valid": 1},
+            "manifest": {
+                "feeds": {
+                    "station_status": {"ttl": 10},
+                    "station_information": {"ttl": 999},
+                }
+            },
+        },
+    )
+    waits: list[int] = []
+    monkeypatch.setattr("citibike.ingestion.gbfs.collect", lambda _: destination)
+    monkeypatch.setattr("citibike.ingestion.gbfs.time.sleep", waits.append)
+    assert len(poll(tmp_path, 3)) == 3 and waits == [10, 10]
+    with pytest.raises(ValueError, match="TTL wait"):
+        poll(tmp_path, 2, max_duration_seconds=1)
+    with pytest.raises(ValueError, match="bounded"):
+        poll(tmp_path, 121)
