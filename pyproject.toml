@@ -1,0 +1,35 @@
+[build-system]
+requires = ["uv_build==0.12.1"]
+build-backend = "uv_build"
+
+[project]
+name = "citibike"
+version = "0.1.0"
+description = "BikeFlow Intelligence Python package"
+readme = "README.md"
+requires-python = ">=3.12.13,<3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15,<2",
+    "pytest>=8.3,<10",
+    "ruff>=0.11,<1",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/citibike"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+addopts = "--import-mode=importlib"
