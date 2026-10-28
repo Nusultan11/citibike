@@ -142,7 +142,7 @@ def test_profile_preserves_null_and_does_not_drop_duration_peaks(
         },
     )
     result = process(ingest_fixture(archive, "2026-04", tmp_path), tmp_path)
-    report = json.loads((result / "quality.json").read_text())
+    report = json.loads((result / "quality.json").read_text(encoding="utf-8"))
     assert report["metrics"]["completed_published_rides"] == 1
     assert report["metrics"]["known_start_station_rides"] == 0
     assert report["reason_counts"]["long_duration"] == 1
@@ -182,3 +182,16 @@ def test_wrong_source_period_cannot_be_published(tmp_path: Path) -> None:
     result = process(ingest_fixture(source, "2026-03", tmp_path), tmp_path)
     with pytest.raises(ValueError, match="inside source period"):
         publish(result)
+
+
+def test_utf8_source_names_and_provenance(tmp_path: Path) -> None:
+    name = "данные/поездки.csv"
+    archive = write_zip(tmp_path / "utf8.zip", {name: [ride(1)]})
+    bronze = ingest_fixture(archive, "2026-04", tmp_path)
+    result = process(bronze, tmp_path)
+    report = verify_artifacts(result)
+    assert report["source"]["source"] == (
+        "Controlled test fixture — not real Citi Bike data"
+    )
+    assert report["files"][0]["file"] == name
+    assert report["metrics"]["completed_published_rides"] == 1

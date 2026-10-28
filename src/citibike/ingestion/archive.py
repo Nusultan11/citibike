@@ -160,7 +160,9 @@ def download(url: str, period: str, root: Path) -> Path:
         raise ValueError("Current or future month is not a complete published period")
     # Reuse the already verified immutable object without another network download.
     for manifest_path in (root / "bronze" / "NYC").glob("*/manifest.json"):
-        manifest = SourceManifest.model_validate_json(manifest_path.read_text())
+        manifest = SourceManifest.model_validate_json(
+            manifest_path.read_text(encoding="utf-8")
+        )
         if manifest.source_url == url and manifest.period == period:
             if checksum(manifest_path.parent / "source.zip") != manifest.checksum:
                 raise ValueError("Bronze checksum changed")

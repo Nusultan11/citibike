@@ -25,7 +25,7 @@ from citibike.quality.rules import critical_reasons
 
 def process(source: Path, root: Path) -> Path:
     manifest = SourceManifest.model_validate_json(
-        (source / "manifest.json").read_text()
+        (source / "manifest.json").read_text(encoding="utf-8")
     )
     if checksum(source / "source.zip") != manifest.checksum:
         raise ValueError("Bronze checksum mismatch")
