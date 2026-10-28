@@ -1,0 +1,40 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+.secrets/
+
+# Local environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.ipynb_checkpoints/
+node_modules/
+.next/
+
+# Generated output and local data / ML artifacts
+/build/
+/dist/
+/coverage/
+.coverage
+htmlcov/
+*.egg-info/
+*.log
+/data/
+/artifacts/
+/models/
+/mlruns/
+/mlartifacts/
+/CitiBike_Project_Architecture_Knowledge_Base_FINAL.zip
+
+# OS metadata
+.DS_Store
+Thumbs.db
