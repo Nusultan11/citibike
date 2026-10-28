@@ -11,9 +11,7 @@ class DatabaseUnavailable(Exception):
 
 
 class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=".env", extra="ignore", populate_by_name=True
-    )
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     host: str = Field(default="127.0.0.1", validation_alias="PGHOST")
     port: int = Field(default=5432, validation_alias="PGPORT", ge=1, le=65535)
