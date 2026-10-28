@@ -189,3 +189,30 @@ commit SHA/PR; ограничения и выводы; один следующи
 - Финальный локальный код: Ruff/format/mypy PASS, `uv run --locked pytest -q tests/unit tests/data_contracts tests/integration/test_serving.py` — **58 passed**, один открытый upstream warning; `uv build`, `docker compose config --quiet`, `build`, `up -d --wait --wait-timeout 120`, HTTP smoke и `git diff --check` — PASS. Frontend `npm --prefix apps/web ci`, `run lint`, `run typecheck`, `run build` прошли ранее, frontend не менялся. Содержимое sdist проверено: без data/cache/env. Нормативные документы и ROADMAP §§1–5 сохранены.
 - [CI 40724002503](https://github.com/Nusultan11/citibike/actions/runs/40724002503) на `99246e6cc0d56b35b91fc9158aa83a77cfb9efb9` — success. После него уточнён генератор аналитического текста и custom-output metadata, локальные проверки повторены. Код и real evidence фиксируются для актуального CI; статус общего F2 пока **PARTIAL**, без ложного завершающего коммита.
 - Следующий шаг: подтвердить CI этого code/evidence SHA, записать итоговый DoD F2 и проверить CI последнего коммита; F3 не начинать.
+
+### 2026-10-28 — F2 Data Trust: итоговый DoD COMPLETED
+
+- Полный code/evidence SHA `de96adb352af27fe02b073d3edea54e5202657ce` опубликован в `main`; [CI 40736811342](https://github.com/Nusultan11/citibike/actions/runs/40736811342) — **success**. Все source/data/quality проверки, 58 локальных тестов, frontend и Docker gates подтверждены выше; raw datasets, GBFS JSON и Parquet остались вне Git. F0/F1 сохраняют статус COMPLETED.
+- Основные артефакты: [полное aggregate evidence](docs/evidence/f2-history.json), [аналитический отчёт](docs/evidence/f2-analysis.md), [свежая F1 регрессия](docs/evidence/f2-f1-regression.json), [явно синтетический incremental protocol](docs/evidence/f2-incremental-fixture.json); команды — [README](README.md) и запись выше. Активный historical snapshot `5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea` содержит все 24 source partitions.
+
+| DoD F2 | Статус | Фактическое доказательство |
+|---|---|---|
+| 1. Полный inventory и scope | PASS | Полный официальный listing 178 objects; 24 contiguous NYC months 2024-10…2026-09, JC исключён; повторный discovery подтвердил scope/ETags |
+| 2. Реальный полный охват | PASS | 24 verified ZIP, 104 CSV, 17386157706 source ZIP bytes; реальная обработка 92085994 rows, без подмены fixtures |
+| 3. Реальные схемы | PASS | 104/104 CSV — citibike-modern-v1, versioned headers/signatures; unknown/extra/legacy schema blocking tests |
+| 4. Полный воспроизводимый EDA | PASS | Raw/canonical nulls, IDs/duplicates/conflicts, DST/duration/boundaries, stations/routes/geography, categories/drift/seasonality, 54 unknown hour gaps, publication-delay caveat, GBFS/as-of joins |
+| 5. Quality evidence → impact → rule → test | PASS | Profiles/rule mapping в JSON; invalid/duplicate/conflict решения, warning отдельно от blocking gates, пики сохранены |
+| 6. Версионированный Silver/lineage | PASS | f2.0.0 base / f2.0.0-silver.2 effective partitions, source SHA/schema/pipeline/processed time, immutable base/final ledger и quarantine; state-reference guard |
+| 7. Каждая входная строка | PASS | 92076567 accepted + 8886 invalid + 483 duplicate_exact + 58 conflicting_id = 92085994; независимые per-CSV counts/row decisions, cross-source mismatches 0 |
+| 8. Настоящий GBFS | PASS | Официальный discovery, 7 raw collections 2.3 по 2521 ID, checksums/grain/count; 2.3/3.0 fixtures, TTL/zero/null/stale/missing/unknown, bounded polling и failure diagnostics |
+| 9. Исторически корректная station history | PASS | 7563 validated intervals, grain/interval/alias overlaps 0; start join по всем 92076567 canonical rows: matched 0 / expansion 0; нет backfill до наблюдений |
+| 10. Incremental/dependencies | PASS | Real unchanged: 0 rebuilt, тот же snapshot; controlled changed source: 1 rebuilt / 23 reused; old/new boundary months, transitive conflict invalidation и immutable reissue tests |
+| 11. Безопасная публикация | PASS | Staging → schema/count/checksum/grain/independent gates → atomic manifest; crash before activate, wrong lineage и corrupt GBFS tests оставляют прежнее корректное состояние |
+| 12. Unit/contracts/integration/real-data/CI | PASS | 58 local tests; real full-window build/verify/profile/repeat; frontend, Docker build/start/smoke/outage/recovery; actual code/evidence CI 40736811342 success |
+| 13. F0/F1 сохранены | PASS | Свежая raw→Silver→Gold→PG→API→Dashboard сверка: все 8 значений 3860371; исходный f1-202604.json не менялся, F2 April partition 3860342 объяснена global conflicts |
+| 14. Команды/evidence/ресурсы | PASS | Проверенные CLI/README, 1693.906s first publication, 50.735s unchanged publication / 81.171s whole unchanged CLI, реальные OS peaks/output/disk; fixture incremental измерен отдельно |
+| 15. Фактический единый журнал | PASS | Только этот §6; base/implementation/code-evidence SHA и actual CI, source/version/row totals, ошибки/исправления, ограничения, один следующий шаг; §§1–5 не менялись |
+
+- Ограничения измерений: чистый cold end-to-end benchmark, общий concurrent RAM и отдельный base-phase RSS первых двух месяцев — **NOT VERIFIED**, причины записаны в evidence. Измеренные worker attempts/base phases/publication не заменены engine limits и не объявляются production SLA. GBFS coverage — только реальные наблюдения 2026-10-28 с зафиксированными TTL gaps/stale, weather и исходная historical train availability отсутствуют. F3–F8 не реализовывались. Неразрешённых блокеров F2 нет.
+- Эта запись фиксирует уже проверенный code/evidence SHA; её собственный journal-only commit получает новый SHA. Его CI проверяется после push и не объявляется пройденным до фактического результата. Итоговый SHA/run сообщается в отчёте после этой проверки; новый цикл коммитов ради самоссылки не требуется.
+- Следующий шаг: **независимая приёмка F2 пользователем**; только после неё — F3 Analytics по ROADMAP. Автоматически F3 не начинать.
