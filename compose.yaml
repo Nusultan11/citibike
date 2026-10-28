@@ -1,0 +1,37 @@
+name: bikeflow
+services:
+  api:
+    build:
+      context: .
+      dockerfile: infra/api.Dockerfile
+    environment:
+      BIKEFLOW_API_HOST: 0.0.0.0
+      BIKEFLOW_API_PORT: "8000"
+      BIKEFLOW_API_LOG_LEVEL: ${BIKEFLOW_API_LOG_LEVEL:-info}
+    ports:
+      - "127.0.0.1:${BIKEFLOW_API_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json, urllib.request; r=urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3); assert r.status == 200 and json.load(r) == {'status': 'ok'}"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 5s
+  web:
+    build:
+      context: .
+      dockerfile: infra/web.Dockerfile
+    environment:
+      API_BASE_URL: http://api:8000
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:${PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(async r => {if (!r.ok || (await r.json()).status !== 'ok') process.exit(1)}).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 10s
