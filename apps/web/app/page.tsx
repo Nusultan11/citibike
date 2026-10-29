@@ -34,7 +34,9 @@ export default async function Home({
         <Link className="brand" href="/">
           BikeFlow <span>Intelligence</span>
         </Link>
-        <span className="phase">First End-to-End · F1</span>
+        <Link className="phase" href="/analytics">
+          Историческая аналитика · F3 ↗
+        </Link>
       </header>
       <section className="intro">
         <p className="eyebrow">ГОРОД В ДВИЖЕНИИ</p>

@@ -283,7 +283,7 @@ GBFS URLs берутся динамически из официального di
 интервалы `[valid_from,valid_to)` без перекрытий и обратного заполнения. Станции
 GBFS и trip station aliases различаются; неоднозначные aliases не соединяются.
 Длительные промежутки между collections остаются неизвестными. Weather и
-историческая train/serve availability отсутствуют; ML и витрины F3 не создаются.
+историческая train/serve availability отсутствуют; ML не создаётся.
 
 `verify` проверяет уже опубликованный snapshot без изменения active pointer;
 `profile` формирует те же агрегированные отчёты. Полные профили остаются локально,
@@ -292,6 +292,76 @@ GBFS и trip station aliases различаются; неоднозначные 
 cache/retry не выдаются за холодный запуск. Лимит DuckDB не является измерением RSS.
 CI дополнительно проходит CLI-протокол на 24 маленьких синтетических месяцах:
 первый build, unchanged repeat, verification и one-changed-source rebuild.
+
+## F3: историческая аналитика
+
+Вход — проверенный активный F2 Silver snapshot; повторная загрузка архивов не нужна.
+Матрица population, grains, формул, coverage и ограничений:
+[analytics-contract](docs/analytics-contract.md). Нормативные формулы — METRICS.md.
+
+```powershell
+uv run --locked python -m citibike.analytics build
+uv run --locked python -m citibike.analytics publish
+docker compose build
+docker compose up -d --wait --wait-timeout 120
+uv run --locked python -m citibike.analytics verify
+uv run --locked python -m citibike.analytics benchmark --output docs/evidence/f3-performance.json
+```
+
+`build --data-dir <root> --snapshot <F2 snapshot directory>` поддерживает явный
+версионированный вход. `publish --gold <Gold publication directory>` публикует
+проверенную версию. `activate --publication-id <previous published ID>` возвращает
+serving на уже опубликованную версию одним transaction; предыдущие физические
+partitions сохраняются. Gold active указывает последний успешный build, PostgreSQL
+active — выбранную serving-версию; фактическую версию сообщает API. F1 указатель
+не меняется. При сбое staging не становится доступен через active publication.
+
+Локально: `data/f3/contributions/` — additive source aggregates; `months/` —
+event-month Parquet с checksums, grain gates и независимой сверкой каждой группы;
+`publications/` — immutable lineage/membership; `runs/` — результаты повторов.
+Изменение исходной partition пересчитывает зависимые старые/новые event months,
+включая начала и окончания по разные стороны границ. Workers выполняются
+последовательно с DuckDB 2 GB / 2 threads; измеренный OS RSS сохраняется отдельно.
+
+Страница [исторической аналитики](http://localhost:3000/analytics) использует
+`/v2/analytics/{publication,kpi,timeseries,stations,routes,categories,geography,peaks,compare}`.
+Параметры: `publication_id`, NYC `start_date`/`end_date` (конец исключён),
+`station_id`, `vehicle`, `membership`, `grain=hour|day|month`, `limit=1..100`,
+`offset=0..10000`; `to_station` применим только к routes, `event_type=start|end` —
+к geography. `compare_start`/`compare_end` — только compare: одинаковые local days,
+UTC hours, weekday mix, полное observed-hour coverage и ненулевой baseline.
+Часовые series ограничены 31 днём. География и произвольные route ranges —
+31 днём либо station filter; маршруты по целым календарным месяцам используют
+monthly aggregates. Пустые страницы сохраняют total_groups, сортировка стабильна.
+Все запросы читают PostgreSQL aggregates, закрепляют одну publication и передают
+provenance/quality/coverage. OpenAPI: [API docs](http://localhost:8000/docs).
+
+Исторические координаты берутся из события поездки; versioned WGS84 grid 0.01°
+не является районом или равновеликой сеткой. District остаётся unknown. GBFS,
+впервые наблюдённый 2026-10-28, не заполняет исторические координаты.
+`/v2/analytics/availability` имеет отдельные timezone-aware `start`/`end` и
+GBFS UUID `station_id`; trip category filters отклоняются. Valid intervals
+ограничены положительными TTL, следующей collection и максимумом 60 секунд,
+без интерполяции gaps. Empty/full ratios требуют ≥95% покрытия, двух разных
+source updates и полного refresh cycle. Неполные/stale наблюдения дают N/A
+с причиной. Средняя доступность считается на наблюдённую operating station,
+а не как полный network total. Scope GBFS — собранный operator feed; юрисдикции
+станций независимо не размечены. Он отделён от NYC trip population.
+
+Полная проверка F3 при работающем PostgreSQL:
+
+```powershell
+uv run --locked pytest -q tests/unit tests/data_contracts tests/integration/test_serving.py tests/integration/test_analytics.py
+```
+
+Integration создаёт и удаляет только свои уникальные disposable БД.
+CI выполняет build/unchanged/changed-source протокол на 24 controlled месяцах и
+PostgreSQL/HTTP/HTML smoke; fixtures не служат доказательством реальных метрик.
+`verify` сверяет реальный Silver → Gold → HTTP → HTML; `benchmark` дополнительно
+собирает 30 последовательных HTTP samples на workload, p50/p95/p99 и SQL plans.
+Первый запрос новой сессии не выдаётся за холодный OS cache. Цель p95 ≤300 ms
+проверяется измерениями, без заявления SLA. Raw данные, Parquet и `.env` в Git
+не включаются; компактные результаты находятся в `docs/evidence/`.
 
 ## Источник и границы
 
@@ -303,7 +373,7 @@ CI дополнительно проходит CLI-протокол на 24 ма
 
 F1 проверен на апреле 2026; F2 расширяет локальный исторический Silver и добавляет
 реальные GBFS collections. Фактический охват и результаты зафиксированы в журнале
-и evidence полного прогона. Dashboard пока показывает F1, без карт,
-исторических витрин F3, ML, рекомендаций и заявлений о production SLA.
+и evidence полного прогона. `/` сохраняет F1; `/analytics` показывает F3.
+Карт F6, ML, рекомендаций и заявлений о production SLA нет.
 Требования: [PROJECT_SPEC.md](PROJECT_SPEC.md), архитектура:
 [ARCHITECTURE.md](ARCHITECTURE.md), проверки: [OPERATIONS.md](OPERATIONS.md).

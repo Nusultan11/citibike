@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 
+from citibike.serving.analytics_api import router as analytics_router
 from citibike.serving.db import DatabaseUnavailable
 from citibike.serving.models import (
     KpiResponse,
@@ -39,6 +40,7 @@ def error_response(status: int, code: str, message: str) -> JSONResponse:
 
 def create_app() -> FastAPI:
     application = FastAPI(title="BikeFlow Intelligence API", version="0.1.0")
+    application.include_router(analytics_router)
 
     @application.get("/health", response_model=HealthResponse)
     async def health() -> HealthResponse:

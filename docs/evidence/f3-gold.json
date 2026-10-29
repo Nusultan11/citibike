@@ -1,0 +1,2417 @@
+{
+  "scope": "Verified real Gold; PostgreSQL/HTTP/HTML/performance recorded separately",
+  "verified_at": "2026-10-29T05:44:09.880233+00:00",
+  "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+  "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+  "source_manifest_checksum": "4915d5948572173c19d3e4e69be0b1830def57d2b4f2ebccd60182bc71e6bf44",
+  "pipeline_version": "f3.0.0",
+  "geo_mapping_version": "trip-wgs84-grid-001",
+  "data_mode": "real_official",
+  "period_start": "2024-10-01T04:00:00+00:00",
+  "period_end": "2026-10-01T04:00:00+00:00",
+  "input_rows": 92085994,
+  "canonical_silver_rows": 92076567,
+  "f2_dispositions": {
+    "accepted": 92076567,
+    "invalid": 8886,
+    "conflicting_id": 58,
+    "duplicate_exact": 483
+  },
+  "default_window_measures": {
+    "n": 92076054,
+    "duration_us": 71705881866028000,
+    "duration_n": 92076054,
+    "departures": 92027342,
+    "arrivals": 91804709,
+    "arrival_rows": 92076567,
+    "route_n": 91766264,
+    "geo_n": 92027342
+  },
+  "starts_outside_default_window": 513,
+  "event_months": [
+    {
+      "id": "c6a87768fe8951d2a806c9d93e629c04fca4a6a09fbe30caee5843d45ed19c84",
+      "month": "2024-09",
+      "rows": {
+        "trip_hourly": 39,
+        "trip_daily": 6,
+        "trip_monthly": 4,
+        "fact_station_hourly": 387,
+        "fact_station_daily": 371,
+        "station_category_hourly": 437,
+        "station_category_daily": 431,
+        "station_category_monthly": 431,
+        "fact_route_daily": 427,
+        "route_category_daily": 434,
+        "route_monthly": 427,
+        "route_category_monthly": 434,
+        "geo_category_daily": 431
+      },
+      "metrics": {
+        "n": 513,
+        "duration_us": 4953683200000,
+        "duration_n": 513,
+        "departures": 512,
+        "arrivals": 0,
+        "arrival_rows": 0,
+        "route_n": 452,
+        "geo_n": 512
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "99a3f6d706d0c56d3ed69f04bd225663680fa6d0c1033dd7b51cacab5706512b",
+        "fact_station_daily.parquet": "9d3c9c1b610df458ad057047a23c7743615c6b104ca728c69bfa07d848938478",
+        "fact_station_hourly.parquet": "d935b05187a20d1567d223553788d00400e8b5f2666ae7a58af41cf0be7522f2",
+        "geo_category_daily.parquet": "678eb64145d00e702066910df66f037108f492d01160e729a29de4ebb3dcbf5f",
+        "route_category_daily.parquet": "d5a69fbb4d3762098325bae1f8529f6e3394f16646f5e3ee6f0459ea6ee2c8fe",
+        "route_category_monthly.parquet": "1075f48c75ede338ea85059d834676c021a9db1f9d3923f16e4d4add2ab43e8c",
+        "route_monthly.parquet": "28e7fa85e2dd39c92d858c05281c56179a88503b7a8a2c869a6b7e325a00b30e",
+        "station_category_daily.parquet": "6f45b6f613ac9525bb59960bf74e627685c7d4bfe052370e2aef101dac902f66",
+        "station_category_hourly.parquet": "85e329b4922059d557f6fd083d21b6ec2c86b016f7f8ee546d7e0d27fe85ba6f",
+        "station_category_monthly.parquet": "5287516baf805226d9ad07258383bf7a770d8d8ef8838c11e7b65c120b2c7b25",
+        "trip_daily.parquet": "b042b5b6f7aa51989eebb61713f84dd18cac6994c0038b6a87b4e2cca9c8fe86",
+        "trip_hourly.parquet": "9fb7326327461f46e40f691d966d19c540eaa29512ec15904677e8b15290e1f7",
+        "trip_monthly.parquet": "866fc30ea6125461c65355a5cb6cc6725b1d389128db161d914f45b13457876c"
+      },
+      "silver": [
+        {
+          "partition_id": "ac211c2914366c842686ca9677b950d266b4a081fc3a41ad142b3b42bf0c355b",
+          "path": "data\\f2\\silver\\ac211c2914366c842686ca9677b950d266b4a081fc3a41ad142b3b42bf0c355b",
+          "checksum": "98e561f9ecc895ef51218da35e42994df762a00299db4b5e4b497fc83cf1c929",
+          "source_version": "44c1fa43aa217dd742f04ebe2ce3b7f533bb27ff01d358bf6d41f83e92a7fbc2",
+          "source_period": "2024-10",
+          "rows": 5150054
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 1.156,
+        "elapsed_seconds": 5.219,
+        "peak_rss_bytes": 89919488,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "312ad10d74e735521f67e59694dbbe4f06666bd7d2a0fb956324d8ac15037037",
+      "month": "2024-10",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1123833,
+        "fact_station_daily": 68451,
+        "station_category_hourly": 2462941,
+        "station_category_daily": 246955,
+        "station_category_monthly": 8999,
+        "fact_route_daily": 3306382,
+        "route_category_daily": 4002365,
+        "route_monthly": 714907,
+        "route_category_monthly": 1260297,
+        "geo_category_daily": 461744
+      },
+      "metrics": {
+        "n": 5150717,
+        "duration_us": 4075945036116000,
+        "duration_n": 5150717,
+        "departures": 5146135,
+        "arrivals": 5134446,
+        "arrival_rows": 5150054,
+        "route_n": 5133307,
+        "geo_n": 5146135
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "92757c2dc1ae4a342b1afb4661b484d953320a03a79b5d5110f868304ba46583",
+        "fact_station_daily.parquet": "7beac782ae57031f45e3dcf54ccba7125431135c0518248aab646418478d67b6",
+        "fact_station_hourly.parquet": "447a6c9bae184155ce82855aaa7dce7be1df2b1106d9f9d6ad62981c7977017a",
+        "geo_category_daily.parquet": "5116a3e7532d4d9cfd3898562f7a0fdf112cc0037b1b0f76f1f5c7275dcb81e0",
+        "route_category_daily.parquet": "93d6ae70e96f37e0a6a5e2497fdfe9e0f21e87dd0bc135d56fe399a09a56cfce",
+        "route_category_monthly.parquet": "133a434ce60b9fd0c8c640b7f4d13e0f00c0899bd3a8735c2945f6d9e23c5aee",
+        "route_monthly.parquet": "c090653014cfecaed31b13d1757b48aeee2c1b00d33a034417f3597765db4b6a",
+        "station_category_daily.parquet": "42d2a9f94b1882c59f2e8d3d6a76891b575e2dc13be792b9d63e5572e68940d4",
+        "station_category_hourly.parquet": "2339d3e40351d6e377271d2f22375529edabbdbed1f424b1a95134aab8ce48fd",
+        "station_category_monthly.parquet": "22e6fae03afc15efb2232028a441cb7fe1d8fb164544222123d92a124b61bb48",
+        "trip_daily.parquet": "93f5c1543e41c05ba6a23a9e50e67acbc02673b53519d9eaede7df0b1b045b0e",
+        "trip_hourly.parquet": "4449b78eba67e31b39f2712617af1d54a8f643521433068d3683f296cb5a20e7",
+        "trip_monthly.parquet": "8bca2c46a7c910efb2b1558daffd76282bf53f471ae8a2752d9ec64b60b46604"
+      },
+      "silver": [
+        {
+          "partition_id": "ac211c2914366c842686ca9677b950d266b4a081fc3a41ad142b3b42bf0c355b",
+          "path": "data\\f2\\silver\\ac211c2914366c842686ca9677b950d266b4a081fc3a41ad142b3b42bf0c355b",
+          "checksum": "98e561f9ecc895ef51218da35e42994df762a00299db4b5e4b497fc83cf1c929",
+          "source_version": "44c1fa43aa217dd742f04ebe2ce3b7f533bb27ff01d358bf6d41f83e92a7fbc2",
+          "source_period": "2024-10",
+          "rows": 5150054
+        },
+        {
+          "partition_id": "9b158ead975568d7b71c003a2b5e6191d0e1eeaabb647599554f43e8cd5a71f5",
+          "path": "data\\f2\\silver\\9b158ead975568d7b71c003a2b5e6191d0e1eeaabb647599554f43e8cd5a71f5",
+          "checksum": "36094989f021df50de79d25578f6818ea43ed090a441d54abf60353d34f2c81a",
+          "source_version": "92912a6907ea5029907dd6c95d80cbf7cd3560f2da5014ab23dbee1851189a88",
+          "source_period": "2024-11",
+          "rows": 3706077
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 27.218,
+        "elapsed_seconds": 129.828,
+        "peak_rss_bytes": 1788469248,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "b3ca9710a479602d76cdffef4d095524e13f5426866b489503044f32e7578e01",
+      "month": "2024-11",
+      "rows": {
+        "trip_hourly": 2876,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 992033,
+        "fact_station_daily": 65649,
+        "station_category_hourly": 2010933,
+        "station_category_daily": 226121,
+        "station_category_monthly": 8984,
+        "fact_route_daily": 2472410,
+        "route_category_daily": 2928676,
+        "route_monthly": 599019,
+        "route_category_monthly": 1011032,
+        "geo_category_daily": 415210
+      },
+      "metrics": {
+        "n": 3705172,
+        "duration_us": 2703328322204000,
+        "duration_n": 3705172,
+        "departures": 3702873,
+        "arrivals": 3694480,
+        "arrival_rows": 3706077,
+        "route_n": 3692473,
+        "geo_n": 3702873
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "76dbdcfc341f176a216c43b44afa15c3abfe4f16c8677148379e05a9dc490ec0",
+        "fact_station_daily.parquet": "5e9f92d99e5b77925e3797b6c4c57db91527107cf26030d5b7acfc746db2f943",
+        "fact_station_hourly.parquet": "4ede6a70ef90e5965d0ebc5b6d112db87d0fa8286c0327c08c540c3fe903a051",
+        "geo_category_daily.parquet": "a909f09c3d6bd59463e8cf6efe6c43633d7bbc0e40d01f38a678144432dcaad0",
+        "route_category_daily.parquet": "2183020826587d1850aef7d3f795369085fe80506e5eef059ab70651f851c815",
+        "route_category_monthly.parquet": "c279ea59931146a55dc65d93938383893b789dc3abc090fdde92c834f2555614",
+        "route_monthly.parquet": "36a59a239df58dd3512846790551eb5e92922706eada256871b37ad69a824da5",
+        "station_category_daily.parquet": "cd34a8470309607554a7ceb925fa826109f9da59c4a168cd4ca3a55e0d713b5c",
+        "station_category_hourly.parquet": "15916e1c38289c3b59670c70e339b044c0815839fe4d3701505bb12040742123",
+        "station_category_monthly.parquet": "c1194d6cad158356f971f2e61461d67f3d3a0cf729fc78f73c87d810812b68b4",
+        "trip_daily.parquet": "70754fd30c12c6ed83206be342cac3beb4b98137beab033c53786a19eefb434d",
+        "trip_hourly.parquet": "6e8fd8b3815b45c5a9e154678e1750a17bb69b49bb48eb13f6d9080e649cd444",
+        "trip_monthly.parquet": "352aa577389bd0a41df3cd2a5151e2f970f8b5d3c70f8846f585d4cb550aea88"
+      },
+      "silver": [
+        {
+          "partition_id": "9b158ead975568d7b71c003a2b5e6191d0e1eeaabb647599554f43e8cd5a71f5",
+          "path": "data\\f2\\silver\\9b158ead975568d7b71c003a2b5e6191d0e1eeaabb647599554f43e8cd5a71f5",
+          "checksum": "36094989f021df50de79d25578f6818ea43ed090a441d54abf60353d34f2c81a",
+          "source_version": "92912a6907ea5029907dd6c95d80cbf7cd3560f2da5014ab23dbee1851189a88",
+          "source_period": "2024-11",
+          "rows": 3706077
+        },
+        {
+          "partition_id": "1eabff6c0073e20ee8450b77b26fd0168a7a37c7ea041f4a379a7ec5982672c4",
+          "path": "data\\f2\\silver\\1eabff6c0073e20ee8450b77b26fd0168a7a37c7ea041f4a379a7ec5982672c4",
+          "checksum": "1d6f2e8f2a52b81a862e419d2320252a994ffdfe19d58de46ee9ed42febeb100",
+          "source_version": "c83f6e01ef4a288a3940ae08373593bd282cbe7dee6e79a854ba993486b0cdeb",
+          "source_period": "2024-12",
+          "rows": 2311171
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 20.14,
+        "elapsed_seconds": 119.469,
+        "peak_rss_bytes": 1140965376,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "cff5c39b8b8dfeeb5d4f85fee0832a434488a2fdd44ec030191f757b925bced5",
+      "month": "2024-12",
+      "rows": {
+        "trip_hourly": 2973,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 874432,
+        "fact_station_daily": 65755,
+        "station_category_hourly": 1558090,
+        "station_category_daily": 210247,
+        "station_category_monthly": 8694,
+        "fact_route_daily": 1669087,
+        "route_category_daily": 1898905,
+        "route_monthly": 434190,
+        "route_category_monthly": 682101,
+        "geo_category_daily": 375888
+      },
+      "metrics": {
+        "n": 2311107,
+        "duration_us": 1484652675690000,
+        "duration_n": 2311107,
+        "departures": 2309989,
+        "arrivals": 2303686,
+        "arrival_rows": 2311171,
+        "route_n": 2302858,
+        "geo_n": 2309989
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "be17e8df8f96c35fd893f92ce933450fd4fbaaba664626152368c25f16e7465c",
+        "fact_station_daily.parquet": "2a8d836f25f9611dc9c9f57f6d12e0b1cddbe7e0ba7af6dddbd63bbc0f300127",
+        "fact_station_hourly.parquet": "03b4a872cca549741692348d9598a4aa8557a04b8de0847c0faf7d3ba8af8212",
+        "geo_category_daily.parquet": "ba5a2038939a579e22c9081f7c0d92084d0fb3520ddac162bc919d593e252827",
+        "route_category_daily.parquet": "117e14dd07935de925aa721b5f9e33df96dbef74556f42985637c4e4d13d9dc4",
+        "route_category_monthly.parquet": "f1d24d2f3d44ea191b6b04d63ce7fd2c350b0e3565b5962fbb46186248c22cb3",
+        "route_monthly.parquet": "07b3f1b1fbc9c1a811c797debbd5f97c00a3bf4eb15bb652d69044441723a255",
+        "station_category_daily.parquet": "460a18ac50006c851f9ca592d57913a25c14318e4e44419316421b6dd34399c2",
+        "station_category_hourly.parquet": "22181a1db4388d7f8e7717bcfc9c57bef47dd164e1f95ff9cf32d85ed1a93cd2",
+        "station_category_monthly.parquet": "2e3b667563422ef0568f84b588d13dd194b95c3cf37091bf3e5cc70dbfdb988f",
+        "trip_daily.parquet": "9d814323ea57b0bf4f0e3a318fabd2f61eeb2d2d409681872769f885e782de4a",
+        "trip_hourly.parquet": "98e231510dd9e5d1788d018832ccc93d0c73f8b3a486370945bdff401e1fc44a",
+        "trip_monthly.parquet": "02240d44e49a00f5711efbc8b5111f90b2d4cc83828dbebff41a614e94d4372b"
+      },
+      "silver": [
+        {
+          "partition_id": "1eabff6c0073e20ee8450b77b26fd0168a7a37c7ea041f4a379a7ec5982672c4",
+          "path": "data\\f2\\silver\\1eabff6c0073e20ee8450b77b26fd0168a7a37c7ea041f4a379a7ec5982672c4",
+          "checksum": "1d6f2e8f2a52b81a862e419d2320252a994ffdfe19d58de46ee9ed42febeb100",
+          "source_version": "c83f6e01ef4a288a3940ae08373593bd282cbe7dee6e79a854ba993486b0cdeb",
+          "source_period": "2024-12",
+          "rows": 2311171
+        },
+        {
+          "partition_id": "c1530ccdcc79d4614a9aa0513b2a316e665d0b073ad60162c1f40c1133d4d8bf",
+          "path": "data\\f2\\silver\\c1530ccdcc79d4614a9aa0513b2a316e665d0b073ad60162c1f40c1133d4d8bf",
+          "checksum": "98bde88eae3e4f86ddedfea281d01d8a8919bc78de8a7d32d5f88c4df8c099c5",
+          "source_version": "ed3b0138903960afe50386ab44fec8bf52d69474b26f5c0af83e648094aea096",
+          "source_period": "2025-01",
+          "rows": 2124475
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 17.234,
+        "elapsed_seconds": 68.187,
+        "peak_rss_bytes": 956104704,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "6ee6d9cd62fa1373ee007dfe8d0f980f6064ce6c969e428a960e8c69a951267d",
+      "month": "2025-01",
+      "rows": {
+        "trip_hourly": 2974,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 857446,
+        "fact_station_daily": 66812,
+        "station_category_hourly": 1472133,
+        "station_category_daily": 204391,
+        "station_category_monthly": 8877,
+        "fact_route_daily": 1570578,
+        "route_category_daily": 1762518,
+        "route_monthly": 392027,
+        "route_category_monthly": 597761,
+        "geo_category_daily": 360925
+      },
+      "metrics": {
+        "n": 2124541,
+        "duration_us": 1243556858824000,
+        "duration_n": 2124541,
+        "departures": 2123977,
+        "arrivals": 2120153,
+        "arrival_rows": 2124475,
+        "route_n": 2119764,
+        "geo_n": 2123977
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "3c2431bf41078fbf4380f25e19f26a8c924c89f141282af7d93627f1379c0b57",
+        "fact_station_daily.parquet": "e25efa36c3ac1810e3112ef50b4f273aed4c1f0a4275948ece83f2d357d57e9e",
+        "fact_station_hourly.parquet": "fa9a5a84cfb0a3910a08f665b6bde8ae62e47df18a09b002eb0e9eec775a7bcc",
+        "geo_category_daily.parquet": "052c5a47de542f171cc487b1581eaa5124ba2a228de9a9705ba8f35d06e36b4b",
+        "route_category_daily.parquet": "6353a28e0036e8e532d3fff2f9b7876d15a1907d8d2dd1f20e40baa1f72f7182",
+        "route_category_monthly.parquet": "0b9c436dbf971816448c87d5bb045c90c92600b0af1dca4ac03f7a0674135d1b",
+        "route_monthly.parquet": "4c89fec7ee6555e5db7c00306b6bda346dbc0ac0e87632d5fc0b1c003f41c873",
+        "station_category_daily.parquet": "5a8dd787551d9d8c05df3de8c9c2a7ad8d3b4899061ac50188d038d3fab9ad70",
+        "station_category_hourly.parquet": "857c24233c7efce65b2dc677c292dd47bff2372a728977a21001697bcd38a600",
+        "station_category_monthly.parquet": "5c47eba5099627db5672e9aff9c3f8c63ac5979e9dd40a9ac8bb60efc9a69fcd",
+        "trip_daily.parquet": "38dd5731fa315dd845404e4d9f232ddb0258bdd8771a0f945ccee6f1ac5b8e46",
+        "trip_hourly.parquet": "676a823c6589fbddf0c52cd51555482c4b084dfd4f69376dd1685eb83125019e",
+        "trip_monthly.parquet": "00a230df3cd23d9207bddfaf0aeffc6cb1a64a2b8db61d608a621489525d9c9c"
+      },
+      "silver": [
+        {
+          "partition_id": "c1530ccdcc79d4614a9aa0513b2a316e665d0b073ad60162c1f40c1133d4d8bf",
+          "path": "data\\f2\\silver\\c1530ccdcc79d4614a9aa0513b2a316e665d0b073ad60162c1f40c1133d4d8bf",
+          "checksum": "98bde88eae3e4f86ddedfea281d01d8a8919bc78de8a7d32d5f88c4df8c099c5",
+          "source_version": "ed3b0138903960afe50386ab44fec8bf52d69474b26f5c0af83e648094aea096",
+          "source_period": "2025-01",
+          "rows": 2124475
+        },
+        {
+          "partition_id": "a41d13385643bd62ea5840115f175a08a66836a4edbac49c06ccde9eda6ff510",
+          "path": "data\\f2\\silver\\a41d13385643bd62ea5840115f175a08a66836a4edbac49c06ccde9eda6ff510",
+          "checksum": "24720f377295341fb0d0adcfe8df7ddb2d983e0ef1b069e2b269ccebf9fdb966",
+          "source_version": "e4860762fb07561bbda251a20223d996e39c6c2c8bc2592896507bfbaa40ce78",
+          "source_period": "2025-02",
+          "rows": 2031257
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 17.547,
+        "elapsed_seconds": 61.469,
+        "peak_rss_bytes": 896344064,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "eafbb7dfc73c214563845a2533e6cc51922e45a09dd004016c9f48eb5c332644",
+      "month": "2025-02",
+      "rows": {
+        "trip_hourly": 2682,
+        "trip_daily": 112,
+        "trip_monthly": 4,
+        "fact_station_hourly": 764834,
+        "fact_station_daily": 60223,
+        "station_category_hourly": 1335704,
+        "station_category_daily": 186075,
+        "station_category_monthly": 8868,
+        "fact_route_daily": 1494329,
+        "route_category_daily": 1683265,
+        "route_monthly": 398048,
+        "route_category_monthly": 604631,
+        "geo_category_daily": 328480
+      },
+      "metrics": {
+        "n": 2031394,
+        "duration_us": 1240145449351000,
+        "duration_n": 2031394,
+        "departures": 2030721,
+        "arrivals": 2026480,
+        "arrival_rows": 2031257,
+        "route_n": 2026077,
+        "geo_n": 2030721
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "49cc07f9cdf481dc6d39b9019cb2ccf8334adc6f96aec58149ea780a4a22976c",
+        "fact_station_daily.parquet": "3315bb97059e8b2aa4a4ae9a03bfac7838a1f1d614ed7412f5d6f0f127174b07",
+        "fact_station_hourly.parquet": "74ccfd140a20024c55a671c65335f655113ca27a10c6cf1419ae6d94f3a1ec09",
+        "geo_category_daily.parquet": "e6dc882497353d4b6bf88a508c35b1cd84113bf7c2a3f4d8525b8a64847cfd9c",
+        "route_category_daily.parquet": "b3a8075e338e482b8cc2bb7bb102e1c11200ce9f04668302e18f48cc01d634ff",
+        "route_category_monthly.parquet": "ba8dc4baf8358c07b5035c27aea787074342edb6a1144aea6ef84937e88b3c88",
+        "route_monthly.parquet": "4e3560f270bb2ae4df2b1b1a114e1cbe932fb20589d48f5d42af4428ca57dfe1",
+        "station_category_daily.parquet": "cdba8d639a7080b25aea43e8c8307c946ce80c969406e67bfbcfbda69903133c",
+        "station_category_hourly.parquet": "a0c09fb54dad74742081e9f45fb338ce83d344b040a8289e52632d2612d6a9ac",
+        "station_category_monthly.parquet": "388ce0b381e3aab41749788965d7861b34ace26f7fd60af55536f1e1d1ca5a5d",
+        "trip_daily.parquet": "5bb47200395ba158db99282ec1a19c4f225aa7e015e4fcc616847789d310e1e1",
+        "trip_hourly.parquet": "e790f5fef03f842554c87737e030e05866425c70f2efdd95649cd43a94795324",
+        "trip_monthly.parquet": "323796968dd95674629de960ebb274bb23790844f843f28d4d5a6011d70c2c40"
+      },
+      "silver": [
+        {
+          "partition_id": "a41d13385643bd62ea5840115f175a08a66836a4edbac49c06ccde9eda6ff510",
+          "path": "data\\f2\\silver\\a41d13385643bd62ea5840115f175a08a66836a4edbac49c06ccde9eda6ff510",
+          "checksum": "24720f377295341fb0d0adcfe8df7ddb2d983e0ef1b069e2b269ccebf9fdb966",
+          "source_version": "e4860762fb07561bbda251a20223d996e39c6c2c8bc2592896507bfbaa40ce78",
+          "source_period": "2025-02",
+          "rows": 2031257
+        },
+        {
+          "partition_id": "2064d98b7579380d5ef491bc8fd6b45de019c3c6093603076c232f0e088ab637",
+          "path": "data\\f2\\silver\\2064d98b7579380d5ef491bc8fd6b45de019c3c6093603076c232f0e088ab637",
+          "checksum": "651ecaff462eeac0c1d0b9cc1c945e0439c14544d030392e58ea363dc7bea1f4",
+          "source_version": "f5cc8c5a4ed99e719a4a9d72014b3b206ab03c2b23ce05a2af4be6564444833f",
+          "source_period": "2025-03",
+          "rows": 3168271
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 14.734,
+        "elapsed_seconds": 52.797,
+        "peak_rss_bytes": 830849024,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "cf6781c193cb8f8067d266fcbfaf38734c4e30618b35dfc5ff36d17b4787a1b1",
+      "month": "2025-03",
+      "rows": {
+        "trip_hourly": 2969,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 963819,
+        "fact_station_daily": 68416,
+        "station_category_hourly": 1849076,
+        "station_category_daily": 230029,
+        "station_category_monthly": 9003,
+        "fact_route_daily": 2242282,
+        "route_category_daily": 2581956,
+        "route_monthly": 549355,
+        "route_category_monthly": 893787,
+        "geo_category_daily": 416923
+      },
+      "metrics": {
+        "n": 3167962,
+        "duration_us": 2220221914992000,
+        "duration_n": 3167962,
+        "departures": 3166909,
+        "arrivals": 3159817,
+        "arrival_rows": 3168271,
+        "route_n": 3158596,
+        "geo_n": 3166909
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "38072d5c73a69476891d84dc7778d8af0375927c76836f7f1ea8b3ed6961c678",
+        "fact_station_daily.parquet": "695509cd09a254770e2770e5943d9babec35147078d66fa1cd606c38c62088ee",
+        "fact_station_hourly.parquet": "b624439621c24076c53539266ec66b474419a4d4f5e501a0874134efe18f07b2",
+        "geo_category_daily.parquet": "66bd7719d7fd236e2d4a2fecec7a116fadb10d3d44f7211d7f4c6ea41689f347",
+        "route_category_daily.parquet": "8c6a16a221ee1617448f2b007a4d87d3ee262f7a3916c5ff933baa238f328b85",
+        "route_category_monthly.parquet": "d5914d7fb78440628646baa8da65ba713b0130b1d87aeec8dcd66e8900b9f7f6",
+        "route_monthly.parquet": "3a9caeaaf27916555875f509d635fb049f3c57a45ecc98cacdfe4ae10fbb7c2a",
+        "station_category_daily.parquet": "0eee7104a42c9aed6a62638989b1eb0cbe14d65ae6cfc7979ac66d57d28dd357",
+        "station_category_hourly.parquet": "d965965bf7f9fada6889e8a11007c1ddc2ae8aa1abb1a2e8bf9fca67ba9d186f",
+        "station_category_monthly.parquet": "cf83252488f03835ac492b94ac72a5614299bd5b3ac8bad9b57f3525fa54a4c5",
+        "trip_daily.parquet": "70eb2f7617fde4e8192472a14619f557f5d8d7ddb89d6e067b5762ba39b1af3f",
+        "trip_hourly.parquet": "4e915e2db75958b0a0f8c405098a1accf4f5db8bc24697d00e4eba8461c15c42",
+        "trip_monthly.parquet": "b950d1350dff10313860e68f3a8db06d318a301842332dec28e1c0ec0f20c28c"
+      },
+      "silver": [
+        {
+          "partition_id": "2064d98b7579380d5ef491bc8fd6b45de019c3c6093603076c232f0e088ab637",
+          "path": "data\\f2\\silver\\2064d98b7579380d5ef491bc8fd6b45de019c3c6093603076c232f0e088ab637",
+          "checksum": "651ecaff462eeac0c1d0b9cc1c945e0439c14544d030392e58ea363dc7bea1f4",
+          "source_version": "f5cc8c5a4ed99e719a4a9d72014b3b206ab03c2b23ce05a2af4be6564444833f",
+          "source_period": "2025-03",
+          "rows": 3168271
+        },
+        {
+          "partition_id": "d6cd05fbb7eb23114f67739d7af710cd1f8ec2f0e8f2257e36350cb9d2aacc11",
+          "path": "data\\f2\\silver\\d6cd05fbb7eb23114f67739d7af710cd1f8ec2f0e8f2257e36350cb9d2aacc11",
+          "checksum": "132d472ae58c8b102bed6746ae438ac8882b1acfd6c59f7c113cb69bb9add6c6",
+          "source_version": "5bda09477bb675e5a481a6f68acd367c2cae48e745a97011ca8a22c0073cece4",
+          "source_period": "2025-04",
+          "rows": 3724596
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 19.531,
+        "elapsed_seconds": 77.875,
+        "peak_rss_bytes": 914948096,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "75d48ec594b18dd9aad9301cb8a028539ed0e6053b69cfb4c8dd4e5cf3542240",
+      "month": "2025-04",
+      "rows": {
+        "trip_hourly": 2880,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 984590,
+        "fact_station_daily": 65927,
+        "station_category_hourly": 1988908,
+        "station_category_daily": 227496,
+        "station_category_monthly": 9009,
+        "fact_route_daily": 2542721,
+        "route_category_daily": 2981700,
+        "route_monthly": 613980,
+        "route_category_monthly": 1026889,
+        "geo_category_daily": 417632
+      },
+      "metrics": {
+        "n": 3725037,
+        "duration_us": 2799509755353000,
+        "duration_n": 3725037,
+        "departures": 3723641,
+        "arrivals": 3714892,
+        "arrival_rows": 3724596,
+        "route_n": 3714220,
+        "geo_n": 3723641
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "27fbb0af0414ffb552d553aad83f08f2965854020bdcd2c7b8754b3dfadefa3f",
+        "fact_station_daily.parquet": "f6cec90940fa015764bf5a3e8d59d9a57dbc7c956da6dcf346ccb939e66377cb",
+        "fact_station_hourly.parquet": "706337d2a6ff85caca9c62cf31edbe500f9ae9e9b992020a786ac15bc9abc2f4",
+        "geo_category_daily.parquet": "bf4a3533aba34a76ed0cd8803ede4637d61e4c564650e101e42110ba4b5022d6",
+        "route_category_daily.parquet": "6d18b05840f2ed4aecf8f4076528f40afb66e2af73e2c48325e539795258c668",
+        "route_category_monthly.parquet": "71cac265379318b82b43aa494bbd8c4e342de2a54161d89f019de20ad8935ea5",
+        "route_monthly.parquet": "8ef8b2d9a9bb4642ecba85c36923a9cff816eee10e94f6bffd10e13034e1a7bf",
+        "station_category_daily.parquet": "8c710b167a8d320b56c474546ab356ead11ac41140df6d7af9e5b07e705f2443",
+        "station_category_hourly.parquet": "87962e2cc503a8de356b30aa2e105578cd9875075287489c29102c4e0a1b07d4",
+        "station_category_monthly.parquet": "582f54c1aa8dd91562e331d4d4be23f8b885895547e43d887cabced53bd7c138",
+        "trip_daily.parquet": "342073db192094d40157c484fc5ff58b4b034c701e5880dc1f23f3a82fd99b5b",
+        "trip_hourly.parquet": "b3a8b5189a11bb3b574de6e18ebe6074c96fbefb9d2661dae4734ee666b02ec8",
+        "trip_monthly.parquet": "fe91b1abcf7767180bd418ec1b5c09e6cbbbc700dc1eaff4a1f289cc8335e250"
+      },
+      "silver": [
+        {
+          "partition_id": "d6cd05fbb7eb23114f67739d7af710cd1f8ec2f0e8f2257e36350cb9d2aacc11",
+          "path": "data\\f2\\silver\\d6cd05fbb7eb23114f67739d7af710cd1f8ec2f0e8f2257e36350cb9d2aacc11",
+          "checksum": "132d472ae58c8b102bed6746ae438ac8882b1acfd6c59f7c113cb69bb9add6c6",
+          "source_version": "5bda09477bb675e5a481a6f68acd367c2cae48e745a97011ca8a22c0073cece4",
+          "source_period": "2025-04",
+          "rows": 3724596
+        },
+        {
+          "partition_id": "1d16ee0ee4bc5bf50d6c19ff6e4e0d610964a799b8250d6d862db0e5168cec3d",
+          "path": "data\\f2\\silver\\1d16ee0ee4bc5bf50d6c19ff6e4e0d610964a799b8250d6d862db0e5168cec3d",
+          "checksum": "61e170b150f6032b1ffdd23280267a32c9e45353f6bb4fdd5ec33e35d1ce8591",
+          "source_version": "0f5edc46361c4581c614a19cb697271b6f04143f6648b56da8fc18f7310ab103",
+          "source_period": "2025-05",
+          "rows": 4325553
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 24.484,
+        "elapsed_seconds": 112.187,
+        "peak_rss_bytes": 1415954432,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "b72f7772c0d53828ab8711c94db9bc4f8e40423b1c7031a713cc68320f1eda68",
+      "month": "2025-05",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1070954,
+        "fact_station_daily": 67902,
+        "station_category_hourly": 2244747,
+        "station_category_daily": 240276,
+        "station_category_monthly": 9028,
+        "fact_route_daily": 2887597,
+        "route_category_daily": 3434847,
+        "route_monthly": 689525,
+        "route_category_monthly": 1191815,
+        "geo_category_daily": 445897
+      },
+      "metrics": {
+        "n": 4325897,
+        "duration_us": 3476089123136000,
+        "duration_n": 4325897,
+        "departures": 4324208,
+        "arrivals": 4312827,
+        "arrival_rows": 4325553,
+        "route_n": 4311705,
+        "geo_n": 4324208
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "58ca51556d89b5352fdf079fed2b6a4b09d1917cc95a664602032f4a296e9dbf",
+        "fact_station_daily.parquet": "5e4299373a968ae69f951d4235603d2f7400a3c89660bc1c04a6d0b0303319be",
+        "fact_station_hourly.parquet": "27dbb4a5374a11d4087fef1e9937eb1a81d4f5e8b4c46396dc2bd7c153269e8c",
+        "geo_category_daily.parquet": "69db0260d81f0a5ec701964b4bfe2462352f8ceb115f3a71ab748bbd41c135ed",
+        "route_category_daily.parquet": "00c0f1d258675b3e158c0c591690f2abf4dca4a96b24e0b3de4c5483b7ad73d6",
+        "route_category_monthly.parquet": "027d7d77e1e39a16beab0bb4dc7ea4fce9be9d05d05db3f543f9a01fd2990684",
+        "route_monthly.parquet": "893069b03b63284409dc4d0fc674f0f976485b21d23cab01dad0afb6d4b525e9",
+        "station_category_daily.parquet": "ea209fd0f691c010c10dd06abe2dd2dca26013ffff0916e64e9b10127848a669",
+        "station_category_hourly.parquet": "2a41520ce033a222bdb7430d7879ece7a98084a82a13fcabb2e22ea2966155b1",
+        "station_category_monthly.parquet": "a84cd2ed8645462423223841828210a1aaa4fb304408eb502e2fc0eddb648f7a",
+        "trip_daily.parquet": "f8fe2fb763bb2414fa24fa2d67e0b837ad29ecbecb9703d1a9ee810a47bd98e9",
+        "trip_hourly.parquet": "2bcfb7f01d03eec076eea1c8e5dbdb6a3aee254dc762c3522561502bd9d8cb2a",
+        "trip_monthly.parquet": "7b169a1e06e534766cab75c9e0632c5e02080479429bee36e61e4480f1e7652a"
+      },
+      "silver": [
+        {
+          "partition_id": "1d16ee0ee4bc5bf50d6c19ff6e4e0d610964a799b8250d6d862db0e5168cec3d",
+          "path": "data\\f2\\silver\\1d16ee0ee4bc5bf50d6c19ff6e4e0d610964a799b8250d6d862db0e5168cec3d",
+          "checksum": "61e170b150f6032b1ffdd23280267a32c9e45353f6bb4fdd5ec33e35d1ce8591",
+          "source_version": "0f5edc46361c4581c614a19cb697271b6f04143f6648b56da8fc18f7310ab103",
+          "source_period": "2025-05",
+          "rows": 4325553
+        },
+        {
+          "partition_id": "10fa3eb147016b2bb59ee5e2e391aa6d8c6393fd7f8aeb48d5686c1e67d61fae",
+          "path": "data\\f2\\silver\\10fa3eb147016b2bb59ee5e2e391aa6d8c6393fd7f8aeb48d5686c1e67d61fae",
+          "checksum": "d1df81e99b675eba65e96c06d7766b30c384dbef6b89183cd45cd7e56efcb8c1",
+          "source_version": "fdc15ebc98ddef6ffa6825a71616e2f704def8376590881f91b0109cd2d81f9b",
+          "source_period": "2025-06",
+          "rows": 4759345
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 28.563,
+        "elapsed_seconds": 117.5,
+        "peak_rss_bytes": 1161023488,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "badb83aef4d6b975aba884e7f5c89cb548fb224692606c72be866e14079504de",
+      "month": "2025-06",
+      "rows": {
+        "trip_hourly": 2880,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1092380,
+        "fact_station_daily": 65091,
+        "station_category_hourly": 2367947,
+        "station_category_daily": 235787,
+        "station_category_monthly": 8910,
+        "fact_route_daily": 3122381,
+        "route_category_daily": 3745446,
+        "route_monthly": 723955,
+        "route_category_monthly": 1257198,
+        "geo_category_daily": 441544
+      },
+      "metrics": {
+        "n": 4759239,
+        "duration_us": 3896353296527000,
+        "duration_n": 4759239,
+        "departures": 4757244,
+        "arrivals": 4742402,
+        "arrival_rows": 4759345,
+        "route_n": 4740549,
+        "geo_n": 4757244
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "6a712d84c167aaa894bc2512125892de1941602e964b930ab5b96a99d0614794",
+        "fact_station_daily.parquet": "680b7cd2ebbad9164bed7c2a2a94feb6f3d9dc85b66b24ba2de7348f55cd53a2",
+        "fact_station_hourly.parquet": "3eea0e786213709839411b7d056c0559e8948b5e55a0dee63b639a413a31ae5c",
+        "geo_category_daily.parquet": "0b4bb959fbcdcfd9c1eec2e3db5e0cd6ab94ad722de1b91d9186f1469749d9b2",
+        "route_category_daily.parquet": "fd06126a8998dfb0e575ab41745ee2d2dad823c1297e85cc1c45b28cda942455",
+        "route_category_monthly.parquet": "b2e5c26a84735c53754b70196e84f92dae060b846d8ebc590fae324dd27356b2",
+        "route_monthly.parquet": "747bc2185c33a051a4e64ef22e7fcafeeebf91ab33944da00b86a61bff1c9830",
+        "station_category_daily.parquet": "74ad0792900982414b7ebdc973a3c3a5600408abc09f2c9f0976fcfe97fd9183",
+        "station_category_hourly.parquet": "ba311db9303f4947999894368014013169ea090e195b32e2c836d72363dea8a1",
+        "station_category_monthly.parquet": "f4d0903f95949f6e7b5a90d2691ad33b8c03189b523309783650519b09482a0f",
+        "trip_daily.parquet": "75443b0c1c8de19fa8373ef17729d7ba7ece77b32d17f00136e840d9e2bce0e0",
+        "trip_hourly.parquet": "6fcb7e7e7da9e96a31a10c44e9da448cc4dde2b00f47014096fcd34f0260bbe9",
+        "trip_monthly.parquet": "066ea777a11b0a836e009006c1684a68df8408720a69e88a327e49cb8949e93a"
+      },
+      "silver": [
+        {
+          "partition_id": "10fa3eb147016b2bb59ee5e2e391aa6d8c6393fd7f8aeb48d5686c1e67d61fae",
+          "path": "data\\f2\\silver\\10fa3eb147016b2bb59ee5e2e391aa6d8c6393fd7f8aeb48d5686c1e67d61fae",
+          "checksum": "d1df81e99b675eba65e96c06d7766b30c384dbef6b89183cd45cd7e56efcb8c1",
+          "source_version": "fdc15ebc98ddef6ffa6825a71616e2f704def8376590881f91b0109cd2d81f9b",
+          "source_period": "2025-06",
+          "rows": 4759345
+        },
+        {
+          "partition_id": "aa00adcc48980dcbe02e987cdaac2cb5ad8dacfff80eb0c15c501eb84b4c1755",
+          "path": "data\\f2\\silver\\aa00adcc48980dcbe02e987cdaac2cb5ad8dacfff80eb0c15c501eb84b4c1755",
+          "checksum": "6828310b5dcdedca24763d1c9d12d1cc384a94083cb7092f9b286af383887285",
+          "source_version": "5c336f33986e229203308f1e177f42d46bce3c6a3a85aac7d412cd7109b3253b",
+          "source_period": "2025-07",
+          "rows": 4988053
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 25.015,
+        "elapsed_seconds": 124.937,
+        "peak_rss_bytes": 1713016832,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "e60c0946b49932130ea338b49a3a6364b2c3eaf9beef9f09b94fb407c1630fdb",
+      "month": "2025-07",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1141308,
+        "fact_station_daily": 67516,
+        "station_category_hourly": 2495412,
+        "station_category_daily": 245938,
+        "station_category_monthly": 8901,
+        "fact_route_daily": 3261841,
+        "route_category_daily": 3917705,
+        "route_monthly": 731842,
+        "route_category_monthly": 1282895,
+        "geo_category_daily": 461045
+      },
+      "metrics": {
+        "n": 4987563,
+        "duration_us": 4260916545197000,
+        "duration_n": 4987563,
+        "departures": 4984569,
+        "arrivals": 4967654,
+        "arrival_rows": 4988053,
+        "route_n": 4964730,
+        "geo_n": 4984569
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "740ec86b34bad520d584399a988de2fb9f91f8c511b987ac4c41a01e25c7d289",
+        "fact_station_daily.parquet": "b0a2a098898e83d98a66b6a2d98a39d670fa96592a4e559e7836c9b39f96e1de",
+        "fact_station_hourly.parquet": "8372c1fcbaeb0872d1bca55690d43d672a3b9f7b44f07f93bc7241c230cd8a22",
+        "geo_category_daily.parquet": "f34d7c4a7604be5e5559385d8c079b31d2503c90605eefc99aece9f5e9cb0f28",
+        "route_category_daily.parquet": "0f85b42fc61206441cc8518ffb9ab215fe7b3de84ffc44849529f876c1338dcf",
+        "route_category_monthly.parquet": "5c5fee56c633b4aa7666d0e48ca69b555852380e2e4f1ac36efd413aae0a038d",
+        "route_monthly.parquet": "bb95cb538de64efad3c108979198ffd351c98b091157888c182f14ac55dadee2",
+        "station_category_daily.parquet": "78f93c54565b3aa16fa96f50f8527ca3616399c86b9c506a088dd86772729186",
+        "station_category_hourly.parquet": "ed53146ac8472bfcd91d137446841e8769f8974c1969ff62e7a353c4b9fabd00",
+        "station_category_monthly.parquet": "9be054a91e5a1e3d3c8c007259db9a79f477310dec14574c6facf0e96d503d8f",
+        "trip_daily.parquet": "eff8f878bf7ef61817d0ed5768a6365bfcd799787219f3c69b1f4c685ce19d27",
+        "trip_hourly.parquet": "6ad2b664075813b05312088858baaad39ef1d74656523f0f8f8b86ef9325b8fa",
+        "trip_monthly.parquet": "f50c3fe89ba15febe46c789c70d4b31f7a41763d1f323d54b8808a01b4bd5233"
+      },
+      "silver": [
+        {
+          "partition_id": "aa00adcc48980dcbe02e987cdaac2cb5ad8dacfff80eb0c15c501eb84b4c1755",
+          "path": "data\\f2\\silver\\aa00adcc48980dcbe02e987cdaac2cb5ad8dacfff80eb0c15c501eb84b4c1755",
+          "checksum": "6828310b5dcdedca24763d1c9d12d1cc384a94083cb7092f9b286af383887285",
+          "source_version": "5c336f33986e229203308f1e177f42d46bce3c6a3a85aac7d412cd7109b3253b",
+          "source_period": "2025-07",
+          "rows": 4988053
+        },
+        {
+          "partition_id": "e4934ed2ffae8c730d9c249f1f1d04713dd3b8ed4bf77b7620b7d3274a7ffde4",
+          "path": "data\\f2\\silver\\e4934ed2ffae8c730d9c249f1f1d04713dd3b8ed4bf77b7620b7d3274a7ffde4",
+          "checksum": "1fa116d144a5e6a1271913330bc36e66f12bb69c8a2dae2105147e101281edea",
+          "source_version": "c15c6f1a3c3084fa03c012a20f88474907cca74119c31e58eb877b753dbc19b1",
+          "source_period": "2025-08",
+          "rows": 5121533
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 33.406,
+        "elapsed_seconds": 128.656,
+        "peak_rss_bytes": 1307566080,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "808df115214e7ecd67142add24eb1b5cfd96cac56671b3dfbd7ebd953a42a02c",
+      "month": "2025-08",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1137036,
+        "fact_station_daily": 66796,
+        "station_category_hourly": 2513425,
+        "station_category_daily": 244079,
+        "station_category_monthly": 8861,
+        "fact_route_daily": 3328452,
+        "route_category_daily": 4012848,
+        "route_monthly": 753301,
+        "route_category_monthly": 1340391,
+        "geo_category_daily": 459144
+      },
+      "metrics": {
+        "n": 5122174,
+        "duration_us": 4490124988584000,
+        "duration_n": 5122174,
+        "departures": 5120062,
+        "arrivals": 5108677,
+        "arrival_rows": 5121533,
+        "route_n": 5107407,
+        "geo_n": 5120062
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "7f4e5a5f35b8db4577a02bd869e048610f6e2a6cd7dd6d6faa59c01f4cfe51b1",
+        "fact_station_daily.parquet": "34ee186d8f24a082fee7b8a73ef80692915339ea96b5346a2cab8d72584c969f",
+        "fact_station_hourly.parquet": "f8e9983edc488f0a3678f6de6db76f7e8b7eb23373ba5c0ac2d9f3d28e27b5e0",
+        "geo_category_daily.parquet": "aff373729ee41ae819cfd9fea5c4bd9a732531a33d4aafad8b246286ab630e2c",
+        "route_category_daily.parquet": "2d74ed228ac7d464febb081fe202abd1cd2d27d243e5323ab0e13444454cff3b",
+        "route_category_monthly.parquet": "e44fa38a2a27b836a813405a5d575d8f31ffd6545e1015e4fc37c91c137b0d0e",
+        "route_monthly.parquet": "507240503629b910c270d718acad1128855d66b01fb678c2a6d222fb82307bd6",
+        "station_category_daily.parquet": "dcf1fc3f34ead7391c9ef4e36bdb5349ce35a166de0c7ffc510a1f899c65f70f",
+        "station_category_hourly.parquet": "6dcc6f1db6234d977f6b653e67a9a04cec52c61f83025c1b5ec3fe7fe632b26b",
+        "station_category_monthly.parquet": "adaf217d1cbcb4db31c6853eae1967424d9fd1589889d6e585128c08a996ad9e",
+        "trip_daily.parquet": "12f7ecdb44b9f8f7f5305ef3c9495f29ae74c2aab351c38e888b6f3b5f98d159",
+        "trip_hourly.parquet": "56e78a1ea3b974dd6fc71fa4519149aafa66acc036d3462cb97e667c8fd7a226",
+        "trip_monthly.parquet": "3061b7ddf36f5ee740e840cd4171fd93a2e521d9eabbfbabeb5f3c4daa7ee439"
+      },
+      "silver": [
+        {
+          "partition_id": "e4934ed2ffae8c730d9c249f1f1d04713dd3b8ed4bf77b7620b7d3274a7ffde4",
+          "path": "data\\f2\\silver\\e4934ed2ffae8c730d9c249f1f1d04713dd3b8ed4bf77b7620b7d3274a7ffde4",
+          "checksum": "1fa116d144a5e6a1271913330bc36e66f12bb69c8a2dae2105147e101281edea",
+          "source_version": "c15c6f1a3c3084fa03c012a20f88474907cca74119c31e58eb877b753dbc19b1",
+          "source_period": "2025-08",
+          "rows": 5121533
+        },
+        {
+          "partition_id": "0df7130a319045f570faf2c1c51eadb953a1003bb446f765983b7a67d479e4c6",
+          "path": "data\\f2\\silver\\0df7130a319045f570faf2c1c51eadb953a1003bb446f765983b7a67d479e4c6",
+          "checksum": "196ffeba82202ae26635bce41ccbafcb5dfdd013d0c2d83ea0c4ead4df56920e",
+          "source_version": "b1721f1f9306daf2ca5aa358efe64c70da7c58cda82ae595692bb2d7cf2d5e46",
+          "source_period": "2025-09",
+          "rows": 5287447
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 30.047,
+        "elapsed_seconds": 130.828,
+        "peak_rss_bytes": 1436123136,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "b5cf419fd76ddc20277dfdb354655fca89d1884cba756202bf0121040f9d41c3",
+      "month": "2025-09",
+      "rows": {
+        "trip_hourly": 2880,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1089631,
+        "fact_station_daily": 64726,
+        "station_category_hourly": 2401358,
+        "station_category_daily": 234431,
+        "station_category_monthly": 8920,
+        "fact_route_daily": 3391085,
+        "route_category_daily": 4110550,
+        "route_monthly": 741257,
+        "route_category_monthly": 1305169,
+        "geo_category_daily": 438871
+      },
+      "metrics": {
+        "n": 5287155,
+        "duration_us": 4288105490624000,
+        "duration_n": 5287155,
+        "departures": 5285037,
+        "arrivals": 5274498,
+        "arrival_rows": 5287447,
+        "route_n": 5272459,
+        "geo_n": 5285037
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "4c2ad3fdf0d46fc9f6336b6d00f4678964aa2ebdc4eb52aa2550ccbbda8c1467",
+        "fact_station_daily.parquet": "155f4a5805e2f9a9dec957209e433308b7c8443c39658654931f1520a754162b",
+        "fact_station_hourly.parquet": "6826942aa5a1b651c7f15157fafb17ff5a50b9acad845742c7d0c2e770640251",
+        "geo_category_daily.parquet": "904a5b42b651f2dc52bf976c3dd7e899663214f846c8937cf7c75643542ed538",
+        "route_category_daily.parquet": "7512bb67c88714cf3e19d116237081d01078831d1beb2fdd9f777c1b94c71892",
+        "route_category_monthly.parquet": "2396aa8cf543836ddeac5e32c7d6ad6df0e5e14fc8a0bc6a059d511aacb587fd",
+        "route_monthly.parquet": "0f508def4cac17bed3630bbc59dca0e57776789525375ea25bf71624e5b32172",
+        "station_category_daily.parquet": "90ca73196908a050fa6eac7c049fd4ffe12fc3ced7e69f77b0c055552c8eafc2",
+        "station_category_hourly.parquet": "1730317f1e9c29ca78229b40e2d12785f8858f4c377c75e1cc9b9db05e75e4d9",
+        "station_category_monthly.parquet": "31f9be30b89f8eb90a3c8b042ab4cc362c9ba8b9d8b93301550486c3888735cf",
+        "trip_daily.parquet": "490e31aaab05dd1b2b7bdf3903eb4bb5b5022f6c719b1486bedfd742cd289d5b",
+        "trip_hourly.parquet": "2d6f2229107a38b4e7d5ae75b5bcc3b7dde9ea5bda6cc53c4748adf01793da9c",
+        "trip_monthly.parquet": "af8767ff5f1dc03662a8da26972117d61e1f78be4b81b641893a8c97925c6bac"
+      },
+      "silver": [
+        {
+          "partition_id": "0df7130a319045f570faf2c1c51eadb953a1003bb446f765983b7a67d479e4c6",
+          "path": "data\\f2\\silver\\0df7130a319045f570faf2c1c51eadb953a1003bb446f765983b7a67d479e4c6",
+          "checksum": "196ffeba82202ae26635bce41ccbafcb5dfdd013d0c2d83ea0c4ead4df56920e",
+          "source_version": "b1721f1f9306daf2ca5aa358efe64c70da7c58cda82ae595692bb2d7cf2d5e46",
+          "source_period": "2025-09",
+          "rows": 5287447
+        },
+        {
+          "partition_id": "cd77f5eb7d966125f6a32be1dc96479764f5073d68ef1f7f321573b2fb178017",
+          "path": "data\\f2\\silver\\cd77f5eb7d966125f6a32be1dc96479764f5073d68ef1f7f321573b2fb178017",
+          "checksum": "78dd942ff9399d28b9f576a3ef80e7d0814fa304c6516bd2543b512b0e82349d",
+          "source_version": "6a8ea3a973ed92caa6129795ff5e0cc758aa9d42c81af579b8f1ebf9f555a6be",
+          "source_period": "2025-10",
+          "rows": 4731900
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 30.485,
+        "elapsed_seconds": 139.375,
+        "peak_rss_bytes": 1830723584,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "85f9b0ca81e3c06c70abbf231d83987e37b19efd8a0346dc4eaee5b05caf1eb8",
+      "month": "2025-10",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1072880,
+        "fact_station_daily": 66821,
+        "station_category_hourly": 2268397,
+        "station_category_daily": 236446,
+        "station_category_monthly": 8876,
+        "fact_route_daily": 3084471,
+        "route_category_daily": 3691686,
+        "route_monthly": 676092,
+        "route_category_monthly": 1164902,
+        "geo_category_daily": 440448
+      },
+      "metrics": {
+        "n": 4732358,
+        "duration_us": 3593906507552000,
+        "duration_n": 4732358,
+        "departures": 4729215,
+        "arrivals": 4718917,
+        "arrival_rows": 4731900,
+        "route_n": 4716616,
+        "geo_n": 4729215
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "c43f9179c718c68dd17458a7aad10fcfa4c1e5b8ea30c457fdaa80a79e75e5d7",
+        "fact_station_daily.parquet": "0a7c095ddc68227996d198002c3d95e6c7e1249ed0f4704d21c2bfd325191b99",
+        "fact_station_hourly.parquet": "d968b5ba2bca54f9e04feeaf882a48d912eb8e4f39cee48b96ad72b91cdc9ba3",
+        "geo_category_daily.parquet": "d019e6eddaddb5cfb4d55fa6136d000cea1964ffdbab78080709cd90128f34da",
+        "route_category_daily.parquet": "1546d30a296e1b11e95c214b10fa913d9218c10d963ddc1af52b41afa06b568f",
+        "route_category_monthly.parquet": "c21109bb7282cccd62b5846fb4a469a3c654a7222dc71dbdd6e6e183c0e1c80f",
+        "route_monthly.parquet": "f03b54e6c76b51d78a70054b1c687a21e9758377615ea0d172bceaa313ed2451",
+        "station_category_daily.parquet": "31d2da7e98d28110a5021c58ca300c357d148855d328ea53cdb20136741fcf16",
+        "station_category_hourly.parquet": "bf0e6e5fbd410f53ba676ec5e509667e074b389791a55c0df5cc55ad25acb191",
+        "station_category_monthly.parquet": "88ca2678c34e3e4f079bad60bf16bb140cb81ad4c57d05ac7d39a8be7760acd4",
+        "trip_daily.parquet": "a266f8830321235847cce87ba62c2c8f7cc4dcdc2c3bda58abc855db0d2d78e3",
+        "trip_hourly.parquet": "9a5cd94b302dc8becc40035493ed3457f9cef4fb6e30e71136dd34016f6ab205",
+        "trip_monthly.parquet": "339a91867e2a51086a5d45d69ea784cfecfc3d8c3d9bb424b8c67f92e30799d8"
+      },
+      "silver": [
+        {
+          "partition_id": "cd77f5eb7d966125f6a32be1dc96479764f5073d68ef1f7f321573b2fb178017",
+          "path": "data\\f2\\silver\\cd77f5eb7d966125f6a32be1dc96479764f5073d68ef1f7f321573b2fb178017",
+          "checksum": "78dd942ff9399d28b9f576a3ef80e7d0814fa304c6516bd2543b512b0e82349d",
+          "source_version": "6a8ea3a973ed92caa6129795ff5e0cc758aa9d42c81af579b8f1ebf9f555a6be",
+          "source_period": "2025-10",
+          "rows": 4731900
+        },
+        {
+          "partition_id": "4789ff535dac9b638d611d064a2eec2db53e4849cadd76c323fa95fad6380e1e",
+          "path": "data\\f2\\silver\\4789ff535dac9b638d611d064a2eec2db53e4849cadd76c323fa95fad6380e1e",
+          "checksum": "e5645f3fa2be71ba46e95b0a58556275aebd832c1b2f3cd10c94d16ad9673f5e",
+          "source_version": "279fc68f6ebc06dec938c7574f843707b2e86c590b3126050672938ad0a8345f",
+          "source_period": "2025-11",
+          "rows": 3412223
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 22.391,
+        "elapsed_seconds": 92.25,
+        "peak_rss_bytes": 1301544960,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "42788579594d4ab7a10195cb17530feb9543a573ff472245bdd27e44746b6f61",
+      "month": "2025-11",
+      "rows": {
+        "trip_hourly": 2876,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 964453,
+        "fact_station_daily": 64711,
+        "station_category_hourly": 1880648,
+        "station_category_daily": 219040,
+        "station_category_monthly": 8899,
+        "fact_route_daily": 2307353,
+        "route_category_daily": 2704898,
+        "route_monthly": 554577,
+        "route_category_monthly": 916062,
+        "geo_category_daily": 399952
+      },
+      "metrics": {
+        "n": 3411263,
+        "duration_us": 2414832689750000,
+        "duration_n": 3411263,
+        "departures": 3409920,
+        "arrivals": 3403490,
+        "arrival_rows": 3412223,
+        "route_n": 3401648,
+        "geo_n": 3409920
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "ed787ab37832ff73850ec0724eaac4125d3f16f19469da89d86f671b33090d84",
+        "fact_station_daily.parquet": "3ad464ad006c776abab4d5ff63f54f88435deaa0f6c6c8291d8db2e8e9b6e83d",
+        "fact_station_hourly.parquet": "d046645a707542b8e92d60165fbf2e12ea91bd50aabd40a91210ce28fbf7f297",
+        "geo_category_daily.parquet": "4a28779f5dd6139d043d297ca2db08918fb996bf10977a641fd2e2cd6dd5a880",
+        "route_category_daily.parquet": "6df3834f1989237d412b2394f41c967dd011f45ea664bf702c96174c12d843fe",
+        "route_category_monthly.parquet": "3dd3b5314d0b062c2f156a7032079e7ba7d9af15a485b392d2f17fce55c78ecc",
+        "route_monthly.parquet": "c3a503a07a9d9bce9810cef19c74ede31048df840f51432e0f4ee7494eea90d7",
+        "station_category_daily.parquet": "d348b0b88864dc6898c2daeeccbb216cf2edcc343214c524ca31a130ba4a87a6",
+        "station_category_hourly.parquet": "080d54ca40ef585bca9cbe9aad3e5c00dda8c3152cd9410127fb2f173a6dc9f6",
+        "station_category_monthly.parquet": "20086e43d3d547014e030441cc926db768039e415942dd29c8e731887e862c29",
+        "trip_daily.parquet": "ca6ce3f3f1caf8eb00621b54f07c5b04046bcef947cf5efc826f0a6625574c0e",
+        "trip_hourly.parquet": "0dd6dfe518840d572096311f0d489953a1f2384cf262bbe96112d2244dd3e480",
+        "trip_monthly.parquet": "e4ac3789876964a836f4d907163a1a6034ceb58b418dcc17872b8f4f1e80c79a"
+      },
+      "silver": [
+        {
+          "partition_id": "4789ff535dac9b638d611d064a2eec2db53e4849cadd76c323fa95fad6380e1e",
+          "path": "data\\f2\\silver\\4789ff535dac9b638d611d064a2eec2db53e4849cadd76c323fa95fad6380e1e",
+          "checksum": "e5645f3fa2be71ba46e95b0a58556275aebd832c1b2f3cd10c94d16ad9673f5e",
+          "source_version": "279fc68f6ebc06dec938c7574f843707b2e86c590b3126050672938ad0a8345f",
+          "source_period": "2025-11",
+          "rows": 3412223
+        },
+        {
+          "partition_id": "ff57fcd30883526d37a069ce7b2ca59ed694b052512e28a32270d51116ce6541",
+          "path": "data\\f2\\silver\\ff57fcd30883526d37a069ce7b2ca59ed694b052512e28a32270d51116ce6541",
+          "checksum": "725be64401693204baca48336536def6c9396a95c2094fa4bf809cae87e238a2",
+          "source_version": "504448a1cd0b8a4630da880a861bc73bbd4d88fad59a66f18ec23a84e5747f45",
+          "source_period": "2025-12",
+          "rows": 2091620
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 17.0,
+        "elapsed_seconds": 67.437,
+        "peak_rss_bytes": 953544704,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "e172c5ea3002ecc4fa57b01f4f202b3eb87856a5d1920fcfbb513e7afbcc9701",
+      "month": "2025-12",
+      "rows": {
+        "trip_hourly": 2969,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 835071,
+        "fact_station_daily": 66251,
+        "station_category_hourly": 1424824,
+        "station_category_daily": 200984,
+        "station_category_monthly": 8832,
+        "fact_route_daily": 1523102,
+        "route_category_daily": 1718971,
+        "route_monthly": 401894,
+        "route_category_monthly": 614825,
+        "geo_category_daily": 354185
+      },
+      "metrics": {
+        "n": 2091749,
+        "duration_us": 1336735223457000,
+        "duration_n": 2091749,
+        "departures": 2090559,
+        "arrivals": 2086171,
+        "arrival_rows": 2091620,
+        "route_n": 2085222,
+        "geo_n": 2090559
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "337633f7f98b63d11ce0bf930000f240faa485e5a941e5b3727a5dee727c05d5",
+        "fact_station_daily.parquet": "e3b5b56ca94debaa7c4833f0e9c65dc2b80ed4279b4643a6d63e4d1ba1c44943",
+        "fact_station_hourly.parquet": "4b5463bb6de2b1e5592ea0569ca927ae557150ba0c0d9cbdafa45380fdf1a985",
+        "geo_category_daily.parquet": "7d25336bc60662d7afdc9118cd905bba5c67a0f6febdf57279df3a39af35116a",
+        "route_category_daily.parquet": "e37d270c4a2c39ab3ef136c2d42a3ee82ed46d148f2791522b4fa341ce41ab2b",
+        "route_category_monthly.parquet": "85c9d204b54bcbc65c8e3e7ccd3f157487a0d96965f2ba29c829fc67957548f6",
+        "route_monthly.parquet": "3affd06170c277bce5d6f2367c05b9e365ec14445102b068e38358f37b31df9d",
+        "station_category_daily.parquet": "bde93d1d6c9c217900e83ed30002f178ada35fafc7088e5e28c297884a2b8721",
+        "station_category_hourly.parquet": "fb5dedad674750b5424f04474f868a1519e49157caabebaef7ba2d9ad89a9cd5",
+        "station_category_monthly.parquet": "52295c20a59d7da9b2e5b96c840fd20ecef9c8c0b12505d08a2f1696c9ef9737",
+        "trip_daily.parquet": "4fbaffee1c85dc36d30372a97eaebee41b7234fc4849f3bd752e664b6018d31b",
+        "trip_hourly.parquet": "3fe208228e053213c94d321bfee66192f54143daa8c771a1545e5e3c6fe3a7aa",
+        "trip_monthly.parquet": "08e0a0b2bf7adf2b89c6f6697e8c2ab59fc9eafb13d64927009d03a5ba931e23"
+      },
+      "silver": [
+        {
+          "partition_id": "ff57fcd30883526d37a069ce7b2ca59ed694b052512e28a32270d51116ce6541",
+          "path": "data\\f2\\silver\\ff57fcd30883526d37a069ce7b2ca59ed694b052512e28a32270d51116ce6541",
+          "checksum": "725be64401693204baca48336536def6c9396a95c2094fa4bf809cae87e238a2",
+          "source_version": "504448a1cd0b8a4630da880a861bc73bbd4d88fad59a66f18ec23a84e5747f45",
+          "source_period": "2025-12",
+          "rows": 2091620
+        },
+        {
+          "partition_id": "4a6f48c357343df0741e1cb7ea627656a25d6cffc04e10227c64e9df11b92da3",
+          "path": "data\\f2\\silver\\4a6f48c357343df0741e1cb7ea627656a25d6cffc04e10227c64e9df11b92da3",
+          "checksum": "7becd1127ee98c86cc5c83c7542942ae2b8368d6d9787586905cfcb4702dd90a",
+          "source_version": "8d579be9515f797739f0ff907576da44f25413bc677e1286a876696a71ae9755",
+          "source_period": "2026-01",
+          "rows": 1816391
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 12.0,
+        "elapsed_seconds": 52.562,
+        "peak_rss_bytes": 660467712,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "047286a613410123af5a295d8ff19710bb45039d602e65f814c4bb637c0b11df",
+      "month": "2026-01",
+      "rows": {
+        "trip_hourly": 2905,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 747787,
+        "fact_station_daily": 63875,
+        "station_category_hourly": 1245182,
+        "station_category_daily": 183103,
+        "station_category_monthly": 8819,
+        "fact_route_daily": 1341626,
+        "route_category_daily": 1500779,
+        "route_monthly": 372443,
+        "route_category_monthly": 554189,
+        "geo_category_daily": 319943
+      },
+      "metrics": {
+        "n": 1816296,
+        "duration_us": 1194567622074000,
+        "duration_n": 1816296,
+        "departures": 1814960,
+        "arrivals": 1807592,
+        "arrival_rows": 1816391,
+        "route_n": 1806439,
+        "geo_n": 1814960
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "c90cbec5c69732094819cde2817ff36b50bdbfbba0b80c53061eee34aa84c31f",
+        "fact_station_daily.parquet": "fec7b1969638977eddc2e86bd673e8bc42209d226983ca9d5e519a07a689643a",
+        "fact_station_hourly.parquet": "01b2678015a1d7812424398b8e5f3083ff9d5e82dea0c400f7bd6d87d9a97c64",
+        "geo_category_daily.parquet": "e09466642e574d3161fcb60befbc685a36b5737311e82d234e905abf9c33630d",
+        "route_category_daily.parquet": "f0875d8340ac97358080efb413a979a51ba30ebacc97f10358210a21e9d5e842",
+        "route_category_monthly.parquet": "9eb7ce1fb6ee3bc7001b716a3f4fd134f010e64c84ea50a5bf25bfaf58c087ab",
+        "route_monthly.parquet": "7d93d7b5a4fe2a9a6feac07c2eb19034fa1759a49bf87e9ee2831f6869f6eb96",
+        "station_category_daily.parquet": "f9f6cb94d67271595783e00b56bf7fdcbca6313d7aa95bfb0a2eac6ab7465fea",
+        "station_category_hourly.parquet": "18d500c50bf913a5b78e07f2d032ed4c2dad33b1806a2bbd8bf09ed457dc45dc",
+        "station_category_monthly.parquet": "c51de826aed19b06771bb566afd22b1722a96b207211258ecc626befbf5e598a",
+        "trip_daily.parquet": "5f2329643e326312e27306c826dca6555f898de70d5eb0474b712fef0c3553ce",
+        "trip_hourly.parquet": "08f7b24ec7e011802b78bbe3380a137ebf127faa380c1bc13761f96a383fba73",
+        "trip_monthly.parquet": "930728e9aca0b41f3d127892e80c6ebc6efd96fe6a79d971ec8179d1ac003a61"
+      },
+      "silver": [
+        {
+          "partition_id": "4a6f48c357343df0741e1cb7ea627656a25d6cffc04e10227c64e9df11b92da3",
+          "path": "data\\f2\\silver\\4a6f48c357343df0741e1cb7ea627656a25d6cffc04e10227c64e9df11b92da3",
+          "checksum": "7becd1127ee98c86cc5c83c7542942ae2b8368d6d9787586905cfcb4702dd90a",
+          "source_version": "8d579be9515f797739f0ff907576da44f25413bc677e1286a876696a71ae9755",
+          "source_period": "2026-01",
+          "rows": 1816391
+        },
+        {
+          "partition_id": "8c22d67ec4964419372d6e6e4ee162022c9260ac2e3c6927c99f2e971c8306fb",
+          "path": "data\\f2\\silver\\8c22d67ec4964419372d6e6e4ee162022c9260ac2e3c6927c99f2e971c8306fb",
+          "checksum": "ccb3fe9ffb2a47be4070aaf26659083994e26e8932230cc807c85e38260bb5d5",
+          "source_version": "c325264841a272799bee92c89401c6f6162406cc52a5e77283640b152a76a03c",
+          "source_period": "2026-02",
+          "rows": 1219444
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 12.938,
+        "elapsed_seconds": 48.875,
+        "peak_rss_bytes": 788549632,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "89ddf67a2672852be2adf46e02a628e80c3238f6372490273374c56ef00bfb80",
+      "month": "2026-02",
+      "rows": {
+        "trip_hourly": 2562,
+        "trip_daily": 110,
+        "trip_monthly": 4,
+        "fact_station_hourly": 600146,
+        "fact_station_daily": 55208,
+        "station_category_hourly": 956458,
+        "station_category_daily": 151265,
+        "station_category_monthly": 8700,
+        "fact_route_daily": 952497,
+        "route_category_daily": 1043848,
+        "route_monthly": 307181,
+        "route_category_monthly": 440224,
+        "geo_category_daily": 261774
+      },
+      "metrics": {
+        "n": 1219706,
+        "duration_us": 867777021000000,
+        "duration_n": 1219706,
+        "departures": 1218589,
+        "arrivals": 1211386,
+        "arrival_rows": 1219444,
+        "route_n": 1210761,
+        "geo_n": 1218589
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "1482265e60c120b91f4287c2caaf8704ef18fa3cb70bd931e8897995a10a164e",
+        "fact_station_daily.parquet": "c841f64fa5f2dff0b08368125cf480086f04b0e1eaafb000c27e3eddd41a5b22",
+        "fact_station_hourly.parquet": "45f1229958f555b7ab799b7c2ceba07ee0e3507fc455110ba28087c5d0c7da03",
+        "geo_category_daily.parquet": "ddff8c306dfa7be8bb9e1739276c77303a2c904975984363db905faab9298f76",
+        "route_category_daily.parquet": "5daceb790bfb7a1f6d77e9d30224663a2fbfd22bb7354cee657c54e9e6709e06",
+        "route_category_monthly.parquet": "199e911a705fb8070b674b21fc7eec3b0f3e5c457fc7cb9245faa007211b8a18",
+        "route_monthly.parquet": "a938c5f82152739016c2f1d99a0ef42a9cd74684424a822f67dd8e821abf2347",
+        "station_category_daily.parquet": "4e6c72d4276da616b77801c822cc7d8cf4f3896e7a372ebf1cb7b468eb978b42",
+        "station_category_hourly.parquet": "5e278723f8d9976f7f80a7ba6858230176d28bab373b02ba762451a50338ef5d",
+        "station_category_monthly.parquet": "3d7b0476218c9b033a4be2ee6eb1999d3b1b45e35a94a98dfe4cbc838221cadf",
+        "trip_daily.parquet": "4b0e2e10312b0cfe7141436d2b2736a616b364144201f2caa9c03fe75dec0fd1",
+        "trip_hourly.parquet": "7314507596ddcab9c4057b57d14b7fcc88752e98dc3a6285168a87520fc23bff",
+        "trip_monthly.parquet": "799dd5f61a8949249c5f4cd717ffe6190daea4fce16d134753f31dd5095345d6"
+      },
+      "silver": [
+        {
+          "partition_id": "8c22d67ec4964419372d6e6e4ee162022c9260ac2e3c6927c99f2e971c8306fb",
+          "path": "data\\f2\\silver\\8c22d67ec4964419372d6e6e4ee162022c9260ac2e3c6927c99f2e971c8306fb",
+          "checksum": "ccb3fe9ffb2a47be4070aaf26659083994e26e8932230cc807c85e38260bb5d5",
+          "source_version": "c325264841a272799bee92c89401c6f6162406cc52a5e77283640b152a76a03c",
+          "source_period": "2026-02",
+          "rows": 1219444
+        },
+        {
+          "partition_id": "3b275877d9a264ac73c3d1b30731bd581b137923e10e20c4e692a9f61bae457d",
+          "path": "data\\f2\\silver\\3b275877d9a264ac73c3d1b30731bd581b137923e10e20c4e692a9f61bae457d",
+          "checksum": "a909ab806f94d6b2a600b3751d25734ca78cd22be6b29127d128784765a5f34a",
+          "source_version": "358bf569d44f5e69a5453e98ed813b3de2b93b4b1262867f49be72b80fa334ce",
+          "source_period": "2026-03",
+          "rows": 2945753
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 8.203,
+        "elapsed_seconds": 31.484,
+        "peak_rss_bytes": 619216896,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "926786d54c1c2b938b64a0b0bc544b566aca8cb634f1d65004bff32694fd3e97",
+      "month": "2026-03",
+      "rows": {
+        "trip_hourly": 2969,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 939410,
+        "fact_station_daily": 68373,
+        "station_category_hourly": 1756077,
+        "station_category_daily": 222889,
+        "station_category_monthly": 9098,
+        "fact_route_daily": 2103669,
+        "route_category_daily": 2410734,
+        "route_monthly": 544072,
+        "route_category_monthly": 870410,
+        "geo_category_daily": 401993
+      },
+      "metrics": {
+        "n": 2945320,
+        "duration_us": 2184052487560000,
+        "duration_n": 2945320,
+        "departures": 2943680,
+        "arrivals": 2936488,
+        "arrival_rows": 2945753,
+        "route_n": 2934766,
+        "geo_n": 2943680
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "023be0dd5202c5e5df285cbc4da04edd0470d209752e8eb3b1fe53e47bd32b88",
+        "fact_station_daily.parquet": "f4797eeb2a55298e0e82bebd448bf619222f3779cbb50d7ee1b753f3ab8b5bc1",
+        "fact_station_hourly.parquet": "036048cf2af09630c0161165cb29b301fb6e8bbe9d5e2661b7a0f11c6628b7ac",
+        "geo_category_daily.parquet": "af060733d379d60e6538274d17461dee08609c2ec0f370e15f87dca78acf8b33",
+        "route_category_daily.parquet": "8161ad9b1780a585d539d23a2773e5dad7a6b0398b56c35389242b44e36b1a81",
+        "route_category_monthly.parquet": "2bbfcc61c2ff35e57004ff5e1674d223bb0c85ae15f2e9c830655af2f2b6c841",
+        "route_monthly.parquet": "7c1257e585698e7f467aafeef2e2790d154962b3c5b440b82c128f34672ebe02",
+        "station_category_daily.parquet": "65236aef4e021894a3fe8ac5a111b1146405a53b1994c522d7f913433badea59",
+        "station_category_hourly.parquet": "f059451ece97c55d2772ed68b2d1de98383a98407407ae6edf2c0b1dcd1c6be7",
+        "station_category_monthly.parquet": "25c17543b607512b850f7d8e1548474aefa78821b1b9d971d822273053196e33",
+        "trip_daily.parquet": "e3e6b7619dcd460abcca09dd886b46baba0b0c0021c90125525aece97871ed1b",
+        "trip_hourly.parquet": "57f47ee4982647ed64be230d161965107cfe2b7c5e4c81f49ec148d2081368d3",
+        "trip_monthly.parquet": "40c709648ae3d5756dee15f1995554a831d3a482c5947c7366c5571d678ee8aa"
+      },
+      "silver": [
+        {
+          "partition_id": "3b275877d9a264ac73c3d1b30731bd581b137923e10e20c4e692a9f61bae457d",
+          "path": "data\\f2\\silver\\3b275877d9a264ac73c3d1b30731bd581b137923e10e20c4e692a9f61bae457d",
+          "checksum": "a909ab806f94d6b2a600b3751d25734ca78cd22be6b29127d128784765a5f34a",
+          "source_version": "358bf569d44f5e69a5453e98ed813b3de2b93b4b1262867f49be72b80fa334ce",
+          "source_period": "2026-03",
+          "rows": 2945753
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 15.156,
+        "elapsed_seconds": 59.015,
+        "peak_rss_bytes": 867201024,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "4700b21ede965d84eb338f1ded3e693e969a5bdbbb8124a6b80f992bf7b972ca",
+      "month": "2026-04",
+      "rows": {
+        "trip_hourly": 2878,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1002210,
+        "fact_station_daily": 67345,
+        "station_category_hourly": 2013426,
+        "station_category_daily": 231785,
+        "station_category_monthly": 9210,
+        "fact_route_daily": 2646871,
+        "route_category_daily": 3092799,
+        "route_monthly": 640049,
+        "route_category_monthly": 1061667,
+        "geo_category_daily": 424719
+      },
+      "metrics": {
+        "n": 3860342,
+        "duration_us": 3018739993662000,
+        "duration_n": 3860342,
+        "departures": 3858403,
+        "arrivals": 3849392,
+        "arrival_rows": 3859859,
+        "route_n": 3848140,
+        "geo_n": 3858403
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "ce63afb5bb1869e54ff347fd5d7bcf0a1d993fc20dba1c0312282a554342f475",
+        "fact_station_daily.parquet": "701046ac6359c662b99d1b9dc1dd1a48a67e8e51d85f19be7626eb7ca39a4d18",
+        "fact_station_hourly.parquet": "2fd9b92b23d107631ca6814515b44e80613bcd34ac949acfb3a0c690b517d0de",
+        "geo_category_daily.parquet": "91e4214a16b8706854ddd556fc6a41d6383322d2d9781c54d13077db22be6869",
+        "route_category_daily.parquet": "271e1ba92e34046fc276133e431f4d6f0f30ba19419a7240ece36d1a66d53908",
+        "route_category_monthly.parquet": "5d06c66798b779950b3cb7cb66e97e8dc7d3e57344071188cfa9c353f072a3f1",
+        "route_monthly.parquet": "1d7cedee7624cbcaff70b87f26b803a75f464267c0f62a06a4106f877c7ac9e4",
+        "station_category_daily.parquet": "1599e6678508ec76f8642a53c2d2b6ef4cf2229110ee38d1977564d913eccbcd",
+        "station_category_hourly.parquet": "5677b7607242ed3e120024fde3550593ccd4e45d31de4e8b517de7edbc0e6ca7",
+        "station_category_monthly.parquet": "8325fd70611507de3989bbfad38e45a0cb4612b7bf647f50dac1c3188aad7682",
+        "trip_daily.parquet": "32c032226176f1ec4b57fcfc8e8f34db761ababb495e87866277a463d389c3a5",
+        "trip_hourly.parquet": "314d3011d530a14811057c906638ddef71adad60f9abd5994261baccda70b51b",
+        "trip_monthly.parquet": "a0792750e67024268edb53e7bed7917a2e9649c713329f7d5ca2af3238a93556"
+      },
+      "silver": [
+        {
+          "partition_id": "6acf9717dbf692900c682481640cbde1492ea3a8f1a9c9b7435079a9d7bcda4e",
+          "path": "data\\f2\\silver\\6acf9717dbf692900c682481640cbde1492ea3a8f1a9c9b7435079a9d7bcda4e",
+          "checksum": "d504cd9db15c81995fc3ef6f1446e913cb611fc1b16ea44e25db8e0dfb735816",
+          "source_version": "fefc1fca369818baeb9206792e02a098b71b59f263064b6627b42317965e2ffb",
+          "source_period": "2026-04",
+          "rows": 3860342
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 17.734,
+        "elapsed_seconds": 73.609,
+        "peak_rss_bytes": 1066479616,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "64446c0d392b4fd52b556ed38ce6de409ae68708e222afaa99a4b1fb4942bb60",
+      "month": "2026-05",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1103309,
+        "fact_station_daily": 69308,
+        "station_category_hourly": 2324577,
+        "station_category_daily": 244876,
+        "station_category_monthly": 9214,
+        "fact_route_daily": 3117845,
+        "route_category_daily": 3710252,
+        "route_monthly": 719535,
+        "route_category_monthly": 1236722,
+        "geo_category_daily": 455473
+      },
+      "metrics": {
+        "n": 4695001,
+        "duration_us": 3807135087104000,
+        "duration_n": 4695001,
+        "departures": 4692559,
+        "arrivals": 4683300,
+        "arrival_rows": 4694849,
+        "route_n": 4681338,
+        "geo_n": 4692559
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "d2ca86c94ce0a31cd269b726a06bd7e577d0bac1ad3701401474cdd442335d85",
+        "fact_station_daily.parquet": "46b88a155eae78877e8fc252d4d9bee6f13b74ab6fc8aa5956cb344491ae1593",
+        "fact_station_hourly.parquet": "8656b132c456603b286da64191eb5d841574751b9da496cd73b3df8b5c3eafd7",
+        "geo_category_daily.parquet": "b8bc10d5ec16dc31ff58f2758bdfb069713369eb97ca0b6776182a1d5bcceda2",
+        "route_category_daily.parquet": "dcb3ff573881ae27923a610c7d69fe3ee51dd6a3fa2aae00efa84755777ce7f4",
+        "route_category_monthly.parquet": "a68b243b68c0a1d7e084b21bb2d14b4c95eca6f7bfb0568b057b35575c38bff5",
+        "route_monthly.parquet": "e6293c56515436c96abe65b2648f894a5493731f086f27edbbd7393e19c82ea5",
+        "station_category_daily.parquet": "4cdda8f9046cb26a2c2117bfe855e435e1c7b6a66f735c3ffb5b0818d5d0a026",
+        "station_category_hourly.parquet": "e651479db722e3c04dd0919b365dfb7052e878a73cb347b790eca1e864f7ca84",
+        "station_category_monthly.parquet": "13f2fb5d15059d2c351e99f678d985a45e51464791316e87f8a5380b27ab00b7",
+        "trip_daily.parquet": "d2bc8581bae76774c32802f08736e959eb8700c9ea10250a0c8f3d49f36a35e0",
+        "trip_hourly.parquet": "f1c50b1644685def4cda6b79b523ae4a99f8e2eaa6cce526d8d4e1dd036459a6",
+        "trip_monthly.parquet": "45bc64757be30f071d88f74cc9387b2a217f06d9cc089fa4c5d6388c09ad41a5"
+      },
+      "silver": [
+        {
+          "partition_id": "6acf9717dbf692900c682481640cbde1492ea3a8f1a9c9b7435079a9d7bcda4e",
+          "path": "data\\f2\\silver\\6acf9717dbf692900c682481640cbde1492ea3a8f1a9c9b7435079a9d7bcda4e",
+          "checksum": "d504cd9db15c81995fc3ef6f1446e913cb611fc1b16ea44e25db8e0dfb735816",
+          "source_version": "fefc1fca369818baeb9206792e02a098b71b59f263064b6627b42317965e2ffb",
+          "source_period": "2026-04",
+          "rows": 3860342
+        },
+        {
+          "partition_id": "c0b5633ea5e684804309bc4decbe65d621968a8779429315308ff32307753f2d",
+          "path": "data\\f2\\silver\\c0b5633ea5e684804309bc4decbe65d621968a8779429315308ff32307753f2d",
+          "checksum": "2af718edcc415bc9b34a74b0698ab80278617fcd236fe204affa05bf2be440e1",
+          "source_version": "b9461221fb7ce806d5274b046b4de46414a1d1116ba2bc46c6a870b7bda71adf",
+          "source_period": "2026-05",
+          "rows": 4694366
+        },
+        {
+          "partition_id": "d1796f5f19b200268b71706b9629259f326a0f24cc7f8467ec10209555b3450a",
+          "path": "data\\f2\\silver\\d1796f5f19b200268b71706b9629259f326a0f24cc7f8467ec10209555b3450a",
+          "checksum": "5be685b6292aa2bbb3d20039b4c7ffeae402b9a45e400cb709480e6e80d52daf",
+          "source_version": "4ba77e6422cee141041638f988281c13e5ebf72bd9e5ab89638eb5d7d3763f60",
+          "source_period": "2026-06",
+          "rows": 5384468
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 21.891,
+        "elapsed_seconds": 94.047,
+        "peak_rss_bytes": 1703481344,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "323bcb261c26e73fa0c202f4b5a0835027f588144d05682c24ce92e9b15b3a8f",
+      "month": "2026-06",
+      "rows": {
+        "trip_hourly": 2880,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1145007,
+        "fact_station_daily": 68131,
+        "station_category_hourly": 2516764,
+        "station_category_daily": 245027,
+        "station_category_monthly": 9417,
+        "fact_route_daily": 3470990,
+        "route_category_daily": 4203631,
+        "route_monthly": 780057,
+        "route_category_monthly": 1374048,
+        "geo_category_daily": 459352
+      },
+      "metrics": {
+        "n": 5384702,
+        "duration_us": 4520169116759000,
+        "duration_n": 5384702,
+        "departures": 5381547,
+        "arrivals": 5370257,
+        "arrival_rows": 5384468,
+        "route_n": 5367824,
+        "geo_n": 5381547
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "09cb775227436c89dee042465a87f22198faee95ed6e1c7ff47f25218c2d5916",
+        "fact_station_daily.parquet": "3a8a25c5b8f602c5e871defa72225f7fb84228b18e007a1b298809189a6dd8ee",
+        "fact_station_hourly.parquet": "807b6832d27e9bc5d9530115e705c8fd4265458b40c8ecf31098d001b20887f0",
+        "geo_category_daily.parquet": "f617c7ac1df1a0026e8cac3acadbcb52edb8a70ac76e6766641bbe4ab9575064",
+        "route_category_daily.parquet": "3efc61d26d2d4a00e9ed34263f95e32cb6bc80c033b5b06e3aa4801b40b76942",
+        "route_category_monthly.parquet": "94c374ef684042f46d624e4fabb3152b0b3f886635ff216aed50df77650dcfd3",
+        "route_monthly.parquet": "67c4657fa39d6ca6a794ee4dbca65e44082febbb0aa779ff4d137fefae8a2759",
+        "station_category_daily.parquet": "0632691d3d387f578cc456dbfaa88ae8fa0f2b72ed8cccadb7830bbc27ac1c50",
+        "station_category_hourly.parquet": "88ec188ed90ca8843c6192ee297c1cbd4a21a9d2fbd2df23d00ed6bdb6ae5623",
+        "station_category_monthly.parquet": "33c84dd8777f8dc7845361b21cd7a4567de2cf9a602b31f90370a6088b717d11",
+        "trip_daily.parquet": "d81ff98fdfe0d78fad5179bb9b41066d3146478f7df1052d75595591734363f9",
+        "trip_hourly.parquet": "cad73c5a2735cc4c6c7ca708fe55f59c24bf9e4da952e7faf3c58b4ccd2709c8",
+        "trip_monthly.parquet": "0962f2b1ef7c8a6702ad044a8be351d43052a328649ba94b1443d476cb2739e5"
+      },
+      "silver": [
+        {
+          "partition_id": "d1796f5f19b200268b71706b9629259f326a0f24cc7f8467ec10209555b3450a",
+          "path": "data\\f2\\silver\\d1796f5f19b200268b71706b9629259f326a0f24cc7f8467ec10209555b3450a",
+          "checksum": "5be685b6292aa2bbb3d20039b4c7ffeae402b9a45e400cb709480e6e80d52daf",
+          "source_version": "4ba77e6422cee141041638f988281c13e5ebf72bd9e5ab89638eb5d7d3763f60",
+          "source_period": "2026-06",
+          "rows": 5384468
+        },
+        {
+          "partition_id": "59589844202f113c015e3dcc17298ae5741dfd7f07fa815e678eb743ac071788",
+          "path": "data\\f2\\silver\\59589844202f113c015e3dcc17298ae5741dfd7f07fa815e678eb743ac071788",
+          "checksum": "f83f5892546a10abc0bf2f7c3733caf82d82281d72a68ab041d2d28de8aebe18",
+          "source_version": "9aeb4f2a1744ce4a81ab5a2bc999bb3e7794fc0a010415e64aeb80283a0c21c0",
+          "source_period": "2026-07",
+          "rows": 4993137
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 24.578,
+        "elapsed_seconds": 111.219,
+        "peak_rss_bytes": 1427578880,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "d736d2a5eadb89a3263a190ff6b6737f421f35d8382f32db9c42668918d0d24a",
+      "month": "2026-07",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1177666,
+        "fact_station_daily": 71361,
+        "station_category_hourly": 2501914,
+        "station_category_daily": 253886,
+        "station_category_monthly": 9503,
+        "fact_route_daily": 3285812,
+        "route_category_daily": 3928956,
+        "route_monthly": 747356,
+        "route_category_monthly": 1293611,
+        "geo_category_daily": 473556
+      },
+      "metrics": {
+        "n": 4993722,
+        "duration_us": 4102769239932000,
+        "duration_n": 4993722,
+        "departures": 4990691,
+        "arrivals": 4977956,
+        "arrival_rows": 4993137,
+        "route_n": 4975996,
+        "geo_n": 4990691
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "e560fa89598df17bdbd2f6d1a277de49fad305c7e1186db685849add5b00a568",
+        "fact_station_daily.parquet": "9ac9bcac89aaeefeb3c35c0c3c217aa05f157beb8dbafd870a950f75c4de6434",
+        "fact_station_hourly.parquet": "0247e8aefd21a0e96a0f0f19d0615aacafb865117e76bd45b4ef73c310cb2090",
+        "geo_category_daily.parquet": "b9a3dc0ad53fa3f127395ca30880172c2b0e1119884adfb782c0244140d25c35",
+        "route_category_daily.parquet": "fb88d8f35cdc30e424e53d0cdc47550c0362f05ef701e328c6473b0207e4754e",
+        "route_category_monthly.parquet": "1e965595c1cd5ab1676ac5441fefe690d12d427693391ce9830aee3a5426c2df",
+        "route_monthly.parquet": "a6c4e9cc3bea423bcfee9fc32ea9f3f22ecd22d7f7f197314b1d66ee2e6fdc01",
+        "station_category_daily.parquet": "1c86cf3a9ded6393f2ebcd11152cf86bee10abfdb607ac8b62329d7e45f4d6e5",
+        "station_category_hourly.parquet": "58b4f15b12f95d9e4801b6bd526091c0fdacdc3f04c4d5246585be5b23445980",
+        "station_category_monthly.parquet": "83f73bf1f2c3fdbfd4e204fc43aeeca3cd23007d59b240bab8f7ae6332b4f953",
+        "trip_daily.parquet": "1ef594e474139779be0c411b0bf83449b069b476dddca93a4b4737ced24cade7",
+        "trip_hourly.parquet": "0b1323abf480f2c787c3317b5e1d72e40764810e7bbc33007a1014a7549b3139",
+        "trip_monthly.parquet": "0944c5ea9bf2824e4db63e59e285b27f61e73a1457b8f320f26b243d0226698e"
+      },
+      "silver": [
+        {
+          "partition_id": "59589844202f113c015e3dcc17298ae5741dfd7f07fa815e678eb743ac071788",
+          "path": "data\\f2\\silver\\59589844202f113c015e3dcc17298ae5741dfd7f07fa815e678eb743ac071788",
+          "checksum": "f83f5892546a10abc0bf2f7c3733caf82d82281d72a68ab041d2d28de8aebe18",
+          "source_version": "9aeb4f2a1744ce4a81ab5a2bc999bb3e7794fc0a010415e64aeb80283a0c21c0",
+          "source_period": "2026-07",
+          "rows": 4993137
+        },
+        {
+          "partition_id": "b54fc25dcd16edd3c62762434273a184524a0e52f27cff6be18af67874d70aa8",
+          "path": "data\\f2\\silver\\b54fc25dcd16edd3c62762434273a184524a0e52f27cff6be18af67874d70aa8",
+          "checksum": "b61f107c5063ab150b0b365e35ad2ef48837b028df67012ddbd998ec639c471d",
+          "source_version": "048ecc43853b2c3a8855a3ed22b177fd110318e3df9478b4b6d018e960215610",
+          "source_period": "2026-08",
+          "rows": 5246236
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 22.406,
+        "elapsed_seconds": 99.235,
+        "peak_rss_bytes": 1318981632,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "5b2c94454ff9c275f4d6134c56e6d8eb355019b1511f0f8d0ed802c39feca228",
+      "month": "2026-08",
+      "rows": {
+        "trip_hourly": 2976,
+        "trip_daily": 124,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1195837,
+        "fact_station_daily": 72397,
+        "station_category_hourly": 2574033,
+        "station_category_daily": 258835,
+        "station_category_monthly": 9716,
+        "fact_route_daily": 3439927,
+        "route_category_daily": 4125415,
+        "route_monthly": 789937,
+        "route_category_monthly": 1377389,
+        "geo_category_daily": 483737
+      },
+      "metrics": {
+        "n": 5245331,
+        "duration_us": 4471272453399000,
+        "duration_n": 5245331,
+        "departures": 5242465,
+        "arrivals": 5231469,
+        "arrival_rows": 5246236,
+        "route_n": 5228178,
+        "geo_n": 5242465
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "2461947b6cfd69b1a7a5677711e34daa640fddf40a15b6f0ad92a54fac86de05",
+        "fact_station_daily.parquet": "023e2b08459f201199ce5137df82038bb09ba74c01d4082e0915eb9c20511760",
+        "fact_station_hourly.parquet": "99df90d065ffabdfdc9b20b9f53cfb2d985ccf9e90b31adb5813fa2a6ed0fe58",
+        "geo_category_daily.parquet": "ce2c69c07717a3434572dfb2bf0eab679c0c1b8934c804e3809641c18ed5b30e",
+        "route_category_daily.parquet": "aa4248fd8abb4ed5938c0bcdd2dfc0115f29e432cc786c5fdfc6a67a6f681a49",
+        "route_category_monthly.parquet": "f4e025cc7c122ca9f1a5594437bfdf798658e6c812b7c6a975bb0c65b1c6d830",
+        "route_monthly.parquet": "00cd4e6e21aedc1d301d9e43d4076d845bc9a5ada10048e0caf47ca5a8878f84",
+        "station_category_daily.parquet": "3ee6a77b8787f5d9faefc985540cbdb200f1872f31906431f7ae8acf0f42dffe",
+        "station_category_hourly.parquet": "fa9e506e4fefcf20d6690606d82a77bbc53c72629ead5449098d81081b3764f0",
+        "station_category_monthly.parquet": "836427fa0d7334083076d72fe2ae434e713c0a3aac2c7eeb06577a1a98854940",
+        "trip_daily.parquet": "59cf1cd6730ec269e6a5925900b87ffba928a59feb051fd32e779167394d7873",
+        "trip_hourly.parquet": "7a19fe4cb3b3038f36c6d3470e405ba21dbdc625b47b77e5927cc9f8464ecbaf",
+        "trip_monthly.parquet": "680be414c288911ce68bed3ffb1e3a7ee936e728845d7068e798906f4f9e71b0"
+      },
+      "silver": [
+        {
+          "partition_id": "b54fc25dcd16edd3c62762434273a184524a0e52f27cff6be18af67874d70aa8",
+          "path": "data\\f2\\silver\\b54fc25dcd16edd3c62762434273a184524a0e52f27cff6be18af67874d70aa8",
+          "checksum": "b61f107c5063ab150b0b365e35ad2ef48837b028df67012ddbd998ec639c471d",
+          "source_version": "048ecc43853b2c3a8855a3ed22b177fd110318e3df9478b4b6d018e960215610",
+          "source_period": "2026-08",
+          "rows": 5246236
+        },
+        {
+          "partition_id": "825f77c84cbb3a795812ce0b943a1d88e42ae256f3aeb26b1f01b1f8a66a73fc",
+          "path": "data\\f2\\silver\\825f77c84cbb3a795812ce0b943a1d88e42ae256f3aeb26b1f01b1f8a66a73fc",
+          "checksum": "166faad6a67d4dad643834436952b12cc0211c82c509208cf9af5909ea076615",
+          "source_version": "81b5d756665ef7a69cc5189349511fb7ec973fcf20ab6ca7078732cb7e50537c",
+          "source_period": "2026-09",
+          "rows": 4982855
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 24.187,
+        "elapsed_seconds": 102.406,
+        "peak_rss_bytes": 1341059072,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    },
+    {
+      "id": "833f34c4279238950b6c9491828e75737bec335d2a7f869c9538071a73a7aa99",
+      "month": "2026-09",
+      "rows": {
+        "trip_hourly": 2880,
+        "trip_daily": 120,
+        "trip_monthly": 4,
+        "fact_station_hourly": 1120310,
+        "fact_station_daily": 70753,
+        "station_category_hourly": 2369602,
+        "station_category_daily": 246537,
+        "station_category_monthly": 9795,
+        "fact_route_daily": 3251485,
+        "route_category_daily": 3902615,
+        "route_monthly": 750569,
+        "route_category_monthly": 1286224,
+        "geo_category_daily": 457397
+      },
+      "metrics": {
+        "n": 4982306,
+        "duration_us": 4014974967181000,
+        "duration_n": 4982306,
+        "departures": 4979389,
+        "arrivals": 4968279,
+        "arrival_rows": 4982855,
+        "route_n": 4965191,
+        "geo_n": 4979389
+      },
+      "checksums": {
+        "fact_route_daily.parquet": "a6ad73e76fc6def3cbaef54aaeb59200b9377377a32a81a881a40d810132485f",
+        "fact_station_daily.parquet": "40b75d0d0876a7d8a522fb2d84f92b3a0c3c777b60e0188c9baf7951fc208e14",
+        "fact_station_hourly.parquet": "95c38a52071fef3c2c545b47a93abc6aaab93322656987d183df2c0fa2c53d2e",
+        "geo_category_daily.parquet": "e818cd8e93030e2bfddf890de39ebf1d0a581220deb26eb2dcea5f227179ff52",
+        "route_category_daily.parquet": "45020cce67ba7334913ef6815f79e03b9899093427a801668a5795c39715ee83",
+        "route_category_monthly.parquet": "cd1e5323090b016515465ad6fb94251ec0dd3ad2ea31ec5b8bf61cf482663a6c",
+        "route_monthly.parquet": "ee54f3b32a361bdd2ab26ef7c9209604d61503c0dfa60d5ca0dbf0920b9e3096",
+        "station_category_daily.parquet": "8748b88225c394d5a8b7b53c209c059f13bbff3abe3042c072cc77a7273b80fc",
+        "station_category_hourly.parquet": "6d175d9a2658b2d9ed05ccc6f8b53734dcc06227688f7c6f4d25d648af740de9",
+        "station_category_monthly.parquet": "489237ee340b1e28c5e39ea13d575a6f50e10c835eff18256a110a42ffbd61d3",
+        "trip_daily.parquet": "915e45e3cdd1eb8df8f9587cbb0f3b664b67de3c12c6af3a65dc05a54e1aa8e9",
+        "trip_hourly.parquet": "4f52a49493dc49cfb0073498a56e8a4801c509b7f14be39b7fd119706e0e85df",
+        "trip_monthly.parquet": "313bd0c5bd0c9b71d6cdc6b44424ad21ebaa787929587943def6c4b4808bbe32"
+      },
+      "silver": [
+        {
+          "partition_id": "825f77c84cbb3a795812ce0b943a1d88e42ae256f3aeb26b1f01b1f8a66a73fc",
+          "path": "data\\f2\\silver\\825f77c84cbb3a795812ce0b943a1d88e42ae256f3aeb26b1f01b1f8a66a73fc",
+          "checksum": "166faad6a67d4dad643834436952b12cc0211c82c509208cf9af5909ea076615",
+          "source_version": "81b5d756665ef7a69cc5189349511fb7ec973fcf20ab6ca7078732cb7e50537c",
+          "source_period": "2026-09",
+          "rows": 4982855
+        }
+      ],
+      "independent_group_mismatches": {
+        "trip_hourly": 0,
+        "trip_daily": 0,
+        "trip_monthly": 0,
+        "fact_station_hourly": 0,
+        "fact_station_daily": 0,
+        "station_category_hourly": 0,
+        "station_category_daily": 0,
+        "station_category_monthly": 0,
+        "fact_route_daily": 0,
+        "route_category_daily": 0,
+        "route_monthly": 0,
+        "route_category_monthly": 0,
+        "geo_category_daily": 0
+      },
+      "measurements": {
+        "build_seconds": 24.265,
+        "elapsed_seconds": 99.265,
+        "peak_rss_bytes": 1345740800,
+        "scope": "month merge + independent direct Silver group oracle"
+      }
+    }
+  ],
+  "matched_mart_month_groups": 325,
+  "first_gold_invocation": {
+    "elapsed_seconds": 2394.5,
+    "peak_rss_bytes": 87142400,
+    "rebuilt_months": 25,
+    "throughput_input_rows_per_sec": 38453.358529964506,
+    "source_contribution_seconds": 729.924,
+    "event_month_build_audit_seconds": 2199.7309999999998,
+    "worker_peak_rss_bytes": 1830723584,
+    "timing_scope": "invocation wall time includes cache validation; first-build child costs recorded separately and retained on reuse"
+  },
+  "gbfs_only_republication": {
+    "elapsed_seconds": 182.594,
+    "peak_rss_bytes": 91959296,
+    "rebuilt_months": 0,
+    "throughput_input_rows_per_sec": 504269.4009661253,
+    "source_contribution_seconds": 729.924,
+    "event_month_build_audit_seconds": 2199.7309999999998,
+    "worker_peak_rss_bytes": 1830723584,
+    "timing_scope": "invocation wall time includes cache validation; first-build child costs recorded separately and retained on reuse"
+  },
+  "real_unchanged_run": {
+    "mode": "unchanged",
+    "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+    "rebuilt_months": 0,
+    "elapsed_seconds": 174.172,
+    "peak_rss_bytes": 81432576
+  },
+  "availability": {
+    "path": "data\\f3\\availability\\2d9bde7099ab3f5440480142d002d33475879fd03a7447bf8aae7f8b8069a487",
+    "id": "2d9bde7099ab3f5440480142d002d33475879fd03a7447bf8aae7f8b8069a487",
+    "pipeline_version": "f3.0.0",
+    "availability_version": "f3-ttl-step-2",
+    "collections": [
+      {
+        "collection_id": "20261028T122027410404-ef8827a0",
+        "silver_checksum": "5cfa01d6f26c1dc36f15b8181c64ecca65b2b01bb7b580c9ef2fbc5028313e69",
+        "quality_checksum": "4eacd7d3615c1da030e8d49e68e329e77b0cc13ceb5027a62fead032f47d1c6e",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T122027410404-ef8827a0\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:19:45+00:00",
+            "ttl": 60,
+            "source_age_seconds": 43.1955,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:20:28.195500+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "0f3a83073f59ce104d0918c5e063c3f0b660632987e8e271435cf4a5708cf58c",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:19:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 41.026381,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:20:29.026381+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "00efc25013336cf8f4d9b36689e2c3c95c4a790091b7f90e63d9535b3fecd843",
+            "bytes": 1080824
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:19:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 43.155906,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:20:29.155906+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "007a74e9476574a9cb9d44dbf5ff795965e93a476393f5698e32acc4de9a5e9f",
+            "bytes": 801994
+          }
+        }
+      },
+      {
+        "collection_id": "20261028T122144489294-41e1bda9",
+        "silver_checksum": "cead31b60d5eb2a0c62a20e072f3df5cebfda404862fab61368f71aa29efe6b0",
+        "quality_checksum": "ad7c23ec15d25cee93807c97d5976dee80fc030038872d78f3fdf891ce69f227",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T122144489294-41e1bda9\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:20:45+00:00",
+            "ttl": 60,
+            "source_age_seconds": 61.276308,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:21:46.276308+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "56bfa3918fbdbe4541f2702670cd600eab79d3fdcdfe66e99655994527e56d30",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:20:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 59.809034,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:21:47.809034+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "ea53d36dd40c981759a4a660e2fbb8cda832f748f1c62b9975a2a11697411226",
+            "bytes": 1080754
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:20:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 62.316182,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:21:48.316182+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "e2bfdea057bf25359a341d117dc64a5811f696dd0241bdfd9580199993f58f69",
+            "bytes": 801994
+          }
+        }
+      },
+      {
+        "collection_id": "20261028T122248591444-ea6a7288",
+        "silver_checksum": "486426805618c4ff51d05bd14ea4b7396aba4aa3c6204ce1d5df8fd2848c4fda",
+        "quality_checksum": "67557898775a675fae42567e69a03b5599acca3dc58d1dd1f11ef79112a5e639",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T122248591444-ea6a7288\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:22:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 3.318223,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:22:49.318223+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "227df6823f953f0ee07d17c7c699a4a8c11b504e3ff1f2785eeb7e13f43c179d",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:21:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 62.573106,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:22:50.573106+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "dff530889cebc7e2d2810e8e9123cbc1c04fb355dce1923bf61543560fc700df",
+            "bytes": 1080749
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:21:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 64.751588,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:22:50.751588+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "04a14bc6648799c1fa23e17b5547a0d636aa7af5bcf20ae7d8f1257867a5b82c",
+            "bytes": 801994
+          }
+        }
+      },
+      {
+        "collection_id": "20261028T122351031547-5bf6fce6",
+        "silver_checksum": "d235f354d4c1b2e3fb9da73f12bd0f43c7a731fe408589d4eb65e01b5a50249c",
+        "quality_checksum": "567563e4145a016828e52a541a57d9ed249b03cd8910e90e34b530b9c6f1dcb3",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T122351031547-5bf6fce6\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:23:45+00:00",
+            "ttl": 60,
+            "source_age_seconds": 6.773992,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:23:51.773992+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "4734b07c372916e958f577c9d6fc9ae1726db7516bfcc051916d71cd01797e24",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:22:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 64.505388,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:23:52.505388+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "22e52df128d94d063fd983bb36ed36dbbbc654ed1e87a5b67fa829d37ffa77de",
+            "bytes": 1080750
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:22:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 66.72765,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:23:52.727650+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "b4c6aa688b15b2abf838b6e9c6bb2209de7fbb722431f0c7adfad6ec7d6b7e72",
+            "bytes": 801994
+          }
+        }
+      },
+      {
+        "collection_id": "20261028T124843790901-2b4f13dc",
+        "silver_checksum": "01478187d3b06ba2cb6c1a34d3f59852e9c162c0395b4fbdbe9b827bf87bd508",
+        "quality_checksum": "98e532cc7556d874208542bb02b7fc7dd713b4d44b6e977163ca3c4aa6c6d4a1",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T124843790901-2b4f13dc\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:47:45+00:00",
+            "ttl": 60,
+            "source_age_seconds": 59.649319,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:48:44.649319+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "172efe82702a0f650df3401d2bca6c1d1884e214a7fc248a821e32e0fa16b6dc",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:47:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 57.402703,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:48:45.402703+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "ecb4fd37da3275919304362a49614a0e26968db88305268ca64e27b4be00d8f4",
+            "bytes": 1080084
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:47:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 59.546015,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:48:45.546015+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "bb1b6d0672d41a96f09d24198e3e33a349d88472e54bf3e0cd94ccc846f9c682",
+            "bytes": 801993
+          }
+        }
+      },
+      {
+        "collection_id": "20261028T124946188581-f0a29db1",
+        "silver_checksum": "310fe594814daac34fe8d250450816385e486b8f4369a251f0fd43e582c551c0",
+        "quality_checksum": "501c26775d700c69c7fe72fb0747043d89faa795669bc1f1c03103dae06d5573",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T124946188581-f0a29db1\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:48:45+00:00",
+            "ttl": 60,
+            "source_age_seconds": 61.893482,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:49:46.893482+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "abea39bedca01950c9c18e078b74681900b024e3a470e25a769198514c40f2c6",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:48:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 59.728369,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:49:47.728369+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "147d850f117ca8ed5784aba852f62bfa221a7b64e87ea0e871b8338ccef3b1bd",
+            "bytes": 1080151
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:48:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 61.86959,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:49:47.869590+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "93e5724fd88a84689258a192e4b4d504107e4fa8545fa501bd6292715fba826b",
+            "bytes": 801993
+          }
+        }
+      },
+      {
+        "collection_id": "20261028T125048443288-740c7e41",
+        "silver_checksum": "02d055ddf722de0cfe5dee9bd5745a7caf071ada4dec4009548d520c68ffb890",
+        "quality_checksum": "40b3f49419bf2481582be636e0d68a0a5897c410287ddd3685151ae390a10279",
+        "path": "data\\gbfs\\silver\\f2-gbfs-2\\20261028T125048443288-740c7e41\\station_status.parquet",
+        "feeds": {
+          "gbfs": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:50:45+00:00",
+            "ttl": 60,
+            "source_age_seconds": 4.179712,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:50:49.179712+00:00",
+            "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+            "checksum": "d54c27bda0cec253ba46cebe2bd9b8f32211f62c7129f6df82512a486b40d390",
+            "bytes": 3589
+          },
+          "station_status": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:49:48+00:00",
+            "ttl": 60,
+            "source_age_seconds": 61.920066,
+            "stale": true,
+            "received_at_utc": "2026-10-28T12:50:49.920066+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+            "checksum": "0926ca5e2e9055a545c2115e561f447cd0dd28bf15c909742a303c2108877e78",
+            "bytes": 1080213
+          },
+          "station_information": {
+            "version": "2.3",
+            "last_updated": "2026-10-28T12:50:46+00:00",
+            "ttl": 60,
+            "source_age_seconds": 4.768943,
+            "stale": false,
+            "received_at_utc": "2026-10-28T12:50:50.768943+00:00",
+            "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+            "checksum": "bf62d18735e37519b94fcd728b865ea8b646939a44bb8bd3f1400bca632a5d2a",
+            "bytes": 801993
+          }
+        }
+      }
+    ],
+    "intervals": 473,
+    "period_start": "2026-10-28T12:20:29.155906+00:00",
+    "period_end": "2026-10-28T12:50:50.768943+00:00",
+    "expected_stations": 2521,
+    "policy": "valid only; step hold to earliest positive feed/report TTL, next receipt, or 60s; no interpolation; ratios require >=95% coverage, >=2 distinct updates and >=1 refresh cycle; confirmed non-operating time remains observed, with separate rental/return operating denominators",
+    "checksums": {
+      "intervals.parquet": "f220a64feb796f45971d10b4712235b8e9bc19efccd1897056b4f9288ea877a4"
+    }
+  },
+  "gold_parquet_bytes": 1869578193,
+  "timing_note": "First Gold invocation reused prebuilt contributions. Successful retained source-worker costs and per-month build/audit costs are measured separately; failed first Windows rename attempt is not included in those retained sums. Cache/retry is not a cold build."
+}
