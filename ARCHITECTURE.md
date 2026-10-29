@@ -72,7 +72,7 @@ Cross-cutting: Prefect, logging, tests, CI/CD, lineage, backups.
 | Оркестрация | Prefect | Отдельные потоки архива, GBFS, обновления, inference |
 | Metadata / serving | PostgreSQL | Индексы по фактическим паттернам запросов |
 | ML | scikit-learn, LightGBM, CatBoost; N-HiTS кандидат | Не все модели обязаны оказаться в production |
-| Experiments | MLflow; Optuna при обоснованном tuning | Runs, dataset fingerprint, контролируемый поиск, registry |
+| Experiments | MLflow | Run, dataset fingerprint, registry |
 | Оптимизация | OR-Tools / SciPy | Проверка ограничений и симуляция |
 | Backend | FastAPI, Pydantic | REST, OpenAPI, валидация |
 | Frontend | Next.js, TypeScript | Разделение страниц, типизированный клиент |
