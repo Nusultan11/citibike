@@ -6,12 +6,10 @@
 
 ```bash
 # Python environment
-uv sync --locked
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy
-uv run --locked pytest -q tests/unit
-uv run --locked pytest -q tests/integration
+uv sync
+uv run ruff check .
+uv run pytest -q tests/unit
+uv run pytest -q tests/integration
 
 # Container checks
 docker compose config
@@ -24,7 +22,7 @@ npm run lint
 npm run build
 ```
 
-**Важно:** это шаблоны. Сверять фактические команды и наличие lockfile/scripts с `pyproject.toml`, CI и README; успешность подтверждать реальным запуском.
+**Важно:** это предлагаемые команды; `uv.lock`, npm scripts, Docker services и команды миграции появятся только после их реализации. Не заявлять, что они уже работают.
 
 ## 2. Приоритетные тестовые фикстуры
 
@@ -58,14 +56,7 @@ Release:
 **Перед релизом:** проверить source→UI, API p95/ошибки, fresh/stale markers, restore backup, rollback модель/код, разрешение на публикацию данных.  
 **После инцидента:** краткая запись impact → root cause → fix → regression test, иначе ошибка повторится.
 
-## 5. Чистый код и автоматизация
-
-- Явные контракты/типы, разделение расчёта и I/O, небольшие функции; одна реализация метрики в production и независимый тестовый oracle.
-- Изменения в источнике или feature recipe → инкрементальный пересчёт затронутых партиций, quality gate, затем атомарная публикация; неверный вход не активирует результат.
-- Тяжёлые EDA/ML jobs запускать отдельно от PR-smoke и API, с checkpoints, лимитами CPU/RAM/времени, retries и записью ошибок. ML training/retraining — только после нового actual и offline review.
-- Перед ускорением сохранить benchmark, изменять один фактор, повторять проверку правильности; не добавлять сервис/кэш без измеренной потребности.
-
-## 6. Методика нагрузочного теста
+## 5. Методика нагрузочного теста
 
 - Фиксировать окружение: CPU, RAM, DB size, concurrent users, period, queries.
 - Измерять p50/p95/p99, throughput, error rate, RAM peak; отдельно ingestion throughput и ML inference time.
