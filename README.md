@@ -330,9 +330,11 @@ event-month Parquet с checksums, grain gates и независимой свер
 `offset=0..10000`; `to_station` применим только к routes, `event_type=start|end` —
 к geography. `compare_start`/`compare_end` — только compare: одинаковые local days,
 UTC hours, weekday mix, полное observed-hour coverage и ненулевой baseline.
-Часовые series ограничены 31 днём. География и произвольные route ranges —
-31 днём либо station filter; маршруты по целым календарным месяцам используют
-monthly aggregates. Пустые страницы сохраняют total_groups, сортировка стабильна.
+Часовые series и география ограничены 31 днём (география также допускает station
+filter). Маршруты за весь опубликованный период используют exact serving cube;
+один календарный месяц — monthly aggregates. Другие city-wide route ranges
+ограничены 31 днём; более длинные требуют `station_id` или `to_station`.
+Пустые страницы сохраняют total_groups, сортировка стабильна.
 Все запросы читают PostgreSQL aggregates, закрепляют одну publication и передают
 provenance/quality/coverage. OpenAPI: [API docs](http://localhost:8000/docs).
 

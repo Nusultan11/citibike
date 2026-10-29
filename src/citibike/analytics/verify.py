@@ -11,12 +11,14 @@ from zoneinfo import ZoneInfo
 
 import duckdb
 import httpx
+from psycopg import sql
 
 from citibike.analytics.build import configured
 from citibike.serving.analytics_models import AnalyticsFilters
 from citibike.serving.analytics_publish import validate_gold
 from citibike.serving.analytics_read import fact_name, where
 from citibike.serving.db import connect
+from citibike.serving.route_window_contract import month_table, window_id, window_table
 from citibike.storage import read_json, write_json
 
 
@@ -294,6 +296,38 @@ def verify(path: Path, output: Path, *, benchmark: bool = False) -> Path:
         ]
         if actual_routes != sample_routes:
             raise ValueError("Independent real route ranking mismatch")
+        whole_routes = client.get(
+            "http://127.0.0.1:8000/v2/analytics/routes",
+            params={**root_params, "limit": 3},
+        )
+        whole_routes.raise_for_status()
+        # Recount returned whole-window pairs directly in Silver. Full ranking
+        # is additionally checked by 32 disjoint shards × 16 independent slices.
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            configured(Path(temporary) / "routes.duckdb") as oracle,
+        ):
+            oracle.read_parquet(paths).create_view("silver")
+            pair_checks = []
+            for row in whole_routes.json()["rows"]:
+                expected_pair = oracle.execute(
+                    """SELECT count(*),
+                    sum(epoch_us(ended_at_utc)-epoch_us(started_at_utc))
+                    FROM silver WHERE disposition='accepted'
+                    AND started_at_utc>=? AND started_at_utc<?
+                    AND start_station_id=? AND end_station_id=?""",
+                    [start, end, row["from_station"], row["to_station"]],
+                ).fetchone()
+                if expected_pair != (row["n"], row["metrics"]["duration_sum_us"]):
+                    raise ValueError("Whole-window route Silver recount mismatch")
+                pair_checks.append(
+                    {
+                        "from": row["from_station"],
+                        "to": row["to_station"],
+                        "silver": expected_pair,
+                    }
+                )
+        evidence["whole_window_route_recounts"] = pair_checks
         category_response = client.get(
             "http://127.0.0.1:8000/v2/analytics/categories", params=root_params
         )
@@ -338,6 +372,15 @@ def verify(path: Path, output: Path, *, benchmark: bool = False) -> Path:
                 "routes",
                 {"start_date": "2026-04-01", "end_date": "2026-05-01"},
             ),
+            "routes_month_vehicle": (
+                "routes",
+                {
+                    "start_date": "2026-04-01",
+                    "end_date": "2026-05-01",
+                    "vehicle": "electric_bike",
+                },
+            ),
+            "routes_24_months_vehicle": ("routes", {"vehicle": "electric_bike"}),
             "station_routes": (
                 "routes",
                 {
@@ -404,18 +447,6 @@ def verify(path: Path, output: Path, *, benchmark: bool = False) -> Path:
             end_date=date(2026, 5, 1),
         )
         queries = {
-            "routes_month": (
-                "route_monthly",
-                april,
-                "from_station,to_station,sum(n) n",
-                " GROUP BY 1,2 ORDER BY sum(n) DESC,1,2 LIMIT 20",
-            ),
-            "station_routes": (
-                "route_monthly",
-                april.model_copy(update={"station_id": top}),
-                "from_station,to_station,sum(n) n",
-                " GROUP BY 1,2 ORDER BY sum(n) DESC,1,2 LIMIT 20",
-            ),
             "daily_series": (
                 "trip_daily",
                 april,
@@ -453,6 +484,55 @@ def verify(path: Path, output: Path, *, benchmark: bool = False) -> Path:
                 "EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) " + query, params
             ).fetchone()
         evidence["sql_latency"] = sql_times
+        route_window = db.execute(
+            "SELECT manifest FROM analytics_route_windows WHERE window_id=%s",
+            (window_id(report),),
+        ).fetchone()
+        assert route_window is not None
+        evidence["route_serving_rollup"] = route_window["manifest"]
+        april_partition = next(p for p in report["months"] if p["month"] == "2026-04")
+        for label, table, clause, params in [
+            (
+                "routes_24_months",
+                window_table(window_id(report)),
+                "vehicle=%s AND membership=%s",
+                ["*", "*"],
+            ),
+            (
+                "routes_month",
+                month_table("route_monthly", april_partition["id"]),
+                "true",
+                [],
+            ),
+            (
+                "station_routes",
+                month_table("route_monthly", april_partition["id"]),
+                "from_station=%s",
+                [top],
+            ),
+        ]:
+            route_query = sql.SQL(
+                "SELECT from_station,to_station,n,duration_us,duration_n "
+                "FROM {} WHERE "
+                + clause
+                + " ORDER BY n DESC,from_station,to_station LIMIT 20"
+            ).format(sql.Identifier(table))
+            plans[label] = db.execute(
+                sql.SQL("EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) ") + route_query, params
+            ).fetchone()
+            samples = []
+            for _ in range(3):
+                before = time.perf_counter()
+                db.execute(route_query, params).fetchall()
+                samples.append((time.perf_counter() - before) * 1000)
+            sql_times[label] = {
+                "same_connection_ms": samples,
+                "cache": "first and subsequent; no cache reset",
+            }
+    evidence["serving_runs"] = [
+        read_json(p)
+        for p in sorted((path.parent.parent / "serving-runs").glob("*.json"))
+    ]
     evidence["parquet_bytes"] = sum(
         p.stat().st_size
         for month in report["months"]

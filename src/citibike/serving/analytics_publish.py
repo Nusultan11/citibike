@@ -20,21 +20,24 @@ from citibike.storage import read_json, write_json
 
 def migrate(db: psycopg.Connection[dict[str, Any]]) -> None:
     migrate_f1(db)
-    content = (Path(__file__).with_name("migrations") / "002_analytics.sql").read_text(
-        encoding="utf-8"
-    )
-    digest = hashlib.sha256(content.encode()).hexdigest()
-    row = db.execute(
-        "SELECT checksum FROM schema_migrations WHERE version='002'"
-    ).fetchone()
-    if row:
-        if row["checksum"] != digest:
-            raise ValueError("Applied analytics migration checksum differs")
-        return
-    db.execute(content)
-    db.execute(
-        "INSERT INTO schema_migrations(version,checksum) VALUES ('002',%s)", (digest,)
-    )
+    for name in ("002_analytics.sql", "003_route_window.sql"):
+        content = (Path(__file__).with_name("migrations") / name).read_text(
+            encoding="utf-8"
+        )
+        digest = hashlib.sha256(content.encode()).hexdigest()
+        version = name[:3]
+        row = db.execute(
+            "SELECT checksum FROM schema_migrations WHERE version=%s", (version,)
+        ).fetchone()
+        if row:
+            if row["checksum"] != digest:
+                raise ValueError("Applied analytics migration checksum differs")
+            continue
+        db.execute(content)
+        db.execute(
+            "INSERT INTO schema_migrations(version,checksum) VALUES(%s,%s)",
+            (version, digest),
+        )
 
 
 def validate_gold(path: Path) -> dict[str, Any]:
@@ -222,6 +225,15 @@ def publish(
         measurements.append(
             {"month": part["month"], "mode": "copied", "tables": copied}
         )
+    from citibike.analytics.route_window import prepare
+    from citibike.serving.route_window_publish import month_indices, publish_window
+
+    window = prepare(path)
+    with connect(settings) as db:
+        db.execute("SET LOCAL statement_timeout='30min'")
+        db.execute("SELECT pg_advisory_xact_lock(7061643)")
+        publish_window(db, window)
+        month_indices(db, report)
     with connect(settings) as db:
         db.execute("SELECT pg_advisory_xact_lock(7061643)")
         existing = db.execute(

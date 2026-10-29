@@ -56,7 +56,7 @@ export default async function AnalyticsPage({
       ]);
       if (routeResult.status === "fulfilled") routes = routeResult.value;
       else
-        routeError = `Маршруты: ${routeResult.reason instanceof Error ? routeResult.reason.message : "Данные недоступны."} Нужны ≤31 дня, целые календарные месяцы или station_id.`;
+        routeError = `Маршруты: ${routeResult.reason instanceof Error ? routeResult.reason.message : "Данные недоступны."} Выберите весь опубликованный период, ≤31 дня либо station_id / станцию назначения.`;
       if (gbfsResult.status === "fulfilled") gbfs = gbfsResult.value;
       else gbfsError = "GBFS API недоступен; исторические поездки показаны отдельно.";
     }

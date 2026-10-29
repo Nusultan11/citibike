@@ -2,6 +2,7 @@
 
 from collections import Counter
 from datetime import UTC, date, datetime, time, timedelta
+from decimal import Decimal
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -131,6 +132,36 @@ def route_metrics(row: dict[str, Any]) -> AnalyticsMetrics:
     )
 
 
+def observed_metrics(
+    row: dict[str, Any], *, starts: bool, ends: bool
+) -> AnalyticsMetrics:
+    result = metrics(row)
+    if not starts:
+        result = result.model_copy(
+            update={
+                field: None
+                for field in (
+                    "completed_published_rides",
+                    "duration_sum_us",
+                    "duration_count",
+                    "average_duration_seconds",
+                    "departures",
+                    "unknown_start_station",
+                    "route_eligible_rides",
+                    "route_coverage",
+                    "geo_eligible_starts",
+                    "geo_coverage",
+                )
+            }
+        )
+    if not ends:
+        result.arrivals = None
+        result.unknown_end_station = None
+    if not starts or not ends:
+        result.net_flow = None
+    return result
+
+
 def query_parts(manifest: dict[str, Any], start: date, end: date) -> list[str]:
     return [
         p["id"]
@@ -218,8 +249,9 @@ def observed_hours(
         station=False,
     )
     row = db.execute(
-        "SELECT count(DISTINCT hour_utc) n FROM analytics_trip_hourly "
-        f"WHERE {clause} AND n>0",
+        "SELECT count(DISTINCT hour_utc) FILTER(WHERE n>0) n,"
+        "count(DISTINCT hour_utc) FILTER(WHERE arrival_rows>0) ends "
+        f"FROM analytics_trip_hourly WHERE {clause}",
         params,
     ).fetchone()
     _, _, start, end = bounds(filters, manifest)
@@ -229,6 +261,8 @@ def observed_hours(
         "observed_city_start_hours": observed,
         "expected_utc_hours": expected,
         "unobserved_city_start_hours": expected - observed,
+        "observed_city_end_hours": int(row["ends"]) if row else 0,
+        "unobserved_city_end_hours": expected - (int(row["ends"]) if row else 0),
         "missing_policy": (
             "unobserved hours are absent, not zero filled; public completed"
             " trips do not measure attempted demand"
@@ -245,6 +279,7 @@ def read(
         raise InvalidFilter("Comparison dates only apply to compare")
     try:
         with connect(settings, readonly=True) as db:
+            db.execute("SET LOCAL TimeZone='UTC'")
             found = metadata(db, filters.publication_id)
             if found is None:
                 return AnalyticsResponse(
@@ -268,6 +303,12 @@ def read(
             response.metrics = metrics(base) if base else None
             response.status = "ok" if base else "empty"
             response.coverage = observed_hours(db, filters, manifest)
+            if base:
+                response.metrics = observed_metrics(
+                    base,
+                    starts=response.coverage["observed_city_start_hours"] > 0,
+                    ends=response.coverage["observed_city_end_hours"] > 0,
+                )
             if kind == "kpi":
                 return response
             if kind in ("timeseries", "peaks"):
@@ -293,16 +334,39 @@ def read(
                     f"WHERE {clause} GROUP BY 1 ORDER BY 1 LIMIT 18000",
                     params,
                 ).fetchall()
+                city_name = "trip_hourly" if hourly else "trip_daily"
+                city_clause, city_params = where(
+                    filters.model_copy(update={"vehicle": None, "membership": None}),
+                    manifest,
+                    city_name,
+                    station=False,
+                )
+                city_counts = {
+                    str(r["key"]): (int(r["n"]), int(r["ends"]))
+                    for r in db.execute(
+                        f"SELECT {key} key,sum(n) n,sum(arrival_rows) ends "
+                        f"FROM analytics_{city_name} WHERE {city_clause} GROUP BY 1",
+                        city_params,
+                    ).fetchall()
+                }
                 if kind == "peaks":
                     for measure in ("departures", "arrivals"):
-                        if rows:
-                            peak = max(rows, key=lambda r: int(r[measure]))
+                        side = 0 if measure == "departures" else 1
+                        candidates = [
+                            r for r in rows if city_counts[str(r["key"])][side] > 0
+                        ]
+                        if candidates:
+                            peak = max(candidates, key=lambda r: int(r[measure]))
                             response.rows.append(
                                 AnalyticsRow(
                                     key=str(peak["key"]),
                                     dimension=measure,
                                     n=int(peak[measure]),
-                                    metrics=metrics(peak),
+                                    metrics=observed_metrics(
+                                        peak,
+                                        starts=city_counts[str(peak["key"])][0] > 0,
+                                        ends=city_counts[str(peak["key"])][1] > 0,
+                                    ),
                                 )
                             )
                     response.coverage["tie_policy"] = (
@@ -311,7 +375,14 @@ def read(
                     )
                     response.coverage["peak_grain"] = filters.grain
                 else:
-                    values = {str(r["key"]): metrics(r) for r in rows}
+                    values = {
+                        str(r["key"]): observed_metrics(
+                            r,
+                            starts=city_counts[str(r["key"])][0] > 0,
+                            ends=city_counts[str(r["key"])][1] > 0,
+                        )
+                        for r in rows
+                    }
                     cursor: date | datetime = utc_start if hourly else start
                     stop: date | datetime = utc_end if hourly else end
                     if not hourly and filters.grain == "month":
@@ -364,17 +435,23 @@ def read(
                     )
                 return response
             if kind in ("stations", "routes", "geography"):
+                if kind == "routes":
+                    from citibike.serving.analytics_routes import read_routes
+
+                    optimized = read_routes(db, filters, manifest, response, base)
+                    if optimized is not None:
+                        return optimized
                 monthly = full_months(filters, manifest)
                 if (
                     kind in ("routes", "geography")
                     and (end - start).days > 31
                     and not filters.station_id
-                    and not (kind == "routes" and monthly)
+                    and not (kind == "routes" and filters.to_station)
                 ):
                     raise InvalidFilter(
-                        "Geography and non-calendar route scans require "
-                        "<=31 days or "
-                        "station_id"
+                        "Geography requires <=31 days or station_id; routes "
+                        "outside the full-publication window require <=31 days "
+                        "or station_id/to_station"
                     )
                 if kind == "stations":
                     name = "station_category_" + ("monthly" if monthly else "daily")
@@ -447,7 +524,12 @@ def read(
                         else None,
                     }
                 )
-                if kind == "routes" and selected and base is not None:
+                if (
+                    kind == "routes"
+                    and selected
+                    and base is not None
+                    and response.coverage["observed_city_start_hours"] > 0
+                ):
                     response.metrics = route_metrics(selected)
                     response.metrics.route_eligible_rides = int(selected["n"])
                     response.metrics.route_coverage = (
@@ -462,7 +544,11 @@ def read(
                     row_metrics = (
                         route_metrics(r)
                         if kind == "routes"
-                        else metrics(r)
+                        else observed_metrics(
+                            r,
+                            starts=response.coverage["observed_city_start_hours"] > 0,
+                            ends=response.coverage["observed_city_end_hours"] > 0,
+                        )
                         if kind == "stations"
                         else None
                     )
@@ -505,7 +591,11 @@ def read(
                     and not response.coverage["unobserved_city_start_hours"]
                     and not previous_coverage["unobserved_city_start_hours"]
                 )
-                prev_n = int(previous["n"]) if previous else None
+                prev_n = (
+                    int(previous["n"])
+                    if previous and previous_coverage["observed_city_start_hours"] > 0
+                    else None
+                )
                 response.comparison = ComparisonResult.model_validate(
                     {
                         "comparable": same,
@@ -536,6 +626,7 @@ def availability(
 ) -> AnalyticsResponse:
     try:
         with connect(settings, readonly=True) as db:
+            db.execute("SET LOCAL TimeZone='UTC'")
             found = metadata(db, filters.publication_id)
             applied = AnalyticsFilters(
                 publication_id=filters.publication_id, station_id=filters.station_id
@@ -561,8 +652,14 @@ def availability(
             if end <= start:
                 response.message = "Insufficient observation window"
                 return response
-            target = (end - start).total_seconds() * (
-                1 if filters.station_id else info["expected_stations"]
+            elapsed = end - start
+            elapsed_us = (
+                elapsed.days * 86400 + elapsed.seconds
+            ) * 1_000_000 + elapsed.microseconds
+            target = (
+                Decimal(elapsed_us)
+                * (1 if filters.station_id else info["expected_stations"])
+                / 1_000_000
             )
             clause = "publication_id=%s AND valid_from<%s AND valid_to>%s"
             params: list[Any] = [publication.publication_id, end, start]
@@ -588,7 +685,7 @@ def availability(
             ).fetchone()
             assert row is not None
             observed = float(row["observed"])
-            coverage = observed / target if target else None
+            coverage = float(row["observed"] / target) if target else None
             sufficient = bool(
                 coverage is not None
                 and coverage >= 0.95
@@ -611,10 +708,14 @@ def availability(
             return_seconds = float(row["return_seconds"])
             # Remove confirmed non-operating time from each operation's target;
             # unknown gaps remain in the target and are never assumed stopped.
-            rent_target = target - observed + rent_seconds
-            return_target = target - observed + return_seconds
-            rent_coverage = rent_seconds / rent_target if rent_target else None
-            return_coverage = return_seconds / return_target if return_target else None
+            rent_target = target - row["observed"] + row["rent_seconds"]
+            return_target = target - row["observed"] + row["return_seconds"]
+            rent_coverage = (
+                float(row["rent_seconds"] / rent_target) if rent_target else None
+            )
+            return_coverage = (
+                float(row["return_seconds"] / return_target) if return_target else None
+            )
             instant = end - timedelta(microseconds=1)
             instant_clause = "publication_id=%s AND valid_from<=%s AND valid_to>%s"
             instant_params: list[Any] = [publication.publication_id, instant, instant]

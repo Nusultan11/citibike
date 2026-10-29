@@ -64,3 +64,17 @@ HTTP читает только агрегаты PostgreSQL. Date filters — NYC
 series и route/geographic scans ограничиваются документированным диапазоном;
 pagination ограничена. Каждый ответ закреплён одним publication_id. Исторические
 trip filters не применяются молча к GBFS operational population.
+
+Для полного опубликованного окна route serving использует exact cube
+`f3-route-window-2`, зависящий от bounds и immutable Gold month IDs. Отдельные
+срезы `*` означают отсутствие фильтра, не `unknown`; запрос выбирает ровно один
+срез. Построение делится на 32 непересекающихся hash buckets по from_station;
+каждый проверяет grain и все 16 срезов независимыми группировками. Checksums,
+суммы и число групп проверяются перед атомарной регистрацией в PostgreSQL.
+Изменённый month меняет ID полного cube; неизменные месяцы Gold/serving остаются
+повторно используемыми. Изменение только GBFS не пересчитывает этот trip cube.
+Одному календарному месяцу с обоими category filters или без них соответствует
+уже уникальный monthly grain; повторный GROUP BY не нужен. Rank indices
+обслуживают stable top-N. Полный период допускает любые category filters;
+остальные city-wide route ranges ограничены 31 днём, более длинные требуют
+origin/destination station. Ограничения явно возвращают 422, без усечения данных.

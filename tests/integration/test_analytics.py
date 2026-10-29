@@ -4,6 +4,7 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from psycopg import sql
 
 from apps.api.main import create_app
 from citibike.serving import analytics_publish as publishing
@@ -31,6 +32,12 @@ def test_comparable_period_change_and_dst_rejection(
     assert response.comparison.comparable is True
     assert response.comparison.previous_rides == 24
     assert response.comparison.relative_change == 1.0
+    zero_baseline = read(
+        "compare", filters.model_copy(update={"station_id": "002"}), database
+    )
+    assert zero_baseline.comparison.comparable is True
+    assert zero_baseline.comparison.previous_rides == 0
+    assert zero_baseline.comparison.relative_change is None
     dst = read(
         "compare",
         filters.model_copy(
@@ -56,6 +63,17 @@ def test_comparable_period_change_and_dst_rejection(
         database,
     )
     assert zero.comparison.relative_change is None
+    unobserved = read(
+        "compare",
+        filters.model_copy(
+            update={
+                "compare_start": date(2024, 11, 1),
+                "compare_end": date(2024, 11, 2),
+            }
+        ),
+        database,
+    )
+    assert unobserved.comparison.previous_rides is None
 
 
 def test_analytics_postgres_http_filters_metrics_and_rollback(
@@ -66,6 +84,12 @@ def test_analytics_postgres_http_filters_metrics_and_rollback(
     assert read("kpi", AnalyticsFilters(), database).status == "empty"
     gold = analytical_gold(tmp_path)
     version = publish(gold, database)
+    with connect(database) as db:
+        db.execute(
+            sql.SQL("ALTER DATABASE {} SET TimeZone='Asia/Tokyo'").format(
+                sql.Identifier(database.database)
+            )
+        )
     filters = AnalyticsFilters(start_date=date(2024, 10, 1), end_date=date(2024, 11, 1))
     result = read("kpi", filters, database)
     assert result.metrics is not None
@@ -76,6 +100,18 @@ def test_analytics_postgres_http_filters_metrics_and_rollback(
     assert result.metrics.unknown_start_station == 1
     assert result.metrics.unknown_end_station == 1
     assert result.metrics.route_coverage == 0.5
+    gap_filters = AnalyticsFilters(
+        start_date=date(2024, 11, 1), end_date=date(2024, 11, 2), grain="hour"
+    )
+    end_only = read("timeseries", gap_filters, database)
+    first = end_only.rows[0].metrics
+    assert end_only.rows[0].key == "2024-11-01 04:00:00+00:00"
+    assert first is not None
+    assert first.completed_published_rides is None and first.departures is None
+    assert first.arrivals == 1 and first.net_flow is None
+    end_kpi = read("kpi", gap_filters, database).metrics
+    assert end_kpi is not None and end_kpi.completed_published_rides is None
+    assert end_kpi.arrivals == 1
     peaks = read("peaks", filters, database)
     assert peaks.coverage["peak_grain"] == "day"
     assert {r.dimension: r.n for r in peaks.rows} == {"departures": 1, "arrivals": 1}
@@ -88,6 +124,35 @@ def test_analytics_postgres_http_filters_metrics_and_rollback(
         (r.category, r.known_share) for r in categories.rows if r.dimension == "vehicle"
     } == {("classic_bike", 1.0), ("unknown", None)}
     assert read("routes", filters, database).total_groups == 1
+    whole_routes = read("routes", AnalyticsFilters(), database)
+    assert whole_routes.coverage["serving_rollup_version"] == "f3-route-window-2"
+    assert whole_routes.total_groups == 2
+    assert [(r.key, r.n) for r in whole_routes.rows] == [("001/002", 2), ("002/001", 2)]
+    for vehicle, member, expected in [
+        ("classic_bike", None, 3),
+        (None, "casual", 1),
+        ("electric_bike", "casual", 1),
+        ("unknown", None, 0),
+    ]:
+        selected = read(
+            "routes",
+            AnalyticsFilters.model_validate({"vehicle": vehicle, "membership": member}),
+            database,
+        )
+        assert selected.metrics is not None
+        assert selected.metrics.completed_published_rides == expected
+        assert sum(r.n or 0 for r in selected.rows) == expected
+    exact_month = read(
+        "routes",
+        filters.model_copy(update={"vehicle": "classic_bike", "membership": "member"}),
+        database,
+    )
+    assert exact_month.total_groups == 1
+    assert exact_month.rows[0].n == 1
+    partial_month = read(
+        "routes", filters.model_copy(update={"vehicle": "classic_bike"}), database
+    )
+    assert partial_month.rows[0].n == 1
     no_destination = read(
         "routes", filters.model_copy(update={"to_station": "missing"}), database
     )
@@ -278,3 +343,23 @@ def test_availability_weighting_and_gaps(
     assert half_operating.availability.rent_observed_coverage == 1
     assert half_operating.availability.empty_station_time_share == 1
     assert half_operating.availability.full_station_time_share == 0
+    # Three completely observed microsecond intervals must yield exactly 1,
+    # even when binary-float target multiplication would exceed that bound.
+    finish = start + timedelta(microseconds=1234567)
+    manifest["availability"]["expected_stations"] = 3
+    with connect(database) as db:
+        db.execute("DELETE FROM analytics_availability")
+        db.execute(
+            "UPDATE analytics_publications SET manifest=%s WHERE publication_id=%s",
+            (Jsonb(manifest), version),
+        )
+        for sid in ("a", "b", "c"):
+            db.execute(
+                "INSERT INTO analytics_availability "
+                "VALUES(%s,%s,NULL,%s,%s,0,5,'micro',%s)",
+                (version, sid, start, finish, start),
+            )
+    micro = availability(AvailabilityFilters(start=start, end=finish), database)
+    assert micro.availability.observed_coverage == 1
+    assert micro.availability.rent_observed_coverage == 1
+    assert micro.availability.active_stations == 3
