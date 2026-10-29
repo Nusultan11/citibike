@@ -32,22 +32,23 @@
 
 Для риска нужны отдельные calibration/precision/recall и бизнес-сценарии. **Accuracy поездок нельзя считать моментально**, пока не поступил опубликованный true target.
 
-## 4. Короткий чек-лист tuning
+## 4. Практика экспериментов
 
-- Эксперимент A: дефолт и базовые признаки.
-- Эксперимент B: ограниченный бюджет Optuna по 3–6 влиятельным параметрам, воспроизводимые folds.
-- Эксперимент C: stress test перспективной модели — разные сезоны/станции/неполные входы.
-- Стоп: нет прогресса против baseline/простого кандидата, расходы растут — идём дальше.
-- По возможности единая глобальная модель на многих станциях, затем сравнение с local baseline.
+1. Baseline и default-кандидаты сравнивать на одинаковых rolling-origin folds и population, фиксируя ресурсы и историю доступности.
+2. Для Optuna ограничить search space и бюджет; в LightGBM сначала исследовать `num_leaves`, `min_child_samples`, `learning_rate`, `n_estimators`, регуляризацию. Для CatBoost — depth, iterations, learning rate, L2. Не смешивать search с финальным тестом.
+3. Сделать feature-group ablation: calendar → historical profile → остальные as-of группы. Выбирать только признаки с устойчивым выигрышем.
+4. Анализировать residuals по station/hour/horizon, low/high activity, season и zero labels; проверять bias, sample coverage, worst cohorts и устойчивость folds.
+5. Валидационный лидер не означает operational champion. Для повторного выбора после раскрытия final test нужен новый период; при неубедительном выигрыше сохранять baseline.
 
 ## Материалы
 
+- Forecasting: time-series cross-validation — https://otexts.com/fpp3/tscv.html
 - scikit-learn TimeSeriesSplit — https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.TimeSeriesSplit.html
 - scikit-learn common pitfalls (leakage) — https://scikit-learn.org/stable/common_pitfalls.html
 - Nixtla MLForecast — https://nixtlaverse.nixtla.io/mlforecast/
 - Nixtla NeuralForecast / N-HiTS — https://nixtlaverse.nixtla.io/neuralforecast/models.nhits.html
-- LightGBM parameters — https://lightgbm.readthedocs.io/en/latest/Parameters.html
-- CatBoost docs — https://catboost.ai/en/docs/
-- Optuna — https://optuna.readthedocs.io/en/stable/
+- LightGBM parameter tuning — https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
+- CatBoost parameter tuning — https://catboost.ai/docs/en/concepts/parameter-tuning
+- Optuna studies/trials — https://optuna.readthedocs.io/en/stable/tutorial/index.html
 - MLflow Model Registry — https://mlflow.org/docs/latest/ml/model-registry/
 - Open-Meteo historical forecasts — https://open-meteo.com/en/docs/historical-forecast-api

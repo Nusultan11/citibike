@@ -1,38 +1,56 @@
 # BikeFlow Intelligence
 
-Проверяемая история поездок Citi Bike: полный официальный NYC ZIP → immutable
-Bronze → Silver Parquet и quarantine → почасовой Gold → PostgreSQL → FastAPI →
-Next.js Dashboard. Реальный апрель 2026: **3 860 371** допустимая опубликованная
-поездка из четырёх CSV. [Агрегированные доказательства](docs/evidence/f1-202604.json)
-содержат checksum, reconciliation и измерения; сырые поездки в Git не включены.
-Исторический Silver F2 охватывает **2024-10 — 2026-09**: 104 CSV, **92 076 567**
-канонических строк из **92 085 994** входных. [EDA](docs/evidence/f2-analysis.md) и
-[машинное evidence](docs/evidence/f2-history.json) содержат полный source inventory,
-версионирование, dispositions, GBFS и измеренные ресурсы.
-Состояние этапов — только в [ROADMAP.md, §6](ROADMAP.md#6-журнал-реализации).
+Независимая аналитическая и прогнозно-рекомендательная платформа на публичных
+данных Citi Bike. История поездок проходит ZIP → immutable Bronze → Silver
+Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
+Факты, прогнозы и будущие сценарные рекомендации имеют разные источники и статусы.
+Опубликованные поездки не измеряют скрытый спрос; симуляция не доказывает экономию.
 
-## Требования и установка
+## Реализовано и подтверждено
 
-- CPython 3.12.13, uv 0.12.1; зависимости закреплены в `uv.lock`.
-- Node.js 24.18.0, npm 11.16.0; зависимости web закреплены в npm lockfile.
-- Docker с Linux containers и Compose с поддержкой `--wait`.
-- Сеть для первой установки и загрузки архива, свободные порты 5432/8000/3000.
-- Нужен диск под ZIP, распакованный CSV, DuckDB spill и Parquet. F1 использует
-  лимит DuckDB 512 MB; F2 — 2048 MB для transform, 2 GB для EDA/publication,
-  два потока на соединение. Эти лимиты не являются peak RSS процесса.
-  Полный F2 — длительный batch: только ZIP выбранных 24 месяцев занимают 17.39 GB,
-  дополнительно нужны Silver, независимые identity partitions и рабочий диск.
+| Этап | Обнаруженная реализация (`IMPLEMENTED`) | Доказательства прежних проверок |
+|---|---|---|
+| F0 | Python-пакет, API/web, Compose, locked dependencies, CI | Команды, SHA и actual CI в [журнале](ROADMAP.md#6-журнал-реализации) |
+| F1 | Полный апрель 2026, raw → UI, независимый oracle, atomic publication | **3 860 371** поездка; [evidence](docs/evidence/f1-202604.json), [регрессия F4](docs/evidence/f4-f1-regression.json) |
+| F2 | Inventory, 24 NYC месяца 2024-10…2026-09, 104 CSV, canonical Silver, GBFS collections | **92 076 567** canonical из **92 085 994** входных; [EDA](docs/evidence/f2-analysis.md), [evidence](docs/evidence/f2-history.json) |
+| F3 | Gold, фильтры, временная/географическая аналитика, маршруты, GBFS intervals, `/analytics` | Default start-window **92 076 054**; [контракт](docs/analytics-contract.md), [сверка](docs/evidence/f3-analytics.json), [benchmark](docs/evidence/f3-performance.md), [UI](docs/evidence/f3-ui.json) |
+| F4 | Departures/arrivals на 24 часа, Seasonal Naive/Poisson/LightGBM/CatBoost, backtest, batch/API | Cohort 64 станции; [контракт и catalog](docs/forecasting-contract.md), [эксперимент](docs/evidence/f4-forecasting.md), [evidence](docs/evidence/f4-forecasting.json) |
+| F5–F8 | `PLANNED`: risk/optimization, полные product views, Prefect/MLflow automation, production hardening | Не реализованы; критерии и зависимости — [ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) |
+
+Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Это не
+подтверждение новых требований ZIP и не независимая приёмка F4 пользователем.
+`VERIFIED` означает фактически пройденную указанную проверку, `NOT VERIFIED` —
+недостаток доказательств; старые evidence не объявляются повторно проверенными.
+Текущие проверки документации и расхождения записаны в новой записи §6.
+
+## Стек и компоненты
+
+Фактически используются Python 3.12.13, uv 0.12.1, DuckDB/Parquet, httpx,
+PostgreSQL/psycopg, FastAPI/Pydantic, Next.js/TypeScript, ECharts, Docker Compose
+и GitHub Actions. ML libraries устанавливаются отдельной dependency group и
+не входят в API image. Структура: `src/citibike/` — pipeline, analytics, features,
+forecasting и serving; `apps/api/`, `apps/web/`, `tests/`, `docs/evidence/`.
+Polars/PyArrow, MapLibre, Prefect, MLflow Registry, Optuna и OR-Tools из целевой
+[архитектуры](ARCHITECTURE.md) не следует считать внедрёнными по наличию в плане.
+
+## Установка и локальный запуск
+
+Нужны CPython/uv указанных версий, Node.js 24.18.0, npm 11.16.0, Docker с Linux
+containers и Compose с `--wait`; свободные порты 5432/8000/3000. Lockfiles —
+`uv.lock`, `apps/web/package-lock.json`. Первая установка и загрузка требуют сети.
+Только ZIP 24 месяцев исходного F2 занимают 17.39 GB; дополнительно нужны CSV,
+Parquet, spill и PostgreSQL (измеренный F3 с retained partitions — около 94.9 GB).
 
 Из корня репозитория:
 
 ```sh
 uv python install
-uv sync --locked
+uv sync --locked --group ml
 npm --prefix apps/web ci
 ```
 
-Создайте `.env` из `.env.example`, не перезаписывая существующий файл. Заполните
-`PGPASSWORD` случайным локальным секретом. Например, PowerShell:
+Создайте `.env` из `.env.example`, сохранив существующий файл. Пример PowerShell
+генерирует локальный секрет без вывода его значения:
 
 ```powershell
 if (-not (Test-Path .env)) {
@@ -43,22 +61,12 @@ if (-not (Test-Path .env)) {
 }
 ```
 
-| Переменная | Значение примера | Назначение |
-|---|---|---|
-| `PGHOST`, `PGPORT` | `127.0.0.1`, `5432` | PostgreSQL для локальных pipeline/API |
-| `PGDATABASE`, `PGUSER` | `bikeflow`, `bikeflow` | База и пользователь serving |
-| `PGPASSWORD` | заполнить локально | Секрет, не включать в Git |
-| `BIKEFLOW_API_HOST`, `BIKEFLOW_API_PORT` | `127.0.0.1`, `8000` | Локальный API |
-| `BIKEFLOW_API_LOG_LEVEL` | `info` | Уровень логирования API |
-| `API_BASE_URL` | `http://127.0.0.1:8000` | Серверный запрос Next.js к API |
-| `PORT` | `3000` | Локальный web port |
-
-Compose переопределяет адрес БД на `db:5432`, API — на `http://api:8000`.
-Порты публикуются только на localhost; секрет не передаётся браузеру. Переменные
-процесса имеют приоритет над `.env`. Не выводите полный `docker compose config`
-в публичные логи; для проверки конфигурации используйте `--quiet`.
-
-## Запуск и загрузка реального архива
+`PGHOST/PGPORT` задают localhost:5432, `PGDATABASE/PGUSER` — bikeflow,
+`PGPASSWORD` нужно заполнить. `BIKEFLOW_API_HOST/BIKEFLOW_API_PORT` — localhost:8000,
+`BIKEFLOW_API_LOG_LEVEL` — info, `API_BASE_URL` — http://127.0.0.1:8000,
+`PORT` — 3000. Переменные процесса имеют приоритет над `.env`. Compose использует
+`db:5432` и `http://api:8000`, публикует порты на localhost; секрет не попадает
+в браузер. Проверяйте конфигурацию через `--quiet`, без раскрытия env в логах.
 
 ```sh
 docker compose config --quiet
@@ -68,16 +76,14 @@ uv run --locked python -m citibike.pipeline --period 2026-04 --url https://s3.am
 uv run --locked python tests/integration/smoke.py --expected-count 3860371
 ```
 
-До первой успешной публикации Dashboard показывает `empty`, без выдуманных
-значений. Pipeline запускается на хосте с тем же locked Python-окружением:
-это отдельная batch-команда, обработка ZIP не выполняется внутри HTTP-запросов.
-`--data-dir` меняет корень локальных артефактов (по умолчанию `data/`);
-`--process-only` останавливается после проверки Parquet, без записи в БД.
+[Dashboard](http://127.0.0.1:3000), [аналитика](http://127.0.0.1:3000/analytics),
+[API health](http://127.0.0.1:8000/health), [OpenAPI](http://127.0.0.1:8000/openapi.json),
+[Swagger](http://127.0.0.1:8000/docs). До публикации UI показывает `empty`.
+Pipeline — отдельный batch на хосте, не HTTP-операция; `--data-dir` меняет
+локальный корень `data/`, `--process-only` проверяет Parquet без записи в БД.
 
-Адреса: [Dashboard](http://127.0.0.1:3000), [API health](http://127.0.0.1:8000/health),
-[OpenAPI](http://127.0.0.1:8000/openapi.json), [Swagger UI](http://127.0.0.1:8000/docs).
-Для запуска API/web вне Docker оставьте `docker compose up -d --wait db`,
-остановите контейнеры `api web` и используйте в разных терминалах:
+Для API/web вне Docker оставьте `docker compose up -d --wait db`, остановите
+`docker compose stop api web`, затем в разных терминалах:
 
 ```sh
 uv run --locked python -m apps.api
@@ -85,73 +91,33 @@ npm --prefix apps/web run dev
 ```
 
 Production web: `npm --prefix apps/web run build`, затем
-`npm --prefix apps/web run start`. Docker API/web работают без root и используют
-закреплённые digest базовых образов. PostgreSQL хранится в persistent volume.
+`npm --prefix apps/web run start`. Контейнеры API/web работают без root;
+PostgreSQL хранится в persistent volume.
 
-## Контракты данных и API
+## Реальные данные и воспроизводимость
 
-- Выбор источника — один завершённый официальный NYC месяц; JC вне охвата.
-  Современная схема проверяется до обработки; неизвестная схема блокирует запуск.
-- Bronze: `data/bronze/NYC/<source_sha256>/source.zip` и `manifest.json` с URL,
-  received time, размером, checksum, ZIP inventory и всеми CSV. Повторная команда
-  проверяет checksum и использует тот же объект без новой загрузки.
-- Silver сохраняет исходные поля, типизированные local/UTC timestamps, station ID
-  как строки, provenance и quality flags. Каждая CSV-запись имеет disposition
-  в `row_ledger.parquet`. Карантин сохраняет причины и исходные значения.
-- Канонизация: только полностью одинаковые записи одного `ride_id`, первый
-  `(source_file, source_row_number)`. Все варианты конфликтующего ID изолируются.
-  Missing ID, неправильное/неоднозначное/несуществующее NY-время, отрицательная
-  длительность и окончание после получения архива исключают поездку из метрик.
-- Неизвестные станции не исключают допустимую поездку из общего числа; теряется
-  только соответствующий station event. Короткая/длинная длительность отмечается,
-  без произвольного cutoff. Некорректные координаты становятся null с флагом.
-- Gold: отдельные departures по старту и arrivals по окончанию, UTC hour grain,
-  `net_trip_flow_s = arrivals_s - departures_s`. Общий счётчик — канонические
-  допустимые поездки с началом внутри `[start,end)`. Пропуски не означают нулевой спрос.
-- Перед публикацией независимый stdlib CSV/ZoneInfo/SQLite baseline проходит
-  по всем исходным CSV и сверяет результат. PostgreSQL получает только Gold.
-  Миграция с checksum, COPY, проверки сумм и смена активной версии — одна транзакция.
-  API читает опубликованную версию в read-only session; клиент закрепляет её ID.
+Команды ниже воспроизводят ранее выполненные протоколы; длительные загрузки,
+EDA и backtest не нужны для проверки одной правки документации. Результаты
+прежних запусков и ограничения находятся в evidence и журнале.
 
-Read-only endpoints:
-
-| Endpoint | Ответ |
-|---|---|
-| `GET /v1/publication` | Активная публикация, источник, период, версии, качество и coverage |
-| `GET /v1/kpi` | `completed_published_rides`, применённые фильтры и metadata |
-| `GET /v1/timeseries` | UTC hourly points, фильтры и metadata |
-
-KPI/timeseries принимают `start_date`, `end_date` (обе даты или ни одной,
-календарь America/New_York, конец не включён), `scope=NYC`, `station_id`,
-`publication_id`. По умолчанию весь месяц активной публикации. Даты вне покрытия,
-неверный интервал/параметры — 422. `station_id` фильтрует старты; timeseries также
-показывает отдельные arrivals/net flow этой станции. Неизвестная станция даёт
-`empty`, не утверждение нулевого спроса. Нет публикации/наблюдений — 200 `empty`
-и KPI null; недоступна БД — 503; ошибки имеют `{"error":{"code":"...","message":"..."}}`.
-`/health` у API и web проверяет liveness своего сервиса, а не наличие данных.
-
-## Независимая сверка и восстановление
-
-После pipeline выполните полную сверку raw CSV → Silver → Gold → PostgreSQL → API
-→ видимое число HTML (имя каталога — возвращённый pipeline publication ID):
+### F1: независимая сверка и восстановление
 
 ```sh
 uv run --locked python -m citibike.verify --result data/processed/69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284 --output docs/evidence/f1-202604.json --recompute-baseline
 ```
 
-Без `--recompute-baseline` используется уже сохранённый независимый baseline для
-этого checksum; остальные звенья проверяются заново. Baseline использует отдельные
-правила преобразования времени через fold/roundtrip, stdlib CSV и disk SQLite,
-не импортирует helpers Gold/quality. Evidence содержит только агрегаты и hashes.
+Путь `--result` — publication ID, возвращённый pipeline. Проверяются raw CSV →
+Silver → Gold → PostgreSQL → API → HTML; baseline отдельно использует stdlib
+CSV/ZoneInfo/SQLite. Без `--recompute-baseline` сохраняется прежний checksum-bound
+raw baseline, остальные звенья проверяются заново.
 
-Повторный pipeline идемпотентен. Неполный/повреждённый ZIP, schema error, all-invalid
-или независимая рассверка блокируют публикацию, предыдущая версия остаётся активной.
-All-invalid сохраняет quarantine в `data/failed/`. После ошибки исправьте её причину
-и повторите исходную команду. Для возврата к ранее проверенному объекту повторите
-pipeline с его period/URL: сохранённая версия активируется атомарно.
-Не редактируйте опубликованные файлы и применённые SQL-миграции вручную.
+Повторный pipeline идемпотентен. Corrupt/incomplete ZIP, unknown schema,
+all-invalid или рассверка блокируют публикацию; all-invalid сохраняет quarantine
+в `data/failed/`. Исправьте причину и повторите команду; прежние period/URL
+атомарно возвращают сохранённую версию. Не редактируйте immutable artifacts
+и применённые миграции.
 
-Проверки отказа и восстановления (при загруженном апреле 2026):
+Проверки отказа при опубликованном апреле (после каждой остановки — recovery):
 
 ```sh
 docker compose stop api
@@ -164,47 +130,13 @@ docker compose up -d --wait --wait-timeout 120
 uv run --locked python tests/integration/smoke.py --expected-count 3860371
 ```
 
-`docker compose down` останавливает сервисы с сохранением volume. Не удаляйте
-volume для обычного восстановления; backup/restore production относится к F8.
-При нестандартных портах smoke принимает `--api-url` и `--web-url`.
+`/health` — liveness, не проверка наличия данных. Smoke принимает `--api-url` и
+`--web-url`. `docker compose down` сохраняет volume; не удаляйте его для обычного
+восстановления. Проверяемые production backup/restore — по [OPERATIONS §6](OPERATIONS.md#6-защита-и-восстановление).
 
-## Проверки и CI
+### F2: история и GBFS
 
-```sh
-uv sync --locked
-uv run --locked ruff check .
-uv run --locked ruff format --check .
-uv run --locked mypy
-uv run --locked pytest -q tests/unit
-uv run --locked pytest -q tests/data_contracts
-uv run --locked pytest -q tests/integration/test_serving.py
-uv build
-npm --prefix apps/web ci
-npm --prefix apps/web run lint
-npm --prefix apps/web run typecheck
-npm --prefix apps/web run build
-git diff --check
-```
-
-Integration требует доступный PostgreSQL и право CREATE DATABASE: тесты создают
-и удаляют только уникальную `bikeflow_test_<uuid>`, не меняя опубликованную базу.
-Unit fixtures малы, искусственные и явно обозначены. Starlette TestClient выдаёт
-upstream deprecation warning об httpx; он не скрыт. Wheel/sdist создаются в `dist/`.
-
-[CI](.github/workflows/ci.yml) выполняет Python/contracts/frontend на PR и main;
-на main также Docker, отдельную тестовую БД, fixture pipeline, empty/filter/error,
-отказ и recovery API/БД. Полный архив на каждом PR не загружается. Наличие workflow
-не доказывает успех CI: реальные run/SHA записываются в журнал.
-
-## F2: исторический слой и GBFS
-
-Официальный ListObjects inventory на 2026-10-28 содержит 178 объектов. Последние
-24 опубликованных полных NYC месяца — **2024-10 — 2026-09**; JC исключён.
-Inventory перечисляет всю опубликованную историю, но скачиваются только выбранные
-24 месяца. Для каждого ZIP проверяются pinned ETag/размер, SHA-256, CRC и все CSV;
-отсутствующий объект блокирует публикацию. `listed` ещё не означает `verified`.
-
-Команды из корня, PowerShell (первый discovery возвращает путь inventory):
+PowerShell; `inventory` возвращает путь нового manifest, фиксирующего scope:
 
 ```powershell
 $inventory = uv run --locked python -m citibike.history inventory
@@ -215,176 +147,67 @@ uv run --locked python -m citibike.history profile --inventory $inventory
 uv run --locked python -m citibike.ingestion.gbfs --count 3
 ```
 
-Проверенная inventory исходного прогона:
+Исходная inventory:
 `data/inventory/807194651725833df9977f9cee4a0635a0f9c37fdad4201d9e61e7143227be1f/inventory.json`.
-Повторный discovery 2026-10-28 16:17 UTC подтвердил тот же scope и те же objects/ETags.
+Listing 2026-10-28 содержал 178 объектов, выбранное окно — 2024-10…2026-09, JC
+исключён. Новый discovery может изменить окно; `listed` не означает `verified`.
+Проверяются ETag/size, SHA256, CRC и все CSV; неизвестная схема блокирует месяц.
 
-F1 Dashboard сохраняет свой source-only результат апреля **3 860 371**. В глобальной
-F2 партиции апрельского архива accepted **3 860 342**: 29 строк конфликтуют с
-майским источником и находятся в quarantine. В мае также исключены 483 exact
-duplicates апрельских записей. Обе версии имеют отдельный provenance; F2 не меняет
-активную F1 публикацию. Повторная raw-to-UI регрессия:
+`--ranged` — до четырёх resumable HTTP Range запросов, без флага — обычный GET.
+`ingest --period YYYY-MM` повторяет выбранный месяц; после recovery повторите
+полный ingest. `build --wait-seconds 14400` может ждать receipts, обычный build
+не ждёт. Повторный build проверяет hashes и переиспользует неизменные partitions.
+Переиздание обнаруживается новым inventory и теми же ingest/build/verify;
+пересчитываются изменённые Silver, глобальные ID-конфликты и зависимые периоды.
+[Incremental evidence](docs/evidence/f2-incremental-fixture.json) относится к fixtures.
+
+F1 source-only апрель — 3 860 371; F2 canonical апрель — 3 860 342 из-за 29
+конфликтующих с маем строк; в мае исключены 483 exact duplicates. F3 default
+считает start events в окне inventory, поэтому отличается от всех accepted F2
+на 513 стартов до окна. Это разные populations с отдельным provenance.
+
+Локальные артефакты, вне Git:
+
+- `data/bronze/NYC/<sha256>/` — ZIP/manifest; `data/processed/<id>/` — F1 output.
+- `data/inventory/<id>/` — listing, objects/receipts и manifest.
+- `data/f2/processed/`, `silver/`, `snapshots/`, `active.json` — base/effective
+  Silver, ledger, quarantine и atomic snapshot; версии f2.0.0 / f2.0.0-silver.2.
+- `data/f2/auxiliary/`, `audits/`, `states/`, `failures/` — профили, независимые
+  row-decision hashes, состояние и ошибки. Каждой CSV-строке назначен disposition.
+- `data/gbfs/bronze/<collection_id>/` — raw discovery/info/status, TTL и timestamps;
+  `data/gbfs/silver/f2-gbfs-2/`, `station_history/` — normalized collections/history.
+
+История GBFS начинается с собственного сбора; текущие stations не заполняют
+прошлые поездки. F2 weather отсутствовал; F4 ERA5 — отдельные evaluation labels.
+`verify` не меняет active pointer; `profile` обновляет агрегированные отчёты.
+F1/F2/F3 используют DuckDB limits 512 MB / 2048 MB / 2 GB и 2 threads; это
+настройки engine, а не измеренный process RSS. Cold/concurrent limits — в evidence.
+
+### F3: аналитика
+
+При наличии активного проверенного F2 snapshot:
 
 ```sh
-uv run --locked python -m citibike.verify --result data/processed/69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284 --output docs/evidence/f2-f1-regression.json
-```
-
-`--ranged` использует до четырёх resumable HTTP Range запросов к тому же
-официальному URL, с проверкой каждого блока и итогового ZIP. Без флага используется
-последовательный GET. `--period YYYY-MM` позволяет повторить только неудавшийся
-месяц из выбранного окна. После восстановления выполните полный `ingest` ещё раз:
-неизменные проверенные объекты переиспользуются. `build --wait-seconds 14400`
-может ожидать receipts при параллельном ingest; обычный build не ожидает.
-
-Повтор `build` проверяет hashes и не перерабатывает неизменные source/pipeline
-версии. Чтобы обнаружить переиздание у источника, выполните новый `inventory`,
-затем те же `ingest/build/verify` с новым путём. Изменённый ZIP получает отдельную
-immutable Bronze version. Пересчитываются его Silver и глобальные ID-конфликты;
-зависимости включают старые и новые месяцы начала/окончания поездок. Неизменные
-эффективные партиции переиспользуются. Контролируемый тест изменения источника
-лежит в [fixture evidence](docs/evidence/f2-incremental-fixture.json) и явно
-отделён от реальной истории.
-
-Локальные артефакты (в Git не включаются):
-
-- `data/inventory/<id>/`: исходные XML listing и manifest; `objects/`, `receipts/`
-  содержат результаты фактической проверки.
-- `data/bronze/NYC/<sha256>/`: неизменяемый ZIP и source manifest.
-- `data/f2/processed/<id>/`: versioned базовые Silver, ledger и quarantine.
-  Mapping определяется реальными CSV headers; неизвестная схема блокирует месяц.
-- `data/f2/auxiliary/`, `audits/`, `states/`, `failures/`: полные EDA-профили,
-  независимый CSV/ZoneInfo/SQLite baseline, row-decision hashes, состояние и ошибки.
-- `data/f2/silver/<id>/`: итоговые canonical Silver, полный ledger и quarantine
-  с source/schema/pipeline lineage. Базовая версия `f2.0.0`, итоговая публикация
-  `f2.0.0-silver.2`; исправление итогового слоя не требует повторного raw transform.
-- `data/f2/snapshots/<id>/manifest.json`, `data/f2/active.json`: проверенный набор
-  всех 24 партиций и атомарно заменяемый указатель. Ошибка до активации сохраняет
-  предыдущую публикацию. F1 PostgreSQL/API/UI продолжают обслуживать апрель 2026.
-- `data/gbfs/bronze/<collection_id>/`: оригинальные discovery/information/status
-  JSON, received/source timestamps, TTL и checksums. Нормализация `f2-gbfs-2`
-  находится в `data/gbfs/silver/f2-gbfs-2/`; history — в `data/gbfs/station_history/`.
-
-Каждая входная CSV-строка имеет ровно один disposition. Независимый аудит проходит
-весь raw и сравнивает per-CSV counts, метрики и hash упорядоченных row decisions;
-межмесячные решения дополнительно сверяются на независимо вычисленных
-fingerprints. Редкие пики и неизвестные категории сохраняются с flags. Критические
-нарушения schema/grain/count/checksum/reconciliation блокируют публикацию;
-допустимые пропуски и неполное station coverage дают warning.
-
-GBFS URLs берутся динамически из официального discovery. Реально получена версия
-2.3; mapping 3.0 проверяется fixtures. Poll ограничен 1–120 collections и двумя
-часами, учитывает station-status TTL, timeout и backoff. Счётчик `0` сохраняется;
-неизвестное значение, отсутствие снимка и stale не превращаются в ноль. Для
-положительного TTL применяется консервативное истечение по TTL, для TTL=0
-требуется refresh и действует предел freshness 300 секунд. Stale не означает
-нарушение провайдером пяти минут GBFS: наш положительный TTL gate строже.
-
-`dim_station_history` использует только наблюдённые свежие information feeds,
-интервалы `[valid_from,valid_to)` без перекрытий и обратного заполнения. Станции
-GBFS и trip station aliases различаются; неоднозначные aliases не соединяются.
-Длительные промежутки между collections остаются неизвестными. Weather и
-историческая train/serve availability отсутствуют; ML не создаётся.
-
-`verify` проверяет уже опубликованный snapshot без изменения active pointer;
-`profile` формирует те же агрегированные отчёты. Полные профили остаются локально,
-компактные результаты — `docs/evidence/f2-history.json` и `f2-analysis.md`.
-Время и OS peak RSS записываются отдельно для worker attempts и publication;
-cache/retry не выдаются за холодный запуск. Лимит DuckDB не является измерением RSS.
-CI дополнительно проходит CLI-протокол на 24 маленьких синтетических месяцах:
-первый build, unchanged repeat, verification и one-changed-source rebuild.
-
-## F3: историческая аналитика
-
-Вход — проверенный активный F2 Silver snapshot; повторная загрузка архивов не нужна.
-Матрица population, grains, формул, coverage и ограничений:
-[analytics-contract](docs/analytics-contract.md). Нормативные формулы — METRICS.md.
-
-```powershell
 uv run --locked python -m citibike.analytics build
 uv run --locked python -m citibike.analytics publish
-docker compose build
-docker compose up -d --wait --wait-timeout 120
 uv run --locked python -m citibike.analytics verify
 uv run --locked python -m citibike.analytics benchmark --output docs/evidence/f3-performance.json
 ```
 
-`build --data-dir <root> --snapshot <F2 snapshot directory>` поддерживает явный
-версионированный вход. `publish --gold <Gold publication directory>` публикует
-проверенную версию. `activate --publication-id <previous published ID>` возвращает
-serving на уже опубликованную версию одним transaction; предыдущие физические
-partitions сохраняются. Gold active указывает последний успешный build, PostgreSQL
-active — выбранную serving-версию; фактическую версию сообщает API. F1 указатель
-не меняется. При сбое staging не становится доступен через active publication.
+Явные входы: `build --data-dir <root> --snapshot <F2 snapshot directory>`,
+`publish --gold <Gold publication directory>`; rollback —
+`activate --publication-id <previous published ID>`. Gold active и PostgreSQL
+active могут различаться: фактическую serving version сообщает API. F1 не меняется.
+`data/f3/{contributions,months,publications,runs}/` содержат lineage/checksums
+и проверки зависимых event months; неизменные partitions переиспользуются.
+Фильтры, ограничения диапазонов, grain, UTC/DST, null/zero и GBFS quality gates —
+в [analytics-contract](docs/analytics-contract.md); не дублируются здесь.
 
-Локально: `data/f3/contributions/` — additive source aggregates; `months/` —
-event-month Parquet с checksums, grain gates и независимой сверкой каждой группы;
-`publications/` — immutable lineage/membership; `runs/` — результаты повторов.
-Изменение исходной partition пересчитывает зависимые старые/новые event months,
-включая начала и окончания по разные стороны границ. Workers выполняются
-последовательно с DuckDB 2 GB / 2 threads; измеренный OS RSS сохраняется отдельно.
+### F4: прогнозы
 
-Страница [исторической аналитики](http://localhost:3000/analytics) использует
-`/v2/analytics/{publication,kpi,timeseries,stations,routes,categories,geography,peaks,compare}`.
-Параметры: `publication_id`, NYC `start_date`/`end_date` (конец исключён),
-`station_id`, `vehicle`, `membership`, `grain=hour|day|month`, `limit=1..100`,
-`offset=0..10000`; `to_station` применим только к routes, `event_type=start|end` —
-к geography. `compare_start`/`compare_end` — только compare: одинаковые local days,
-UTC hours, weekday mix, полное observed-hour coverage и ненулевой baseline.
-Часовые series и география ограничены 31 днём (география также допускает station
-filter). Маршруты за весь опубликованный период используют exact serving cube;
-один календарный месяц — monthly aggregates. Другие city-wide route ranges
-ограничены 31 днём; более длинные требуют `station_id` или `to_station`.
-Пустые страницы сохраняют total_groups, сортировка стабильна.
-Все запросы читают PostgreSQL aggregates, закрепляют одну publication и передают
-provenance/quality/coverage. OpenAPI: [API docs](http://localhost:8000/docs).
+При наличии локальной проверенной F3 publication и ML group:
 
-Исторические координаты берутся из события поездки; versioned WGS84 grid 0.01°
-не является районом или равновеликой сеткой. District остаётся unknown. GBFS,
-впервые наблюдённый 2026-10-28, не заполняет исторические координаты.
-`/v2/analytics/availability` имеет отдельные timezone-aware `start`/`end` и
-GBFS UUID `station_id`; trip category filters отклоняются. Valid intervals
-ограничены положительными TTL, следующей collection и максимумом 60 секунд,
-без интерполяции gaps. Empty/full ratios требуют ≥95% покрытия, двух разных
-source updates и полного refresh cycle. Неполные/stale наблюдения дают N/A
-с причиной. Средняя доступность считается на наблюдённую operating station,
-а не как полный network total. Scope GBFS — собранный operator feed; юрисдикции
-станций независимо не размечены. Он отделён от NYC trip population.
-
-Полная проверка F3 при работающем PostgreSQL:
-
-```powershell
-uv run --locked pytest -q tests/unit tests/data_contracts tests/integration/test_serving.py tests/integration/test_analytics.py
-```
-
-Integration создаёт и удаляет только свои уникальные disposable БД.
-CI выполняет build/unchanged/changed-source протокол на 24 controlled месяцах и
-PostgreSQL/HTTP/HTML smoke; fixtures не служат доказательством реальных метрик.
-`verify` сверяет реальный Silver → Gold → HTTP → HTML; `benchmark` дополнительно
-собирает 30 последовательных HTTP samples на workload, p50/p95/p99 и SQL plans.
-Первый запрос новой сессии не выдаётся за холодный OS cache. Цель p95 ≤300 ms
-проверяется измерениями, без заявления SLA. Raw данные, Parquet и `.env` в Git
-не включаются; компактные результаты находятся в `docs/evidence/`.
-
-Результаты реального F3: [validation и performance](docs/evidence/f3-performance.md),
-[Silver/API/HTML](docs/evidence/f3-analytics.json),
-[30-sample benchmark](docs/evidence/f3-performance.json),
-[browser QA](docs/evidence/f3-ui.json). В default NYC окне — 92076054 поездки;
-513 accepted starts до окна учитываются отдельно. Полный PostgreSQL с retained
-partitions и индексами занимает около 94.9 GB; Gold Parquet — 1.87 GB, route cube —
-0.106 GB. Измеренный p95 месячного route query с одним category filter — 2413.46ms;
-цель 300ms для него не достигнута. Cold isolated OS cache — NOT VERIFIED.
-
-## F4 — Forecasting
-
-Два отдельных прогноза **наблюдаемых опубликованных** departures/arrivals,
-24 следующих полных UTC часа, календарь America/New_York. Это не весь спрос,
-не inventory и не подтверждённая operational accuracy. Полный контракт и catalog:
-[forecasting-contract](docs/forecasting-contract.md).
-
-ML libraries установлены отдельной dependency group; API image их не включает:
-
-```powershell
-uv sync --locked --group ml
+```sh
 uv run --locked --group ml python -m citibike.forecasting build --stations 64
 uv run --locked --group ml python -m citibike.forecasting weather
 uv run --locked --group ml python -m citibike.forecasting backtest
@@ -393,76 +216,107 @@ uv run --locked --group ml python -m citibike.forecasting backtest --final
 uv run --locked --group ml python -m citibike.forecasting train
 uv run --locked --group ml python -m citibike.forecasting predict
 uv run --locked --group ml python -m citibike.forecasting publish
-docker compose build api
-docker compose up -d --wait --wait-timeout 120
 uv run --locked --group ml python -m citibike.forecasting verify --serving
 ```
 
-Вход по умолчанию — принятая локальная F3 publication. CLI допускает явные
-`--gold`, `--dataset`, `--experiment`, `--selection`, `--model`, `--forecast`,
-`--data-dir`. `predict --origin` повторяет конкретный сохранённый origin;
-`--station` можно повторить для явного cohort. Без origin используется текущее
-время. Будущий origin и модель/данные, ещё не доступные в origin, отклоняются.
-Одинаковые model/dataset/origin/cohort/code versions дают одну publication.
-Rollback: `activate --publication-id` ранее опубликованной forecast version.
+Это протокол прежнего F4, а не разрешение переиспользовать раскрытый final test
+для новых решений. Новые выборы требуют нового независимого периода по ML_SPEC.
+CLI: `--gold/--dataset/--experiment/--selection/--model/--forecast/--data-dir`;
+`predict --origin` фиксирует origin, повторяемый `--station` — cohort.
+Будущие/ещё недоступные inputs отвергаются; одинаковые версии/origin дают один ID.
+Rollback — `activate --publication-id` ранее опубликованной forecast version.
+Immutable models, predictions/residuals и manifests находятся в `data/f4/`.
+`weather --weather-json <path>` переиспользует raw response; ERA5 используется
+только после prediction для diagnostics, не как as-of feature.
 
-Артефакты и predictions — immutable `data/f4/`, вне Git. Сохраняются checksums,
-source/Gold/dataset/feature/station/model versions, manifests, predictions/residuals,
-folds, параметры, seed 42, timing и OS RSS. Validation выполняется до select;
-final test locked к selection и не может использоваться для нового tuning.
-Poisson, LightGBM, CatBoost сравниваются с delayed Seasonal Naive на одинаковых
-eligible rows. Train-only encodings/scalers, labels доступны до fold fit_asof.
-Default + один bounded вариант на алгоритм; 2 threads, <=80000 train rows/тип/fold.
-Real experiment ограничен 64 stations; coverage сообщается, не экстраполируется.
+Оба текущих fallback — Seasonal Naive. Backtest **approximate retrospective**:
+исторические publication timestamps неизвестны, +45 суток — гипотеза. Cohort64
+покрывает около 2.56% known-ID events. Strict current inference проверяет реальные
+input timestamps, но не доказывает operational accuracy. Недостаточная история
+даёт `unavailable`; source window старше 62 суток блокирует batch. Неудачный batch
+не заменяет корректную публикацию. Prediction intervals не реализованы;
+MLflow Registry остаётся F7. Детали — [forecasting-contract](docs/forecasting-contract.md).
 
-Историческая первая дата публикации архивов неизвестна. Backtest — **approximate
-retrospective**: гипотеза source month end +45 суток с учётом всех зависимых
-source months, включая следующий архив на границах. Текущий canonical F2 snapshot
-не является восстановленной исторической версией. Strict historical replay до
-фактического создания этих immutable inputs недоступен. Production inference
-проверяет реальные source/dataset/model availability timestamps; short lags,
-future weather, historical GBFS и текущая station capacity не используются.
+## API и пользовательские страницы
 
-`weather` получает ERA5 только как **evaluation outcome labels** после prediction:
-cold/heat/heavy-rain segments. Это reanalysis городского grid, не as-of forecast
-и не station measurement. Raw response хранится локально; `--weather-json` позволяет
-повторить сохранённый ответ. Weather никогда не входит в model feature matrix.
-Осадки агрегируются как preceding-hour sums; температура — по timestamp.
-Исправление границы дня в auxiliary weather diagnostics описано вместе с
-[измерениями F4](docs/evidence/f4-forecasting.md); сохранённые predictions,
-параметры и frozen selection не изменены.
+| Контур | Существующая выдача |
+|---|---|
+| F1: `/` | `/v1/publication`, `/v1/kpi`, `/v1/timeseries`; фильтры NYC dates, station, publication |
+| F3: `/analytics` | `/v2/analytics/{publication,kpi,timeseries,stations,routes,categories,geography,peaks,compare}`; отдельно `/v2/analytics/availability` |
+| F4: batch/API | `/v3/forecasts`; `publication_id`, `station_id`, `prediction_type`, `horizon_h=1..24`, `limit=1..200`, `offset=0..10000` |
 
-При недостаточной истории — unavailable; нули и отсутствующие observations
-различаются. Source window старше 62 суток блокирует корректный batch; неудачный
-batch не заменяет последнюю корректную publication. Prediction intervals не
-заявлены. MLflow Registry automation остаётся F7; F4 использует versioned local
-champion manifests. Inference не запускается из HTTP.
+Read-only API закрепляет publication и возвращает provenance/quality/freshness.
+Даты F1/F3 — полуоткрытое окно America/New_York; параметры проверяет OpenAPI.
+Нет публикации — `empty`, не нулевой спрос; недоступная БД — 503; неверный диапазон
+— 422. F1/F3 IDs не являются forecast IDs. Карта, полноценные прогнозные web views
+и рекомендации относятся к F5/F6, не к текущему UI.
 
-Read-only [forecasts API](http://localhost:8000/v3/forecasts): `publication_id`,
-`station_id`, `prediction_type`, `horizon_h=1..24`, `limit=1..200`, `offset=0..10000`.
-Ответ содержит provenance, timestamps, quality/freshness и status; F1/F3 IDs
-не принимаются как forecast versions. Полноценные прогнозные web views — F6.
+## Проверки и CI
 
-Проверки ML и serving:
+Быстрые проверки и полный локальный suite (PostgreSQL нужен для integration):
 
-```powershell
-uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration/test_serving.py tests/integration/test_analytics.py tests/integration/test_forecasting.py
+```sh
+uv sync --locked --group ml
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked mypy
+uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration --basetemp .cache/dt
+uv build
+npm --prefix apps/web ci
+npm --prefix apps/web run lint
+npm --prefix apps/web run typecheck
+npm --prefix apps/web run build
+git diff --check
 ```
 
-CI использует controlled fixtures и smoke budgets без real-data retraining.
-Цель daily batch <=5 минут требует фактического замера, не является SLA.
+Integration создаёт/удаляет только уникальные disposable `bikeflow_test_<uuid>`;
+нужно право CREATE DATABASE. Для проверки без PostgreSQL исключите
+`tests/integration`. Fixtures искусственные и явно обозначены. Известный
+StarletteDeprecationWarning не скрыт. Wheel/sdist создаются в ignored `dist/`.
 
-## Источник и границы
+[CI](.github/workflows/ci.yml): PR/main — lint/format/types, unit/contracts/ML,
+controlled F2/F3 CLI и frontend; main — Docker, disposable PostgreSQL,
+forecast/analytics smoke и F1 outage/recovery. Полная история и real backtest
+не запускаются на каждом PR. Успех определяется actual run/SHA из журнала,
+не наличием YAML. Нагрузочные production gates определяет OPERATIONS.
 
-[Citi Bike System Data](https://citibikenyc.com/system-data) и
-[Data Sharing Policy](https://citibikenyc.com/data-sharing-policy). Независимый
-проект без аффилиации с Citi Bike. Исходные данные предоставляются без гарантии
-полноты; запрещено пытаться идентифицировать пользователей. В Git — код и
-агрегированные доказательства, без исходных ZIP/Parquet и секретов.
+## Расхождения с обновлённой спецификацией
 
-F1 проверен на апреле 2026; F2 расширяет локальный исторический Silver и добавляет
-реальные GBFS collections. Фактический охват и результаты зафиксированы в журнале
-и evidence полного прогона. `/` сохраняет F1; `/analytics` показывает F3.
-Карт F6, ML, рекомендаций и заявлений о production SLA нет.
-Требования: [PROJECT_SPEC.md](PROJECT_SPEC.md), архитектура:
-[ARCHITECTURE.md](ARCHITECTURE.md), проверки: [OPERATIONS.md](OPERATIONS.md).
+Нормативная основа — UPDATED ZIP SHA256
+`1b228e3c9400d9cfd6c2ed5c340e55b0d7def4cbe962a26cf109345cb281cbbc`.
+Ниже сопоставление с кодом и сохранёнными evidence, без новой приёмки F0–F4.
+
+| Требование | Фактическое состояние и последствие |
+|---|---|
+| Исследовательский EDA / ML-readiness, DATA_CONTRACTS §5 | `IMPLEMENTED`: quality profiles, seasonal aggregates, eligibility/cohort и missing-label counts. `NOT VERIFIED`: полный набор воспроизводимых гипотез, station churn, zero/error и distribution-shift исследований новой редакции; прежний F2 DoD их не подтверждает |
+| Feature-group ablation, ML_SPEC §§3–5 | `PLANNED`: adapters используют фиксированный CATALOG, отдельных ablation runs на одинаковых folds нет; вклад групп не доказан |
+| Bounded search и все trials, ML_SPEC §4 | `IMPLEMENTED`: default + один bounded config/алгоритм, seed/folds/train limits, successful runs и warnings. `NOT VERIFIED`: полный заранее фиксированный search/stop protocol и журнал failed trials; ошибка прерывает evaluate до итогового manifest |
+| Operational champion, ML_SPEC §5 | `NOT VERIFIED`: forward/shadow evaluation отсутствует. Local champion manifests выбирают baseline, это fallback без доказанного operational uplift; strict current input gate не заменяет forward evaluation |
+| MLflow lifecycle, ML_SPEC §7 | `PLANNED` для F7: local manifests не MLflow Registry; требование не отменено |
+| Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F5–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
+
+Эти ограничения должны участвовать в независимой приёмке F4 и проверке входов
+перед F5. Исправление реализации и новые эксперименты не входят в синхронизацию.
+
+## Требования и продолжение разработки
+
+[PROJECT_SPEC](PROJECT_SPEC.md) — продукт; [ARCHITECTURE](ARCHITECTURE.md) —
+компоненты; [DATA_CONTRACTS](DATA_CONTRACTS.md) — данные;
+[METRICS](METRICS.md) — определения; [ML_SPEC](ML_SPEC.md) — ML;
+[OPERATIONS](OPERATIONS.md) — проверки/восстановление;
+[ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) — план,
+[§6](ROADMAP.md#6-журнал-реализации) — единственная история работ.
+[knowledge_base](knowledge_base/) — справочные материалы;
+`docs/*-contract.md` описывают текущую реализацию и не отменяют нормативные требования.
+
+Процесс по [AGENTS.md](AGENTS.md) и [bikeflow-step](.agents/skills/bikeflow-step/SKILL.md):
+**один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
+приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
+допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая
+приёмка F4 с учётом новых требований и перечисленных пробелов. F5 начинается
+только после приёмки и проверки зависимостей ROADMAP; автоматически не переходить.
+
+[Citi Bike System Data](https://citibikenyc.com/system-data),
+[Data Sharing Policy](https://citibikenyc.com/data-sharing-policy).
+Проект не аффилирован с оператором. Не пытайтесь идентифицировать пользователей.
+В Git — код и агрегированные evidence; raw datasets, models и секреты остаются локально.

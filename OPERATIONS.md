@@ -28,15 +28,17 @@ Prefect управляет зависимостями, retries и статуса
 ## 3. Пирамида тестирования
 
 - **Unit:** типы, границы времени, DST, null vs zero, idempotency, формулы.
-- **Data contract/quality:** schema drift, пропуски, uniqueness, outliers, joins, reconciliation, публикационная задержка.
+- **Data contract/quality:** schema drift, пропуски, uniqueness, outliers, joins, reconciliation, задержка публикации; воспроизводимость EDA и покрытие ML labels.
 - **Integration:** ZIP → Bronze → Silver → Gold, registry → inference → DB, DB → API; тестовая PostgreSQL в контейнере.
-- **ML:** leakage, time split, baseline, метрики и сегменты, признаки доступны на origin, repeatability.
+- **ML:** leakage, time split, baseline, ablation, train/serve parity, метрики и error slices, доступность признаков на origin, фиксация test и воспроизводимость.
 - **Optimization:** ограничения capacity, nonnegative transfer, no-action baseline, симуляционный сценарий.
 - **API/Frontend:** контракт JSON, фильтры, актуальность, корректный период, исключения, карта и mobile.
 - **E2E:** контрольный набор с известным истинным ответом проходит source → UI.
 - **Load/recovery/security:** p95/p99, memory, restart, restore backup, rollback, SQL injection, secrets, auth.
 
 **Независимый контроль:** проверить ключевой показатель отдельным расчётом по первичным данным, а не только тем же helper, что использует Gold. Сохранить evidence, команду запуска и артефакт теста.
+
+**Качество кода:** небольшие типизированные модули, явные контракты, разделение I/O и расчётов; единая production-логика без копий в notebooks/API. Изменения покрывать крайними случаями и регрессионными тестами; сначала измерять, затем оптимизировать.
 
 ## 4. CI/CD gates
 
@@ -47,7 +49,7 @@ staging: migrations + smoke + selected E2E + performance smoke
 release: approval + versioned deploy + smoke + rollback route
 ```
 
-Не запускать полный многолетний EDA на каждом PR. Полные проверки — после новых данных, миграций и перед ответственными релизами.
+На PR запускать быстрые контракты, unit/ML fixtures, lint/type checks. Многолетний EDA, tuning и полный backtest — отдельно при изменениях данных/признаков/модели или по расписанию; каждый запуск имеет ограниченный бюджет, versioned evidence и фиксирует ошибки.
 
 ## 5. Мониторинг и инциденты
 
