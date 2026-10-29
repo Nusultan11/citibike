@@ -16,12 +16,13 @@ jobs:
       - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
         with:
           version: "0.12.1"
-      - run: uv sync --locked
+      - run: uv sync --locked --group ml
       - run: uv run --locked ruff check .
       - run: uv run --locked ruff format --check .
       - run: uv run --locked mypy
       - run: uv run --locked pytest -q tests/unit
       - run: uv run --locked pytest -q tests/data_contracts
+      - run: uv run --locked --group ml pytest -q tests/ml
       - run: uv run --locked python -m tests.fixtures_history --data-dir .cache/f2-ci
       - run: uv run --locked python -m citibike.history build --inventory .cache/f2-ci/inventory/controlled.json --data-dir .cache/f2-ci
       - run: uv run --locked python -m citibike.history build --inventory .cache/f2-ci/inventory/controlled.json --data-dir .cache/f2-ci
@@ -60,7 +61,7 @@ jobs:
       - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
         with:
           version: "0.12.1"
-      - run: uv sync --locked
+      - run: uv sync --locked --group ml
       - name: Generate ephemeral database password
         run: |
           password=$(uv run --locked python -c 'import secrets; print(secrets.token_hex(24))')
@@ -71,6 +72,8 @@ jobs:
       - run: docker compose up -d --wait --wait-timeout 120
       - run: uv run --locked python tests/integration/smoke.py --expect-data empty
       - run: uv run --locked pytest -q tests/integration/test_serving.py tests/integration/test_analytics.py
+      - run: uv run --locked --group ml pytest -q tests/integration/test_forecasting.py
+      - run: uv run --locked --group ml python -m tests.integration.forecast_smoke
       - run: uv run --locked python -m tests.integration.analytics_smoke
       - run: uv run --locked python -m tests.fixtures --output .cache/f1-fixture.zip
       - run: uv run --locked python -m citibike.pipeline --period 2026-04 --fixture .cache/f1-fixture.zip --data-dir .cache/f1

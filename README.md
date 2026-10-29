@@ -374,6 +374,84 @@ partitions и индексами занимает около 94.9 GB; Gold Parqu
 0.106 GB. Измеренный p95 месячного route query с одним category filter — 2413.46ms;
 цель 300ms для него не достигнута. Cold isolated OS cache — NOT VERIFIED.
 
+## F4 — Forecasting
+
+Два отдельных прогноза **наблюдаемых опубликованных** departures/arrivals,
+24 следующих полных UTC часа, календарь America/New_York. Это не весь спрос,
+не inventory и не подтверждённая operational accuracy. Полный контракт и catalog:
+[forecasting-contract](docs/forecasting-contract.md).
+
+ML libraries установлены отдельной dependency group; API image их не включает:
+
+```powershell
+uv sync --locked --group ml
+uv run --locked --group ml python -m citibike.forecasting build --stations 64
+uv run --locked --group ml python -m citibike.forecasting weather
+uv run --locked --group ml python -m citibike.forecasting backtest
+uv run --locked --group ml python -m citibike.forecasting select
+uv run --locked --group ml python -m citibike.forecasting backtest --final
+uv run --locked --group ml python -m citibike.forecasting train
+uv run --locked --group ml python -m citibike.forecasting predict
+uv run --locked --group ml python -m citibike.forecasting publish
+docker compose build api
+docker compose up -d --wait --wait-timeout 120
+uv run --locked --group ml python -m citibike.forecasting verify --serving
+```
+
+Вход по умолчанию — принятая локальная F3 publication. CLI допускает явные
+`--gold`, `--dataset`, `--experiment`, `--selection`, `--model`, `--forecast`,
+`--data-dir`. `predict --origin` повторяет конкретный сохранённый origin;
+`--station` можно повторить для явного cohort. Без origin используется текущее
+время. Будущий origin и модель/данные, ещё не доступные в origin, отклоняются.
+Одинаковые model/dataset/origin/cohort/code versions дают одну publication.
+Rollback: `activate --publication-id` ранее опубликованной forecast version.
+
+Артефакты и predictions — immutable `data/f4/`, вне Git. Сохраняются checksums,
+source/Gold/dataset/feature/station/model versions, manifests, predictions/residuals,
+folds, параметры, seed 42, timing и OS RSS. Validation выполняется до select;
+final test locked к selection и не может использоваться для нового tuning.
+Poisson, LightGBM, CatBoost сравниваются с delayed Seasonal Naive на одинаковых
+eligible rows. Train-only encodings/scalers, labels доступны до fold fit_asof.
+Default + один bounded вариант на алгоритм; 2 threads, <=80000 train rows/тип/fold.
+Real experiment ограничен 64 stations; coverage сообщается, не экстраполируется.
+
+Историческая первая дата публикации архивов неизвестна. Backtest — **approximate
+retrospective**: гипотеза source month end +45 суток с учётом всех зависимых
+source months, включая следующий архив на границах. Текущий canonical F2 snapshot
+не является восстановленной исторической версией. Strict historical replay до
+фактического создания этих immutable inputs недоступен. Production inference
+проверяет реальные source/dataset/model availability timestamps; short lags,
+future weather, historical GBFS и текущая station capacity не используются.
+
+`weather` получает ERA5 только как **evaluation outcome labels** после prediction:
+cold/heat/heavy-rain segments. Это reanalysis городского grid, не as-of forecast
+и не station measurement. Raw response хранится локально; `--weather-json` позволяет
+повторить сохранённый ответ. Weather никогда не входит в model feature matrix.
+Осадки агрегируются как preceding-hour sums; температура — по timestamp.
+Исправление границы дня в auxiliary weather diagnostics описано вместе с
+[измерениями F4](docs/evidence/f4-forecasting.md); сохранённые predictions,
+параметры и frozen selection не изменены.
+
+При недостаточной истории — unavailable; нули и отсутствующие observations
+различаются. Source window старше 62 суток блокирует корректный batch; неудачный
+batch не заменяет последнюю корректную publication. Prediction intervals не
+заявлены. MLflow Registry automation остаётся F7; F4 использует versioned local
+champion manifests. Inference не запускается из HTTP.
+
+Read-only [forecasts API](http://localhost:8000/v3/forecasts): `publication_id`,
+`station_id`, `prediction_type`, `horizon_h=1..24`, `limit=1..200`, `offset=0..10000`.
+Ответ содержит provenance, timestamps, quality/freshness и status; F1/F3 IDs
+не принимаются как forecast versions. Полноценные прогнозные web views — F6.
+
+Проверки ML и serving:
+
+```powershell
+uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration/test_serving.py tests/integration/test_analytics.py tests/integration/test_forecasting.py
+```
+
+CI использует controlled fixtures и smoke budgets без real-data retraining.
+Цель daily batch <=5 минут требует фактического замера, не является SLA.
+
 ## Источник и границы
 
 [Citi Bike System Data](https://citibikenyc.com/system-data) и
