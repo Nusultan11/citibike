@@ -84,7 +84,7 @@ def verify(path: Path, output: Path, *, benchmark: bool = False) -> Path:
         )
         monthly = db.execute(
             """SELECT
-            strftime(timezone('America/New_York',started_at_utc),'%Y-%m-01') key,
+            strftime(timezone('America/New_York',started_at_utc),'%Y-%m-01') bucket,
             count(*) n FROM raw WHERE started_at_utc>=? AND started_at_utc<?
             AND disposition='accepted' GROUP BY 1 ORDER BY 1""",
             [start, end],
@@ -142,10 +142,10 @@ def verify(path: Path, output: Path, *, benchmark: bool = False) -> Path:
         ]:
             peak = db.execute(
                 f"""SELECT
-                strftime({timestamp},'%Y-%m-%d %H:00:00+00:00') key,count(*) n
+                strftime({timestamp},'%Y-%m-%d %H:00:00+00:00') bucket,count(*) n
                 FROM raw WHERE {timestamp}>=? AND {timestamp}<?
                 AND {station_column} IS NOT NULL GROUP BY 1
-                ORDER BY n DESC,key LIMIT 1""",
+                ORDER BY n DESC,bucket LIMIT 1""",
                 [start, end],
             ).fetchone()
             sample_peaks[dimension] = peak

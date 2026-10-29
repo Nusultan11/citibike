@@ -365,6 +365,15 @@ PostgreSQL/HTTP/HTML smoke; fixtures не служат доказательст�
 проверяется измерениями, без заявления SLA. Raw данные, Parquet и `.env` в Git
 не включаются; компактные результаты находятся в `docs/evidence/`.
 
+Результаты реального F3: [validation и performance](docs/evidence/f3-performance.md),
+[Silver/API/HTML](docs/evidence/f3-analytics.json),
+[30-sample benchmark](docs/evidence/f3-performance.json),
+[browser QA](docs/evidence/f3-ui.json). В default NYC окне — 92076054 поездки;
+513 accepted starts до окна учитываются отдельно. Полный PostgreSQL с retained
+partitions и индексами занимает около 94.9 GB; Gold Parquet — 1.87 GB, route cube —
+0.106 GB. Измеренный p95 месячного route query с одним category filter — 2413.46ms;
+цель 300ms для него не достигнута. Cold isolated OS cache — NOT VERIFIED.
+
 ## Источник и границы
 
 [Citi Bike System Data](https://citibikenyc.com/system-data) и

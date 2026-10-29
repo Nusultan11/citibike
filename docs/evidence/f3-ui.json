@@ -1,0 +1,53 @@
+{
+  "verified_at": "2026-10-29T09:16:15.884996+00:00",
+  "method": "Manual browser automation via CUA against local Docker production build; actual real_official F3 publication",
+  "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+  "url": "http://127.0.0.1:3000/analytics",
+  "full_period": {
+    "completed_published_rides": 92076054,
+    "route_groups": 2088923,
+    "route_state": "ok",
+    "canvas_count": 1
+  },
+  "form_filter": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-05-01",
+    "station_id": "6140.05",
+    "rides": 14539,
+    "arrivals": 14565
+  },
+  "route_drilldown": {
+    "from_station": "6140.05",
+    "to_station": "6266.06",
+    "route_count": 482,
+    "displayed_pairs": 1,
+    "total_pairs": 1,
+    "kpi_retains_origin_population": 14539
+  },
+  "mobile": {
+    "requested_width": 390,
+    "requested_height": 844,
+    "document_client_width": 375,
+    "document_scroll_width": 375,
+    "overflow": false
+  },
+  "desktop": {
+    "requested_width": 1366,
+    "requested_height": 900,
+    "document_client_width": 1351,
+    "document_scroll_width": 1351,
+    "overflow": false
+  },
+  "states": {
+    "loading": "Observed during form navigation",
+    "empty": "NO_SUCH_STATION_F3_QA -> Нет опубликованных наблюдений; no invented zero",
+    "error": "2026-06-01 to 2026-05-01 -> visible period filter error",
+    "gbfs": "Separate observed window with insufficient coverage, stale, ratios N/A"
+  },
+  "console_errors": [],
+  "screenshots": {
+    ".cache\\f3-real-desktop.png": "2b56cf335371f019d2e4f885506d38cbd77c26e2c9fa585b2e8b4ec5059c0474",
+    ".cache\\f3-real-preview.png": "41b93c6cbae1c9fb4c3723c4eccc21b4f1438b8bba321adc36e1308760926121"
+  },
+  "cleanup": "Viewport override reset; real full-period tab marked deliverable"
+}
