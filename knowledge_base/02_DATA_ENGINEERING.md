@@ -51,21 +51,14 @@ GROUP BY 1;
 
 Делать разбор «какие записи пострадали» и долей, а не только абсолютных чисел. Для проблемы выводить `evidence → downstream impact → решение → автотест`.
 
-## 4. EDA для гипотез и ML
-
-- Начни с распределений `station × hour`: нулевые/редкие события, асимметрия, хвосты и пики; отдельно измерь неизвестные часы. Не подгоняй правила очистки под красивую гистограмму.
-- Сравни одинаковые часы/дни недели между месяцами и сезонами; проверь сдвиг по станциям, типам и изменениям состава сети. Покажи числитель, знаменатель и размер групп.
-- Для каждой гипотезы сохрани запрос/агрегат, результат, ограничения и следующий тест или feature ablation. Исследовательские графики — над агрегатами, точные контрольные счётчики — по полному источнику.
-- Перед ML измерь долю доступных station-hour labels, неизвестные нули, выборочный bias и доступность признаков на origin. Не переноси статистики или будущие версии станций назад во времени.
-
-## 5. Версионирование и пересчёт
+## 4. Версионирование и пересчёт
 
 - Manifest `{source_key, version, checksum, received_at, state}`; pipeline version и список затронутых партиций.
 - При изменении старого архива пересчитать зависимые Silver/Gold-периоды, а не только текущий день.
 - Писать результаты сначала в staging; сравнить количество строк, ключи и суммы метрик, потом атомарно переключить read pointer.
 - Хранить rejected/quarantine с причинами; решение «удалить» должно быть обратимым от raw.
 
-## 6. Скорость: checklist
+## 5. Скорость: checklist
 
 1. Сначала benchmark: wall time, peak RSS, bytes scanned, выходной размер, rows/sec.
 2. Projection/filter pushdown и lazy scanning; chunk/stream когда поддерживается.
@@ -80,7 +73,6 @@ GROUP BY 1;
 - Polars parquet — https://docs.pola.rs/user-guide/io/parquet/
 - DuckDB Parquet overview — https://duckdb.org/docs/stable/data/parquet/overview
 - DuckDB Performance Guide — https://duckdb.org/docs/stable/guides/performance/overview
-- DuckDB workload tuning (spill, threads, profiling) — https://duckdb.org/docs/current/guides/performance/how_to_tune_workloads
 - Apache Parquet — https://parquet.apache.org/docs/
 - Arrow — https://arrow.apache.org/docs/python/
 - Pandera validation — https://pandera.readthedocs.io/en/stable/
