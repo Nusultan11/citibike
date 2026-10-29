@@ -132,15 +132,15 @@ ERA5 city-grid reanalysis — только outcome labels ПОСЛЕ prediction,
 
 Silver label oracle: 1046111 nonzero groups, 4708937 events, 0 mismatches/0 lost-positive groups. Независимые range joins: 128 feature samples, 0 mismatches. Stdlib metric oracle пересчитал 1082284 validation + 447730 final prediction rows: 0 metric mismatches/0 PIT fold violations; residuals/calendar и одинаковые populations проверены.
 
-Real strict batch `6de557fca70088054b3a27a6cb2fe143a5f4be0970f46f78d5938593775bb445`: origin `2026-10-29T11:19:03.380944+00:00`, issued `2026-10-29T11:19:09.402804+00:00`, data_as_of `2026-10-01T04:00:00+00:00` = source event window end. 64×24×2 = 3072 rows: 3024 finite nonnegative + 48 unavailable (одна stale-history station). Feature/source/model/dataset versions и availability проверены; unavailable не замаскирован нулём. Полная сверка artifact→PG→HTTP: 3072/3072/3072, 0 mismatches. Повтор publish сохраняет ID; в disposable PostgreSQL проверены COPY/activation failure, идемпотентность, retained version pin и rollback. CHECK NULL defect воспроизведён и исправлен новой migration005 без изменения применённой004. API runtime не содержит ML libraries.
+Real strict batch `1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810`: origin `2026-10-29T11:46:44.472185+00:00`, issued `2026-10-29T11:46:50.027325+00:00`, data_as_of `2026-10-01T04:00:00+00:00` = source event window end. 64×24×2 = 3072 rows: 3024 finite nonnegative + 48 unavailable (одна stale-history station). Feature/source/model/dataset versions и availability проверены; unavailable не замаскирован нулём. Полная сверка artifact→PG→HTTP: 3072/3072/3072, 0 mismatches. Повтор publish сохраняет ID; в disposable PostgreSQL проверены COPY/activation failure, идемпотентность, retained version pin и rollback. CHECK NULL defect воспроизведён и исправлен новой migration005 без изменения применённой004. API runtime не содержит ML libraries.
 
 | Phase | Wall/elapsed s | OS peak RSS bytes |
 | --- | --- | --- |
 | dataset | 90.0630 | 1461096448 |
 | validation | 971.5000 | 590106624 |
 | final_test | 247.7340 | 518615040 |
-| inference | 6.0470 | 201498624 |
+| inference | 5.5630 | 199872512 |
 
-Полный CLI predict+publish на втором acceptance batch: **8.2651219s** (первый batch 11.7243199s). Замер включает запуск двух CLI, не training/backtest. Оба <300s для данного cohort; это не citywide SLA. RSS — process high-water measurement, не изолированная estimator memory. Shared host / sequential runs, concurrent-load SLA — NOT VERIFIED.
+Полный CLI predict+publish на финальном batch из прошедшего CI code SHA `1c5d5d753bf4c817728aa9e8c8b8e691fda8871b`: **7.7726736s** (предыдущие batches 11.7243199s и 8.2651219s). Замер включает запуск двух CLI, не training/backtest. Оба <300s для данного cohort; это не citywide SLA. RSS — process high-water measurement, не изолированная estimator memory. Shared host / sequential runs, concurrent-load SLA — NOT VERIFIED.
 
 Fresh F1 raw→UI regression: [f4-f1-regression.json](f4-f1-regression.json), все 8 stage values 3860371. Final local tests **92 passed**, один существующий StarletteDeprecationWarning; Ruff/format/mypy (92 files), locked sync, package build, frontend npm ci/lint/typecheck/build, Docker/HTTP проходят. Фактические SHA и CI фиксируются в ROADMAP §6 после push. MLflow Registry automation — F7; здесь immutable local manifests, не Registry. Prediction intervals не заявлены; F5–F8 не реализуются.

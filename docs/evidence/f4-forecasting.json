@@ -1,6 +1,6 @@
 {
   "version": "f4.0.0",
-  "verified_at": "2026-10-29T11:34:31.212567+00:00",
+  "verified_at": "2026-10-29T11:47:44.091781+00:00",
   "data_mode": "real_official",
   "availability_mode": "approximate retrospective",
   "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
@@ -29011,7 +29011,7 @@
   },
   "inference": {
     "kind": "forecast",
-    "publication_id": "6de557fca70088054b3a27a6cb2fe143a5f4be0970f46f78d5938593775bb445",
+    "publication_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
     "model_bundle_id": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
     "model_bundle_path": "data\\f4\\models\\7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
     "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
@@ -29020,8 +29020,8 @@
     "station_version": "fc6e0ae662585dea20f458c2486169082066a59dd4a3c6a33134ca0a2c282fb1",
     "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
     "gold_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
-    "forecast_origin_utc": "2026-10-29T11:19:03.380944+00:00",
-    "issued_at": "2026-10-29T11:19:09.402804+00:00",
+    "forecast_origin_utc": "2026-10-29T11:46:44.472185+00:00",
+    "issued_at": "2026-10-29T11:46:50.027325+00:00",
     "data_as_of": "2026-10-01T04:00:00+00:00",
     "data_as_of_kind": "source event window end",
     "strict_source_available_at": "2026-10-29T10:45:50.260539+00:00",
@@ -29101,19 +29101,19 @@
     "accuracy_evidence_mode": "approximate retrospective",
     "freshness": {
       "max_source_age_days": 62,
-      "source_age_days": 28.30490024240741
+      "source_age_days": 28.324125835474536
     },
     "limitations": "Published observed trip counts; no weather/GBFS; station operating status unknown; no prediction intervals; retrospective accuracy not operational uplift",
     "measurements": {
-      "elapsed_seconds": 6.046999999991385,
-      "peak_rss_bytes": 201498624
+      "elapsed_seconds": 5.562999999994645,
+      "peak_rss_bytes": 199872512
     },
-    "id": "6de557fca70088054b3a27a6cb2fe143a5f4be0970f46f78d5938593775bb445",
+    "id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
     "version": "f4.0.0",
-    "created_at": "2026-10-29T11:19:09.402804+00:00",
+    "created_at": "2026-10-29T11:46:50.027325+00:00",
     "checksums": {
-      "forecasts.json": "0908c06bf73aa1de050cc19396954bb92087025cf31b2430d3e67c59f0d47f4a",
-      "forecasts.parquet": "cd048b5b88a6ccc3e47d8452cd05d0a850c16ac4370f0ef92a198c481f8e7dd0"
+      "forecasts.json": "90b25fa68a5280af7c7d3b0c45837438bf362970225cb1b6d4da2bccac16742a",
+      "forecasts.parquet": "a7974195f3677284c227f2ad103f9726d33bf2398f8f0d71954e57f43a8351a2"
     }
   },
   "environment": {
@@ -29138,8 +29138,8 @@
       "peak_rss_bytes": 518615040
     },
     "inference": {
-      "elapsed_seconds": 6.046999999991385,
-      "peak_rss_bytes": 201498624
+      "elapsed_seconds": 5.562999999994645,
+      "peak_rss_bytes": 199872512
     }
   },
   "evaluation_weather": {
@@ -29666,7 +29666,7 @@
   "weather_use": "ERA5 outcomes only after prediction; never feature input",
   "registry": "Immutable local manifests; MLflow Registry automation deferred to F7",
   "serving": {
-    "publication_id": "6de557fca70088054b3a27a6cb2fe143a5f4be0970f46f78d5938593775bb445",
+    "publication_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
     "postgres_rows": 3072,
     "http_rows": 3072,
     "mismatches": 0
