@@ -288,15 +288,16 @@ forecast/analytics smoke и F1 outage/recovery. Полная история и r
 
 | Требование | Фактическое состояние и последствие |
 |---|---|
-| Исследовательский EDA / ML-readiness, DATA_CONTRACTS §5 | `IMPLEMENTED`: quality profiles, seasonal aggregates, eligibility/cohort и missing-label counts. `NOT VERIFIED`: полный набор воспроизводимых гипотез, station churn, zero/error и distribution-shift исследований новой редакции; прежний F2 DoD их не подтверждает |
+| Исследовательский EDA / ML-readiness, DATA_CONTRACTS §5 | `VERIFIED` на 24 реальных месяцах: семь протоколов гипотез, zero/missing/rare/peak station-hours, churn/сезонность/география/TV shifts, lineage и coverage cohort64; [расчёты и ограничения](docs/evidence/f2-analysis.md). Первая историческая публикация архивов UNKNOWN; operational readiness не доказана. Model error slices/ablation относятся к корректирующей приёмке F4 |
 | Feature-group ablation, ML_SPEC §§3–5 | `PLANNED`: adapters используют фиксированный CATALOG, отдельных ablation runs на одинаковых folds нет; вклад групп не доказан |
 | Bounded search и все trials, ML_SPEC §4 | `IMPLEMENTED`: default + один bounded config/алгоритм, seed/folds/train limits, successful runs и warnings. `NOT VERIFIED`: полный заранее фиксированный search/stop protocol и журнал failed trials; ошибка прерывает evaluate до итогового manifest |
 | Operational champion, ML_SPEC §5 | `NOT VERIFIED`: forward/shadow evaluation отсутствует. Local champion manifests выбирают baseline, это fallback без доказанного operational uplift; strict current input gate не заменяет forward evaluation |
 | MLflow lifecycle, ML_SPEC §7 | `PLANNED` для F7: local manifests не MLflow Registry; требование не отменено |
 | Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F5–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
 
-Эти ограничения должны участвовать в независимой приёмке F4 и проверке входов
-перед F5. Исправление реализации и новые эксперименты не входят в синхронизацию.
+Эти ограничения должны участвовать в корректирующей независимой приёмке F4
+после закрытия F2 и в проверке входов перед F5. Коррекция F2 не меняет модели,
+frozen selection или final-test и не закрывает оставшиеся требования F4.
 
 ## Требования и продолжение разработки
 
@@ -312,8 +313,8 @@ forecast/analytics smoke и F1 outage/recovery. Полная история и r
 Процесс по [AGENTS.md](AGENTS.md) и [bikeflow-step](.agents/skills/bikeflow-step/SKILL.md):
 **один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
 приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
-допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая
-приёмка F4 с учётом новых требований и перечисленных пробелов. F5 начинается
+допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — корректирующая
+приёмка F4 после полного закрытия F2 с учётом оставшихся пробелов. F5 начинается
 только после приёмки и проверки зависимостей ROADMAP; автоматически не переходить.
 
 [Citi Bike System Data](https://citibikenyc.com/system-data),

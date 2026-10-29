@@ -9,6 +9,7 @@ from citibike.processing.historical import prepare
 from citibike.processing.schemas import detect
 from citibike.processing.trips import process, verify_artifacts
 from citibike.quality.history_report import station_join_counts
+from citibike.quality.profiling import label_grid
 from citibike.storage import read_json, write_json
 from tests.fixtures import ride, write_zip
 
@@ -173,3 +174,72 @@ def test_station_join_cardinality_and_no_historical_backfill() -> None:
             '2026-10-28 10:00:00+00','2026-10-28 10:30:00+00')""")
         with pytest.raises(ValueError, match="join explosion"):
             station_join_counts(db)
+
+
+def test_research_zero_missing_source_gap_and_duplicate_join() -> None:
+    with duckdb.connect() as db:
+        db.execute("SET TimeZone='UTC'")
+        db.execute("""CREATE TABLE stations(station_id VARCHAR);
+            INSERT INTO stations VALUES ('001'),('unknown');
+            CREATE TABLE events(station_id VARCHAR,hour_utc TIMESTAMPTZ,
+                prediction_type VARCHAR,n BIGINT);
+            INSERT INTO events VALUES
+                ('001','2026-01-01 00:00:00+00','departures',2),
+                ('001','2026-01-01 04:00:00+00','arrivals',1),
+                (NULL,'2026-01-01 01:00:00+00','departures',1),
+                (NULL,'2026-01-01 02:00:00+00','arrivals',1)""")
+        label_grid(db, "2026-01-01T00:00:00+00:00", "2026-01-01T06:00:00+00:00")
+        assert db.execute("""SELECT actual,eligibility FROM grid
+            WHERE station_id='001' AND prediction_type='departures'
+            ORDER BY hour_utc""").fetchall() == [
+            (2, "eligible"),
+            (0, "eligible"),
+            (None, "source_gap"),
+            (None, "source_gap"),
+            (None, "source_gap"),
+            (None, "source_gap"),
+        ]
+        assert db.execute("""SELECT count(actual) FROM grid
+            WHERE station_id='unknown'""").fetchone() == (0,)
+        db.execute("INSERT INTO events SELECT * FROM events LIMIT 1")
+        with pytest.raises(ValueError, match="join explosion"):
+            label_grid(db, "2026-01-01T00:00:00+00:00", "2026-01-02T00:00:00+00:00")
+
+
+@pytest.mark.parametrize(
+    ("start", "end", "hours"),
+    [
+        ("2025-11-02T00:00:00-04:00", "2025-11-03T00:00:00-05:00", 25),
+        ("2025-03-09T00:00:00-05:00", "2025-03-10T00:00:00-04:00", 23),
+    ],
+)
+def test_research_dst_utc_exposure(start: str, end: str, hours: int) -> None:
+    with duckdb.connect() as db:
+        db.execute("""CREATE TABLE stations AS SELECT '001' station_id;
+            CREATE TABLE events(station_id VARCHAR,hour_utc TIMESTAMPTZ,
+                prediction_type VARCHAR,n BIGINT)""")
+        label_grid(db, start, end)
+        assert db.execute("SELECT count(*),count(actual) FROM grid").fetchone() == (
+            hours * 2,
+            0,
+        )
+        assert db.execute(
+            """SELECT count(DISTINCT hour_utc) FROM grid"""
+        ).fetchone() == (hours,)
+
+
+def test_research_seven_day_boundary_and_missing_station_hour() -> None:
+    with duckdb.connect() as db:
+        db.execute("""CREATE TABLE stations AS SELECT '001' station_id;
+            CREATE TABLE events(station_id VARCHAR,hour_utc TIMESTAMPTZ,
+                prediction_type VARCHAR,n BIGINT);
+            INSERT INTO events VALUES
+                ('001','2026-01-01 00:00:00+00','departures',1),
+                ('001','2026-01-15 00:00:00+00','arrivals',1),
+                (NULL,'2026-01-08 00:00:00+00','departures',1),
+                (NULL,'2026-01-08 01:00:00+00','departures',1)""")
+        label_grid(db, "2026-01-01T00:00:00+00:00", "2026-02-01T00:00:00+00:00")
+        assert db.execute("""SELECT actual,eligibility FROM grid WHERE
+            station_id='001' AND prediction_type='departures'
+            AND hour_utc BETWEEN '2026-01-08 00:00:00+00' AND '2026-01-08 01:00:00+00'
+            ORDER BY hour_utc""").fetchall() == [(0, "eligible"), (None, "station_gap")]

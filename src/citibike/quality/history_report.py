@@ -3,6 +3,7 @@
 import os
 import platform
 import shutil
+import time
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
@@ -12,6 +13,8 @@ import duckdb
 
 from citibike.ingestion.archive import checksum
 from citibike.ingestion.gbfs import GBFS_PIPELINE
+from citibike.processing.resources import peak_rss_bytes
+from citibike.quality.profiling import research
 from citibike.storage import read_json, write_json
 
 
@@ -151,8 +154,11 @@ def gbfs_evidence(root: Path) -> dict[str, Any]:
 def evidence(
     root: Path, inventory: Path, snapshot: Path, output: Path
 ) -> dict[str, Any]:
+    before = time.monotonic()
     inventory_report = read_json(inventory)
     manifest = read_json(snapshot / "manifest.json")
+    if inventory_report["window"] != manifest["window"]:
+        raise ValueError("Inventory/snapshot window mismatch")
     base_version = manifest.get("base_pipeline_version", manifest["pipeline_version"])
     periods = manifest["window"]
     monthly = []
@@ -414,10 +420,9 @@ def evidence(
         "runs": [read_json(p) for p in sorted((root / "f2/runs").glob("*.json"))],
         "weather": {"status": "unavailable", "rows": 0, "join_performed": False},
         "train_serve_availability": (
-            "No weather/forecast data or historical GBFS before "
-            "collection. Source Last-Modified can represent a "
-            "reissue; first-publication availability is unknown. F4 "
-            "not implemented."
+            "F2 has no weather/forecast or historical GBFS before collection. "
+            "F4 uses a separate retrospective delayed-source experiment. "
+            "Last-Modified/retrieved_at do not prove first-publication availability."
         ),
         "interpretation": (
             "Raw/canonical profiles precede cross-source exclusions;"
@@ -498,8 +503,331 @@ def evidence(
             "Parquet remain local and ignored by Git."
         ),
     }
+    report["research"] = research(snapshot, root / "f2/work/research-spill")
+    report["ml_readiness"] = cohort_readiness(root, snapshot, report["research"])
+    report["research_hypotheses"] = hypotheses(report["research"])
+    report["reproduction"] = {
+        "inventory_path": str(inventory),
+        "inventory_sha256": checksum(inventory),
+        "snapshot_path": str(snapshot),
+        "report_code_sha256": checksum(Path(__file__)),
+        "verified_at": datetime.now().astimezone().isoformat(),
+        "elapsed_seconds": round(time.monotonic() - before, 3),
+        "peak_rss_bytes": peak_rss_bytes(),
+        "scope": (
+            "Fresh report/SQL checks; original ingest/audit "
+            "measurements retain their original dates"
+        ),
+    }
     write_json(output, report)
     return report
+
+
+def cohort_readiness(
+    root: Path, snapshot: Path, analysis: dict[str, Any]
+) -> dict[str, Any]:
+    """Read existing F4 labels/cohort; never fit, select or mutate artifacts."""
+    pointer = root / "f4/active_datasets.json"
+    if not pointer.exists():
+        return {"status": "unavailable", "reason": "No F4 dataset in this data root"}
+    from citibike.forecasting.artifacts import checked
+
+    path = Path(read_json(pointer)["path"])
+    data = checked(path)
+    if (
+        data["source_snapshot_id"]
+        != read_json(snapshot / "manifest.json")["snapshot_id"]
+    ):
+        raise ValueError("F4 cohort belongs to a different F2 snapshot")
+    with duckdb.connect() as db:
+        db.execute("SET memory_limit='1GB'; SET threads=2; SET TimeZone='UTC'")
+        db.read_parquet(str(path / "dense.parquet")).create_view("dense")
+        db.execute("""CREATE VIEW labels AS SELECT station_id,hour_utc,
+            'departures' prediction_type,departures actual FROM dense UNION ALL
+            SELECT station_id,hour_utc,'arrivals',arrivals FROM dense""")
+        measured = db.execute("""SELECT count(DISTINCT station_id),
+            count(*) FILTER(WHERE actual=0),count(*) FILTER(WHERE actual IS NULL),
+            sum(actual) FILTER(WHERE prediction_type='departures'),
+            sum(actual) FILTER(WHERE prediction_type='arrivals'),
+            count(*)-count(DISTINCT(station_id,hour_utc,prediction_type))
+            FROM labels""").fetchone()
+        assert measured is not None
+        db.read_parquet(str(path / "examples.parquet")).create_view("examples")
+        example_counts = db.execute("""SELECT count(*) FILTER(WHERE actual=0),
+            count(*) FILTER(WHERE actual IS NULL) FROM examples""").fetchone()
+        if (
+            measured[0] != data["coverage"]["stations"]
+            or measured[5]
+            or example_counts != (data["zero_labels"], data["missing_labels"])
+        ):
+            raise ValueError("F4 label coverage/grain mismatch")
+        per_month = query_rows_local(
+            db,
+            """SELECT
+            strftime(timezone('America/New_York',hour_utc),'%Y-%m') period,
+            prediction_type,count(*) candidate_hours,count(actual) eligible_hours,
+            count(*) FILTER(WHERE actual=0) zero_hours,
+            count(*) FILTER(WHERE actual IS NULL) missing_hours,sum(actual) events
+            FROM labels GROUP BY 1,2 ORDER BY 1,2""",
+        )
+        per_station = query_rows_local(
+            db,
+            """SELECT station_id,prediction_type,
+            count(*) candidate_hours,count(actual) eligible_hours,
+            count(*) FILTER(WHERE actual IS NULL) missing_hours,sum(actual) events
+            FROM labels GROUP BY 1,2 ORDER BY 1,2""",
+        )
+        partitions = read_json(snapshot / "manifest.json")["partitions"]
+        db.read_parquet(
+            [str(Path(p["path"]) / "silver.parquet") for p in partitions]
+        ).create_view("trips")
+        direct = []
+        for kind, prefix, field in [
+            ("departures", "start", "started"),
+            ("arrivals", "end", "ended"),
+        ]:
+            direct += query_rows_local(
+                db,
+                f"""SELECT '{kind}' prediction_type,
+                count(*) cohort_events FROM trips WHERE {prefix}_station_id IN
+                    (SELECT DISTINCT station_id FROM labels)
+                AND {field}_at_utc>='{analysis["window_utc"][0]}'::TIMESTAMPTZ
+                AND {field}_at_utc<'{analysis["window_utc"][1]}'::TIMESTAMPTZ""",
+            )
+        for row in direct:
+            if (
+                row["cohort_events"]
+                != data["coverage"]["cohort_" + row["prediction_type"]]
+            ):
+                raise ValueError("Independent F4 cohort Silver count mismatch")
+    return {
+        "status": "verified",
+        "dataset_id": data["id"],
+        "manifest_sha256": checksum(path / "manifest.json"),
+        "checksums": data["checksums"],
+        "coverage": data["coverage"],
+        "independent_direct_silver": direct,
+        "monthly": per_month,
+        "stations": per_station,
+        "join_duplicate_keys": measured[5],
+        "dense_label_zero_hours": measured[1],
+        "dense_label_missing_hours": measured[2],
+        "examples_zero_rows": example_counts[0] if example_counts else None,
+        "examples_missing_rows": example_counts[1] if example_counts else None,
+        "availability_audit": data["availability_audit"],
+        "availability_mode": data["availability_mode"],
+        "limitation": (
+            "Cohort64 is bounded, not city representative; "
+            "historical publication times unknown; +45d is an "
+            "assumption, not verified production readiness. No "
+            "capacity/current coordinates/historical GBFS/actual "
+            "future weather features."
+        ),
+    }
+
+
+def query_rows_local(db: duckdb.DuckDBPyConnection, sql: str) -> list[dict[str, Any]]:
+    from citibike.quality.profiling import query_rows
+
+    return query_rows(db, sql)
+
+
+def hypotheses(r: dict[str, Any]) -> list[dict[str, Any]]:
+    """Explicit questions and supported descriptive conclusions, not causal tests."""
+    result = []
+    for name, question, population, calculation, value, limitation in [
+        (
+            "distribution",
+            "Are eligible station-hours sparse and long-tailed?",
+            "All observed IDs x UTC hour x target within 24 NY months",
+            (
+                "monthly/histograms: count zero, 1, 2-4, >=20; "
+                "quantile_cont on eligible labels"
+            ),
+            [
+                {
+                    "prediction_type": k,
+                    "eligible": sum(
+                        x["eligible_hours"]
+                        for x in r["monthly"]
+                        if x["prediction_type"] == k
+                    ),
+                    "zero": sum(
+                        x["zero_hours"]
+                        for x in r["monthly"]
+                        if x["prediction_type"] == k
+                    ),
+                    "single": sum(
+                        x["single_event_hours"]
+                        for x in r["monthly"]
+                        if x["prediction_type"] == k
+                    ),
+                    "missing": sum(
+                        x["source_gap_hours"] + x["station_gap_hours"]
+                        for x in r["monthly"]
+                        if x["prediction_type"] == k
+                    ),
+                }
+                for k in ("departures", "arrivals")
+            ],
+            (
+                "Zeros are published-event labels, not station "
+                "operating status or unmet demand; missing excluded "
+                "from quantiles"
+            ),
+        ),
+        (
+            "churn",
+            "Does observed ID composition change?",
+            "ID x event month, either target",
+            (
+                "station_month sets, first/last, adjacent set "
+                "difference/Jaccard; activity quantiles"
+            ),
+            {
+                "union_ids": r["station_universe"],
+                "stable_ids": r["stable_24_month_ids"],
+                "activity": r["heterogeneity"],
+            },
+            (
+                "First/last seen are window-censored; identity "
+                "reuse/moves cannot be resolved as installations"
+            ),
+        ),
+        (
+            "weekly",
+            "Do observed rates differ across local weekday/hour?",
+            (
+                "Eligible target station-hours, NY ISO weekday 1..7; "
+                "repeated DST hours both included"
+            ),
+            "sum(actual)/count(eligible hours), not unnormalised weekday totals",
+            [
+                max(
+                    (
+                        x
+                        for x in r["weekly"]
+                        if x["prediction_type"] == k and x["mean"] is not None
+                    ),
+                    key=lambda x: x["mean"],
+                    default={},
+                )
+                for k in ("departures", "arrivals")
+            ],
+            (
+                "Eligibility mix changes; descriptive associations "
+                "only, no commuter or weather causal claim"
+            ),
+        ),
+        (
+            "annual",
+            "Does seasonal rate variation persist in stable IDs?",
+            "24 event months; full universe and IDs observed in all months",
+            (
+                "monthly eligible mean + stable_mean; 12 year-on-year "
+                "pairs, no partial months"
+            ),
+            [
+                {
+                    "prediction_type": k,
+                    "lowest": min(
+                        (
+                            x
+                            for x in r["monthly"]
+                            if x["prediction_type"] == k and x["mean"] is not None
+                        ),
+                        key=lambda x: x["mean"],
+                        default={},
+                    ),
+                    "highest": max(
+                        (
+                            x
+                            for x in r["monthly"]
+                            if x["prediction_type"] == k and x["mean"] is not None
+                        ),
+                        key=lambda x: x["mean"],
+                        default={},
+                    ),
+                }
+                for k in ("departures", "arrivals")
+            ],
+            (
+                "Only two annual cycles, no trend/season separation; "
+                "stable cohort has hindsight survivorship and is "
+                "descriptive only"
+            ),
+        ),
+        (
+            "geography",
+            "Are endpoint event volumes spatially heterogeneous?",
+            "Canonical endpoint x 0.1 degree cell, both targets, event window",
+            (
+                "floor(endpoint latitude*10), floor(longitude*10); "
+                "broad box; unknown/outside explicit"
+            ),
+            {
+                "largest_cells": [
+                    next((x for x in r["geography"] if x["prediction_type"] == k), {})
+                    for k in ("departures", "arrivals")
+                ],
+                "coordinate_churn": r["coordinate_churn"],
+            },
+            (
+                "Unequal cell area/station exposure, not borough rates; "
+                "historical trip coordinates only, never current "
+                "GBFS/capacity; no causal spatial effect"
+            ),
+        ),
+        (
+            "outliers",
+            "Are extreme station-hours retained?",
+            "Positive observed ID x UTC hour x target",
+            "Tukey q3+1.5*IQR on positive hours; deterministic top20; daily extremes",
+            r["outliers"],
+            (
+                "Heavy-tailed counts are not automatically erroneous; "
+                "no clipping/exclusion; anomaly causes unverified"
+            ),
+        ),
+        (
+            "shift",
+            "Do count distributions shift across months and matched seasons?",
+            (
+                "Eligible station-hour histograms, full observed "
+                "universe; adjacent and year-on-year"
+            ),
+            (
+                "TV=0.5*sum(abs(bin_share_current-bin_share_previous)), "
+                "fixed 0/1/2-4/5-9/10-19/20+ bins"
+            ),
+            sorted(
+                (x for x in r["shifts"] if x["total_variation"] is not None),
+                key=lambda x: -x["total_variation"],
+            )[:8],
+            (
+                "Mix, season and source/eligibility gaps confounded; "
+                "descriptive effect size, no significance/causality or "
+                "model selection"
+            ),
+        ),
+    ]:
+        result.append(
+            {
+                "id": name,
+                "hypothesis": question,
+                "population_grain": population,
+                "calculation": calculation,
+                "result": value,
+                "limitations": limitation,
+                "verification": (
+                    "Independent raw-Silver event-month totals, Python "
+                    "label oracle; frozen fixture expected values and "
+                    "grain/coverage tests. Geography/churn/TV additionally "
+                    "checked by independent calculation in corrective run."
+                ),
+            }
+        )
+    return result
 
 
 def analytical_markdown(report: dict[str, Any], target: Path) -> None:
@@ -612,8 +940,8 @@ def analytical_markdown(report: dict[str, Any], target: Path) -> None:
         ),
         (
             "Weather отсутствует: соединение не выполнялось. "
-            "Прогнозы и ML training не реализованы; отсутствующая "
-            "train/serve availability остаётся неизвестной."
+            "F4 использует отдельные retrospective experiments и ERA5 outcome labels; "
+            "историческая публикационная availability остаётся неизвестной."
         ),
         "",
         "Измерения и ограничения",
@@ -643,5 +971,111 @@ def analytical_markdown(report: dict[str, Any], target: Path) -> None:
             else "Controlled fixtures: официальные feeds не запрашивались."
         ),
     ]
+    if "research" in report:
+        r = report["research"]
+        rows += [
+            "",
+            "## Исследовательский EDA / ML-readiness",
+            "",
+            f"Версия {r['version']}; effective Silver snapshot "
+            f"`{report['snapshot_id']}`. "
+            f"Event window NY: {report['window'][0]}…{report['window'][-1]}; "
+            f"{r['station_universe']} наблюдаемых IDs; "
+            f"{r['stable_24_month_ids']} во всех месяцах.",
+            "Grain: station ID × UTC hour × departures/arrivals. "
+            "IDs не равны установкам "
+            "или active_stations. Все доли и квантили используют явно eligible labels.",
+            "Ноль: городской source-hour наблюдён, station event любого типа не далее "
+            "7 дней до и после target в том же NY месяце. Будущее "
+            "bracketing применяется "
+            "только к оценке label; features его не получают. "
+            "Source gaps и длинные/краевые "
+            "station gaps остаются missing; отсутствие поездок не "
+            "доказывает закрытие станции.",
+            "",
+            (
+                "| Месяц | Target | Eligible / candidate | Zero | "
+                "Source gap | Station gap | Mean | Stable mean |"
+            ),
+            "|---|---|---:|---:|---:|---:|---:|---:|",
+        ]
+        for m in r["monthly"]:
+            rows.append(
+                f"| {m['period']} | {m['prediction_type']} | {m['eligible_hours']} / "
+                f"{m['candidate_hours']} | {m['zero_hours']} | "
+                f"{m['source_gap_hours']} | "
+                f"{m['station_gap_hours']} | {m['mean']} | {m['stable_mean']} |"
+            )
+        for h in report["research_hypotheses"]:
+            import json
+
+            rows += [
+                "",
+                f"### {h['id']}: {h['hypothesis']}",
+                "",
+                f"Population/grain: {h['population_grain']}.",
+                f"Расчёт: {h['calculation']}.",
+                "Результат: `"
+                + json.dumps(h["result"], ensure_ascii=False, default=str)
+                + "`.",
+                f"Ограничения: {h['limitations']}.",
+                f"Проверка: {h['verification']}.",
+            ]
+        rows += [
+            "",
+            "### Источники labels и ограничения ML",
+            "",
+            f"Прямой подсчёт targets из Silver: `{r['target_provenance']}`; "
+            f"события вне окна: `{r['out_of_window_events']}`.",
+            f"Независимых расхождений по event-month: {r['independent_mismatches']}; "
+            f"Python label oracle: `{r['label_oracle']}`; "
+            f"дубликаты label grain: {r['join_duplicate_keys']}.",
+            "Исключения по event month / station распределениям — "
+            "`research.station_exclusions`; "
+            "по source month — `monthly.dispositions`. Reason flags "
+            "пересекаются и не складываются. "
+            "Детальные churn/weekly/daily/geo/histograms/shifts и "
+            "исполнявшийся SQL — в существующем JSON.",
+            "F4 cohort read-only: `"
+            + str(
+                {
+                    k: v
+                    for k, v in report["ml_readiness"].items()
+                    if k
+                    in (
+                        "status",
+                        "dataset_id",
+                        "coverage",
+                        "dense_label_zero_hours",
+                        "dense_label_missing_hours",
+                        "join_duplicate_keys",
+                        "limitation",
+                    )
+                }
+            )
+            + "`.",
+            "Историческая первая публикация архивов UNKNOWN. "
+            "retrieved_at/Last-Modified не "
+            "доказывают доступность на прошлом origin; +45d — гипотеза F4. "
+            "Calendar известен заранее; actual weather — только "
+            "outcome diagnostics; historical "
+            "GBFS/capacity/availability не восстановлены из будущих "
+            "снимков. Strict operational "
+            "ML-readiness и причинные эффекты этим EDA не доказаны.",
+            f"Новый EDA run: `{r['measurements']}`; "
+            f"полный report: `{report['reproduction']}`.",
+            "Измерения wall/RSS — shared host, warm caches, OS "
+            "process high-water, не citywide SLA. "
+            "Исходные ingest/SQLite row audits выше сохраняют "
+            "прежние даты; в этой задаче "
+            "они checksum-bound, а не повторно исполненный CSV/SQLite проход.",
+            "",
+            "Воспроизведение (без download/build/train):",
+            "",
+            "```sh",
+            "uv run --locked --group ml python -m citibike.history verify --inventory "
+            + report["reproduction"]["inventory_path"].replace("\\", "/"),
+            "```",
+        ]
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(rows), encoding="utf-8")
