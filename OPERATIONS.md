@@ -28,17 +28,15 @@ Prefect управляет зависимостями, retries и статуса
 ## 3. Пирамида тестирования
 
 - **Unit:** типы, границы времени, DST, null vs zero, idempotency, формулы.
-- **Data contract/quality:** schema drift, пропуски, uniqueness, outliers, joins, reconciliation, публикационная задержка; воспроизводимые EDA-срезы и ML label coverage.
+- **Data contract/quality:** schema drift, пропуски, uniqueness, outliers, joins, reconciliation, публикационная задержка.
 - **Integration:** ZIP → Bronze → Silver → Gold, registry → inference → DB, DB → API; тестовая PostgreSQL в контейнере.
-- **ML:** leakage, time split, baseline, feature ablation, train/serve parity, метрики/ошибки по сегментам, происхождение labels, признаки доступны на origin, repeatability и блокировка повторного tuning на раскрытом test.
+- **ML:** leakage, time split, baseline, метрики и сегменты, признаки доступны на origin, repeatability.
 - **Optimization:** ограничения capacity, nonnegative transfer, no-action baseline, симуляционный сценарий.
 - **API/Frontend:** контракт JSON, фильтры, актуальность, корректный период, исключения, карта и mobile.
 - **E2E:** контрольный набор с известным истинным ответом проходит source → UI.
 - **Load/recovery/security:** p95/p99, memory, restart, restore backup, rollback, SQL injection, secrets, auth.
 
 **Независимый контроль:** проверить ключевой показатель отдельным расчётом по первичным данным, а не только тем же helper, что использует Gold. Сохранить evidence, команду запуска и артефакт теста.
-
-**Качество реализации:** небольшие модули с явными входами/выходами, типами и контрактами; не дублировать вычисления между notebook, pipeline, API и тестами. Изменения покрывать пограничными/регрессионными тестами; оптимизировать после профилирования, без ослабления проверок.
 
 ## 4. CI/CD gates
 
@@ -49,7 +47,7 @@ staging: migrations + smoke + selected E2E + performance smoke
 release: approval + versioned deploy + smoke + rollback route
 ```
 
-На PR запускать быстрые контракты, unit/ML fixtures и линтеры; тяжёлые EDA, Optuna и полный backtest — только при изменении данных/feature recipe, пересмотре модели или по расписанию. Результаты и неудачи сохранять как версионированные evidence, не запускать повторный поиск из API.
+Не запускать полный многолетний EDA на каждом PR. Полные проверки — после новых данных, миграций и перед ответственными релизами.
 
 ## 5. Мониторинг и инциденты
 
