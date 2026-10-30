@@ -1,0 +1,4092 @@
+{
+  "phase": "F5",
+  "status": "PARTIAL",
+  "generated_at": "2026-10-30T05:56:21.839767+00:00",
+  "base_commit": "ea6a4a50efe66413f74a3af7d9edc647f83a9e2c",
+  "independent_acceptance": "F2/F3/F4 accepted in user request; F5 pending",
+  "real_official": {
+    "status": "NOT VERIFIED real simulation E2E; real rejection gates VERIFIED",
+    "collections": [
+      {
+        "data_mode": "real_official",
+        "id": "9acad75b365fd0f7251b48edbecc2abdcff044759384c88f345671c1c9ec2849",
+        "path": "data\\f5\\results\\9acad75b365fd0f7251b48edbecc2abdcff044759384c88f345671c1c9ec2849",
+        "manifest_sha256": "39b91d9626f47743b3275ef57b93dd7fdff24857443f36e9ea12c14b4c732492",
+        "inputs_sha256": "664c894aa59b3cced4d91753d3e5684e39661eb702ae97523458915cf4b9f62a",
+        "as_of": "2026-10-30T05:36:43.811279+00:00",
+        "forecast_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+        "collection_id": "20261030T053639553419-cc295a0c",
+        "coverage": {
+          "requested": 64,
+          "eligible": 0,
+          "fraction": 0.0
+        },
+        "excluded_station_ids": [
+          "1234.56",
+          "3011.03",
+          "3129.08",
+          "3138.03",
+          "3280.04",
+          "3472.03",
+          "3671.01",
+          "3771.06",
+          "4051.01",
+          "4146.02",
+          "4348.07",
+          "4631.02",
+          "4812.02",
+          "5125.03",
+          "5140.06",
+          "5181.04",
+          "5308.04_",
+          "5489.06",
+          "5703.13",
+          "5731.03",
+          "5847.09",
+          "5872.08",
+          "5929.07",
+          "6072.16",
+          "6107.08",
+          "6137.04",
+          "6158.02",
+          "6191.06",
+          "6224.06",
+          "6230.02",
+          "6234.04",
+          "6346.07",
+          "6373.07",
+          "6438.05",
+          "6486.07",
+          "6505.01",
+          "6551.16",
+          "6611.07",
+          "6638.08",
+          "6753.08",
+          "6873.01",
+          "6877.05",
+          "6932.14",
+          "6970.02",
+          "7111.10",
+          "7186.15",
+          "7288.04",
+          "7504.18",
+          "7595.17",
+          "7606.01",
+          "7658.13",
+          "7737.06",
+          "7798.02",
+          "7910.10",
+          "8041.07",
+          "8099.04",
+          "8265.09",
+          "8268.08",
+          "8340.01",
+          "8474.02",
+          "8514.05",
+          "8631.03",
+          "8799.01",
+          "Shop Morgan"
+        ],
+        "exclusion_reason_counts": {
+          "missing_station_mapping": 4,
+          "gbfs_quality:stale_status": 60,
+          "stale_gbfs_station": 60,
+          "forecast_unavailable:0:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:0:departures:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:1:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:1:departures:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:2:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:2:departures:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:3:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:3:departures:station_history_stale; current operating status unknown": 1
+        },
+        "status": "unavailable",
+        "risk": null,
+        "reasons": [
+          "no_eligible_stations",
+          "stale_gbfs_station_status"
+        ],
+        "provenance": {
+          "forecast_path": "data\\f4\\forecasts\\1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+          "gbfs_path": "data\\f5\\live-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T053639553419-cc295a0c",
+          "data_mode": "real_official",
+          "forecast_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+          "forecast_manifest_sha256": "d7cc46145249c30e4592d622a1e071828d94906ece53a18b6fd8831547830cb1",
+          "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+          "model_bundle_id": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
+          "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+          "gold_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+          "accuracy_evidence_mode": "approximate retrospective",
+          "operational_promotion": "NOT VERIFIED; Seasonal Naive fallback only",
+          "published_at": "2026-10-29T11:46:51.393101+00:00",
+          "published_rows_sha256": "131fc6944713c399998b52741adf365abbd04559d3f6e95c249abb869a4ca358",
+          "gbfs_collection_id": "20261030T053639553419-cc295a0c",
+          "gbfs_quality_sha256": "8313baeb314ab471c56bc47f12d73a83b55460f0b46267dcd299954033879ab0",
+          "gbfs_silver_sha256": "cc1fee841f36c5507020c5a98fb14f689a0d2195b7410f6a357ab36aa62a81d6",
+          "gbfs_bronze_manifest_sha256": "cd7b0f5ea6463f39d62cc81a57b5163835e94a9375ee59527c95c18ed3e7956f",
+          "gbfs_feeds": {
+            "gbfs": {
+              "version": "2.3",
+              "last_updated": "2026-10-30T05:36:14+00:00",
+              "ttl": 60,
+              "source_age_seconds": 26.380653,
+              "stale": false,
+              "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+              "received_at_utc": "2026-10-30T05:36:40.380653+00:00",
+              "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+              "checksum": "f1038e8a4f419f0646646900e898e3598f70898576b19d4632162eeae7881813",
+              "bytes": 3589
+            },
+            "station_status": {
+              "version": "2.3",
+              "last_updated": "2026-10-30T05:35:17+00:00",
+              "ttl": 60,
+              "source_age_seconds": 86.156059,
+              "stale": true,
+              "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+              "received_at_utc": "2026-10-30T05:36:43.156059+00:00",
+              "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+              "checksum": "14b39a8af45cac09c3a10ffd7944a9038f11c3081d01c109edbf0acc2edd201b",
+              "bytes": 1079566
+            },
+            "station_information": {
+              "version": "2.3",
+              "last_updated": "2026-10-30T05:36:15+00:00",
+              "ttl": 60,
+              "source_age_seconds": 28.811279,
+              "stale": false,
+              "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+              "received_at_utc": "2026-10-30T05:36:43.811279+00:00",
+              "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+              "checksum": "a9739cebbec68934157226ca1fb41b0b05b5fdb574609fa366463ca53e8f740f",
+              "bytes": 801662
+            }
+          },
+          "station_mapping": "Unique same-collection GBFS short_name -> trip station_id; no fuzzy/current-to-historical backfill"
+        },
+        "command": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m citibike.risk run --forecast data\\f4\\forecasts\\1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810 --gbfs data\\f5\\live-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T053639553419-cc295a0c --as-of 2026-10-30T05:36:43.811279+00:00 --config data\\f5\\config.json",
+        "exit_code": 2,
+        "full_cli_seconds": 1.8596453999634832,
+        "measurements": {
+          "elapsed_seconds": 0.01803549996111542,
+          "peak_rss_bytes": 127746048
+        },
+        "oracle": {
+          "status": "PASS",
+          "real_e2e": "NOT VERIFIED",
+          "result_id": "9acad75b365fd0f7251b48edbecc2abdcff044759384c88f345671c1c9ec2849",
+          "input_gate": {
+            "status": "unavailable",
+            "reasons": [
+              "no_eligible_stations",
+              "stale_gbfs_station_status"
+            ],
+            "as_of": "2026-10-30T05:36:43.811279+00:00",
+            "start": "2026-10-30T06:00:00+00:00",
+            "end": "2026-10-30T10:00:00+00:00",
+            "coverage": {
+              "requested": 64,
+              "eligible": 0,
+              "fraction": 0.0,
+              "exclusions": {
+                "1234.56": [
+                  "missing_station_mapping"
+                ],
+                "3011.03": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3129.08": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3138.03": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3280.04": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3472.03": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3671.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3771.06": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4051.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4146.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4348.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4631.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4812.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5125.03": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5140.06": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5181.04": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5308.04_": [
+                  "missing_station_mapping"
+                ],
+                "5489.06": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5703.13": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5731.03": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5847.09": [
+                  "forecast_unavailable:0:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:0:departures:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:1:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:1:departures:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:2:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:2:departures:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:3:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:3:departures:station_history_stale; current operating status unknown",
+                  "missing_station_mapping"
+                ],
+                "5872.08": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5929.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6072.16": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6107.08": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6137.04": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6158.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6191.06": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6224.06": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6230.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6234.04": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6346.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6373.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6438.05": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6486.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6505.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6551.16": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6611.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6638.08": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6753.08": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6873.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6877.05": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6932.14": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6970.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7111.10": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7186.15": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7288.04": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7504.18": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7595.17": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7606.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7658.13": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7737.06": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7798.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7910.10": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8041.07": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8099.04": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8265.09": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8268.08": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8340.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8474.02": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8514.05": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8631.03": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8799.01": [
+                  "gbfs_quality:stale_status",
+                  "stale_gbfs_station"
+                ],
+                "Shop Morgan": [
+                  "missing_station_mapping"
+                ]
+              }
+            },
+            "provenance": {
+              "forecast_path": "data\\f4\\forecasts\\1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+              "gbfs_path": "data\\f5\\live-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T053639553419-cc295a0c",
+              "data_mode": "real_official",
+              "forecast_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+              "forecast_manifest_sha256": "d7cc46145249c30e4592d622a1e071828d94906ece53a18b6fd8831547830cb1",
+              "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+              "model_bundle_id": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
+              "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+              "gold_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+              "accuracy_evidence_mode": "approximate retrospective",
+              "operational_promotion": "NOT VERIFIED; Seasonal Naive fallback only",
+              "published_at": "2026-10-29T11:46:51.393101+00:00",
+              "published_rows_sha256": "131fc6944713c399998b52741adf365abbd04559d3f6e95c249abb869a4ca358",
+              "gbfs_collection_id": "20261030T053639553419-cc295a0c",
+              "gbfs_quality_sha256": "8313baeb314ab471c56bc47f12d73a83b55460f0b46267dcd299954033879ab0",
+              "gbfs_silver_sha256": "cc1fee841f36c5507020c5a98fb14f689a0d2195b7410f6a357ab36aa62a81d6",
+              "gbfs_bronze_manifest_sha256": "cd7b0f5ea6463f39d62cc81a57b5163835e94a9375ee59527c95c18ed3e7956f",
+              "gbfs_feeds": {
+                "gbfs": {
+                  "version": "2.3",
+                  "last_updated": "2026-10-30T05:36:14+00:00",
+                  "ttl": 60,
+                  "source_age_seconds": 26.380653,
+                  "stale": false,
+                  "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+                  "received_at_utc": "2026-10-30T05:36:40.380653+00:00",
+                  "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+                  "checksum": "f1038e8a4f419f0646646900e898e3598f70898576b19d4632162eeae7881813",
+                  "bytes": 3589
+                },
+                "station_status": {
+                  "version": "2.3",
+                  "last_updated": "2026-10-30T05:35:17+00:00",
+                  "ttl": 60,
+                  "source_age_seconds": 86.156059,
+                  "stale": true,
+                  "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+                  "received_at_utc": "2026-10-30T05:36:43.156059+00:00",
+                  "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+                  "checksum": "14b39a8af45cac09c3a10ffd7944a9038f11c3081d01c109edbf0acc2edd201b",
+                  "bytes": 1079566
+                },
+                "station_information": {
+                  "version": "2.3",
+                  "last_updated": "2026-10-30T05:36:15+00:00",
+                  "ttl": 60,
+                  "source_age_seconds": 28.811279,
+                  "stale": false,
+                  "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+                  "received_at_utc": "2026-10-30T05:36:43.811279+00:00",
+                  "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+                  "checksum": "a9739cebbec68934157226ca1fb41b0b05b5fdb574609fa366463ca53e8f740f",
+                  "bytes": 801662
+                }
+              },
+              "station_mapping": "Unique same-collection GBFS short_name -> trip station_id; no fuzzy/current-to-historical backfill"
+            },
+            "risk": null
+          },
+          "paired_draws": 0,
+          "outcomes": 0,
+          "reason": "Unavailable input is preserved, not simulated zero risk",
+          "source_audit": {
+            "feeds": {
+              "station_information": {
+                "source_age_at_asof_seconds": 28.811279,
+                "ttl": 60,
+                "expiry": "2026-10-30T05:37:15+00:00",
+                "received_at": "2026-10-30T05:36:43.811279+00:00",
+                "raw_sha256": "a9739cebbec68934157226ca1fb41b0b05b5fdb574609fa366463ca53e8f740f"
+              },
+              "station_status": {
+                "source_age_at_asof_seconds": 86.811279,
+                "ttl": 60,
+                "expiry": "2026-10-30T05:36:17+00:00",
+                "received_at": "2026-10-30T05:36:43.156059+00:00",
+                "raw_sha256": "14b39a8af45cac09c3a10ffd7944a9038f11c3081d01c109edbf0acc2edd201b"
+              }
+            },
+            "computed_feed_rejections": [
+              "stale_gbfs_station_status"
+            ],
+            "raw_state_stations_checked": 0,
+            "forecast_published_at": "2026-10-29T11:46:51.393101+00:00"
+          },
+          "elapsed_seconds": 0.022663399984594434,
+          "verifier_sha256": "c4362cfd22cdb0551eef8461a0953e18f1d7e3b1913f804b7158bf7837cc055d"
+        }
+      },
+      {
+        "data_mode": "real_official",
+        "id": "46351f008f9c887d523ae430ab90d6a84084c5d06e58c92e7e540b8d81f30100",
+        "path": "data\\f5\\results\\46351f008f9c887d523ae430ab90d6a84084c5d06e58c92e7e540b8d81f30100",
+        "manifest_sha256": "bdc885753b2fb156c9dc4ceb80f167534b3bc9d266b383118e1c8b94eff10474",
+        "inputs_sha256": "ff2f2a94256d590ee462c260ddd88222e8f869b3b82a593d33ecd3dde6ca5e66",
+        "as_of": "2026-10-30T05:38:38.386706+00:00",
+        "forecast_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+        "collection_id": "20261030T053836644030-f8d09555",
+        "coverage": {
+          "requested": 64,
+          "eligible": 0,
+          "fraction": 0.0
+        },
+        "excluded_station_ids": [
+          "1234.56",
+          "3011.03",
+          "3129.08",
+          "3138.03",
+          "3280.04",
+          "3472.03",
+          "3671.01",
+          "3771.06",
+          "4051.01",
+          "4146.02",
+          "4348.07",
+          "4631.02",
+          "4812.02",
+          "5125.03",
+          "5140.06",
+          "5181.04",
+          "5308.04_",
+          "5489.06",
+          "5703.13",
+          "5731.03",
+          "5847.09",
+          "5872.08",
+          "5929.07",
+          "6072.16",
+          "6107.08",
+          "6137.04",
+          "6158.02",
+          "6191.06",
+          "6224.06",
+          "6230.02",
+          "6234.04",
+          "6346.07",
+          "6373.07",
+          "6438.05",
+          "6486.07",
+          "6505.01",
+          "6551.16",
+          "6611.07",
+          "6638.08",
+          "6753.08",
+          "6873.01",
+          "6877.05",
+          "6932.14",
+          "6970.02",
+          "7111.10",
+          "7186.15",
+          "7288.04",
+          "7504.18",
+          "7595.17",
+          "7606.01",
+          "7658.13",
+          "7737.06",
+          "7798.02",
+          "7910.10",
+          "8041.07",
+          "8099.04",
+          "8265.09",
+          "8268.08",
+          "8340.01",
+          "8474.02",
+          "8514.05",
+          "8631.03",
+          "8799.01",
+          "Shop Morgan"
+        ],
+        "exclusion_reason_counts": {
+          "missing_station_mapping": 4,
+          "gbfs_quality:stale_information,stale_status": 60,
+          "stale_gbfs_station": 60,
+          "forecast_unavailable:0:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:0:departures:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:1:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:1:departures:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:2:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:2:departures:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:3:arrivals:station_history_stale; current operating status unknown": 1,
+          "forecast_unavailable:3:departures:station_history_stale; current operating status unknown": 1
+        },
+        "status": "unavailable",
+        "risk": null,
+        "reasons": [
+          "no_eligible_stations",
+          "stale_gbfs_station_information",
+          "stale_gbfs_station_status"
+        ],
+        "provenance": {
+          "forecast_path": "data\\f4\\forecasts\\1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+          "gbfs_path": "data\\f5\\live-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T053836644030-f8d09555",
+          "data_mode": "real_official",
+          "forecast_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+          "forecast_manifest_sha256": "d7cc46145249c30e4592d622a1e071828d94906ece53a18b6fd8831547830cb1",
+          "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+          "model_bundle_id": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
+          "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+          "gold_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+          "accuracy_evidence_mode": "approximate retrospective",
+          "operational_promotion": "NOT VERIFIED; Seasonal Naive fallback only",
+          "published_at": "2026-10-29T11:46:51.393101+00:00",
+          "published_rows_sha256": "131fc6944713c399998b52741adf365abbd04559d3f6e95c249abb869a4ca358",
+          "gbfs_collection_id": "20261030T053836644030-f8d09555",
+          "gbfs_quality_sha256": "fe229c6214ca5d80f2b5444ee276f51941c86b16663d23497ab89716a3c958e0",
+          "gbfs_silver_sha256": "d9f9172c077bc79ba7b260f4538c32e1b1d8061b029b7b0ec15478194730fe18",
+          "gbfs_bronze_manifest_sha256": "0625a2fd414f1659b718b9d5ee146449a1692ced0527b7a702ca0b00eb133839",
+          "gbfs_feeds": {
+            "gbfs": {
+              "version": "2.3",
+              "last_updated": "2026-10-30T05:38:14+00:00",
+              "ttl": 60,
+              "source_age_seconds": 23.471361,
+              "stale": false,
+              "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+              "received_at_utc": "2026-10-30T05:38:37.471361+00:00",
+              "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+              "checksum": "34315c12f350638788fa747f19f60ba8bcccc010a97860f9229f0c46eb95dc1d",
+              "bytes": 3589
+            },
+            "station_status": {
+              "version": "2.3",
+              "last_updated": "2026-10-30T05:37:17+00:00",
+              "ttl": 60,
+              "source_age_seconds": 81.234725,
+              "stale": true,
+              "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+              "received_at_utc": "2026-10-30T05:38:38.234725+00:00",
+              "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+              "checksum": "b73e7ca76de568af3dd612a1379447184fbe450787e1ded41bd6d63593b159e3",
+              "bytes": 1079567
+            },
+            "station_information": {
+              "version": "2.3",
+              "last_updated": "2026-10-30T05:37:15+00:00",
+              "ttl": 60,
+              "source_age_seconds": 83.386706,
+              "stale": true,
+              "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+              "received_at_utc": "2026-10-30T05:38:38.386706+00:00",
+              "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+              "checksum": "fa78826f717909bc1281502b75d2461941882e762d06db437ef854aef3e057bf",
+              "bytes": 801662
+            }
+          },
+          "station_mapping": "Unique same-collection GBFS short_name -> trip station_id; no fuzzy/current-to-historical backfill"
+        },
+        "command": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m citibike.risk run --forecast data\\f4\\forecasts\\1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810 --gbfs data\\f5\\live-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T053836644030-f8d09555 --as-of 2026-10-30T05:38:38.386706+00:00 --config data\\f5\\config.json",
+        "exit_code": 2,
+        "full_cli_seconds": 1.9651621999801137,
+        "measurements": {
+          "elapsed_seconds": 0.016918100009206682,
+          "peak_rss_bytes": 126922752
+        },
+        "oracle": {
+          "status": "PASS",
+          "real_e2e": "NOT VERIFIED",
+          "result_id": "46351f008f9c887d523ae430ab90d6a84084c5d06e58c92e7e540b8d81f30100",
+          "input_gate": {
+            "status": "unavailable",
+            "reasons": [
+              "no_eligible_stations",
+              "stale_gbfs_station_information",
+              "stale_gbfs_station_status"
+            ],
+            "as_of": "2026-10-30T05:38:38.386706+00:00",
+            "start": "2026-10-30T06:00:00+00:00",
+            "end": "2026-10-30T10:00:00+00:00",
+            "coverage": {
+              "requested": 64,
+              "eligible": 0,
+              "fraction": 0.0,
+              "exclusions": {
+                "1234.56": [
+                  "missing_station_mapping"
+                ],
+                "3011.03": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3129.08": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3138.03": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3280.04": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3472.03": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3671.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "3771.06": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4051.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4146.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4348.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4631.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "4812.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5125.03": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5140.06": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5181.04": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5308.04_": [
+                  "missing_station_mapping"
+                ],
+                "5489.06": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5703.13": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5731.03": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5847.09": [
+                  "forecast_unavailable:0:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:0:departures:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:1:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:1:departures:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:2:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:2:departures:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:3:arrivals:station_history_stale; current operating status unknown",
+                  "forecast_unavailable:3:departures:station_history_stale; current operating status unknown",
+                  "missing_station_mapping"
+                ],
+                "5872.08": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "5929.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6072.16": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6107.08": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6137.04": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6158.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6191.06": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6224.06": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6230.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6234.04": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6346.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6373.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6438.05": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6486.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6505.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6551.16": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6611.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6638.08": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6753.08": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6873.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6877.05": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6932.14": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "6970.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7111.10": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7186.15": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7288.04": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7504.18": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7595.17": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7606.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7658.13": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7737.06": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7798.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "7910.10": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8041.07": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8099.04": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8265.09": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8268.08": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8340.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8474.02": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8514.05": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8631.03": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "8799.01": [
+                  "gbfs_quality:stale_information,stale_status",
+                  "stale_gbfs_station"
+                ],
+                "Shop Morgan": [
+                  "missing_station_mapping"
+                ]
+              }
+            },
+            "provenance": {
+              "forecast_path": "data\\f4\\forecasts\\1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+              "gbfs_path": "data\\f5\\live-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T053836644030-f8d09555",
+              "data_mode": "real_official",
+              "forecast_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+              "forecast_manifest_sha256": "d7cc46145249c30e4592d622a1e071828d94906ece53a18b6fd8831547830cb1",
+              "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+              "model_bundle_id": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
+              "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+              "gold_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+              "accuracy_evidence_mode": "approximate retrospective",
+              "operational_promotion": "NOT VERIFIED; Seasonal Naive fallback only",
+              "published_at": "2026-10-29T11:46:51.393101+00:00",
+              "published_rows_sha256": "131fc6944713c399998b52741adf365abbd04559d3f6e95c249abb869a4ca358",
+              "gbfs_collection_id": "20261030T053836644030-f8d09555",
+              "gbfs_quality_sha256": "fe229c6214ca5d80f2b5444ee276f51941c86b16663d23497ab89716a3c958e0",
+              "gbfs_silver_sha256": "d9f9172c077bc79ba7b260f4538c32e1b1d8061b029b7b0ec15478194730fe18",
+              "gbfs_bronze_manifest_sha256": "0625a2fd414f1659b718b9d5ee146449a1692ced0527b7a702ca0b00eb133839",
+              "gbfs_feeds": {
+                "gbfs": {
+                  "version": "2.3",
+                  "last_updated": "2026-10-30T05:38:14+00:00",
+                  "ttl": 60,
+                  "source_age_seconds": 23.471361,
+                  "stale": false,
+                  "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+                  "received_at_utc": "2026-10-30T05:38:37.471361+00:00",
+                  "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+                  "checksum": "34315c12f350638788fa747f19f60ba8bcccc010a97860f9229f0c46eb95dc1d",
+                  "bytes": 3589
+                },
+                "station_status": {
+                  "version": "2.3",
+                  "last_updated": "2026-10-30T05:37:17+00:00",
+                  "ttl": 60,
+                  "source_age_seconds": 81.234725,
+                  "stale": true,
+                  "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+                  "received_at_utc": "2026-10-30T05:38:38.234725+00:00",
+                  "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+                  "checksum": "b73e7ca76de568af3dd612a1379447184fbe450787e1ded41bd6d63593b159e3",
+                  "bytes": 1079567
+                },
+                "station_information": {
+                  "version": "2.3",
+                  "last_updated": "2026-10-30T05:37:15+00:00",
+                  "ttl": 60,
+                  "source_age_seconds": 83.386706,
+                  "stale": true,
+                  "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+                  "received_at_utc": "2026-10-30T05:38:38.386706+00:00",
+                  "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+                  "checksum": "fa78826f717909bc1281502b75d2461941882e762d06db437ef854aef3e057bf",
+                  "bytes": 801662
+                }
+              },
+              "station_mapping": "Unique same-collection GBFS short_name -> trip station_id; no fuzzy/current-to-historical backfill"
+            },
+            "risk": null
+          },
+          "paired_draws": 0,
+          "outcomes": 0,
+          "reason": "Unavailable input is preserved, not simulated zero risk",
+          "source_audit": {
+            "feeds": {
+              "station_information": {
+                "source_age_at_asof_seconds": 83.386706,
+                "ttl": 60,
+                "expiry": "2026-10-30T05:38:15+00:00",
+                "received_at": "2026-10-30T05:38:38.386706+00:00",
+                "raw_sha256": "fa78826f717909bc1281502b75d2461941882e762d06db437ef854aef3e057bf"
+              },
+              "station_status": {
+                "source_age_at_asof_seconds": 81.386706,
+                "ttl": 60,
+                "expiry": "2026-10-30T05:38:17+00:00",
+                "received_at": "2026-10-30T05:38:38.234725+00:00",
+                "raw_sha256": "b73e7ca76de568af3dd612a1379447184fbe450787e1ded41bd6d63593b159e3"
+              }
+            },
+            "computed_feed_rejections": [
+              "stale_gbfs_station_information",
+              "stale_gbfs_station_status"
+            ],
+            "raw_state_stations_checked": 0,
+            "forecast_published_at": "2026-10-29T11:46:51.393101+00:00"
+          },
+          "elapsed_seconds": 0.02761710004415363,
+          "verifier_sha256": "c4362cfd22cdb0551eef8461a0953e18f1d7e3b1913f804b7158bf7837cc055d"
+        }
+      }
+    ],
+    "numeric_real_risk": null
+  },
+  "controlled_fixture": {
+    "result_id": "3403a0eb33544546f5892476900bfb62e4bf06cf074c79cd07c554c0b9ce90b0",
+    "result_path": "data\\f5\\results\\3403a0eb33544546f5892476900bfb62e4bf06cf074c79cd07c554c0b9ce90b0",
+    "manifest_sha256": "3d9525d206891d09ee335bf0133e174c09cb5c8d003c0d1614828fce794d687d",
+    "checksums": {
+      "events.jsonl": "6dc2040bae3720576c7d79cdb8e3076ea331d37f595182494bb3d1d919061c18",
+      "inputs.json": "a73643d77d5638c8bb873b6a4391072cede8589c87fdd11d549561c09e40cc3c",
+      "outcomes.jsonl": "67b93a545221c94e1fa07448fe55430bc4b30bb57373940b024aa2a3c1a11ffd",
+      "plans.json": "309973a8da09a383aeacd64f9d527ee488c7b52a8150eeedc0a8c12b1d49f0f8"
+    },
+    "config": {
+      "hours": 4,
+      "repeats": 32,
+      "seed": 42,
+      "scales": [
+        0.5,
+        1.0,
+        1.5
+      ],
+      "orders": [
+        "uniform",
+        "departures_first",
+        "arrivals_first"
+      ],
+      "vehicles": 2,
+      "vehicle_capacity": 10,
+      "speed_kmh": 15.0,
+      "handling_minutes": 10.0,
+      "cost_per_bike_km": 1.0,
+      "cost_per_vehicle": 1.0,
+      "cost_weight": 0.1,
+      "low_threshold": 0.25,
+      "high_threshold": 0.75,
+      "solver_seconds": 10.0,
+      "max_events": 200000
+    },
+    "recipe": {
+      "risk\\__init__.py": "878f8c4e339f6c2c03130f59ff171560fef1701abce951003b6051fbed609049",
+      "risk\\__main__.py": "11ec4a5b494f2b2c42860422788918abe2ac1443dad3f97ec22687c1f62a1771",
+      "risk\\inputs.py": "6e14094a1dfe9633cf4a770cc3f675f810f2d72ceae153fa22b105a99fe95be3",
+      "risk\\run.py": "bc05968a7ac139969fbcbab7b583679602c45c067fdad54b8e79f0e71dcdf537",
+      "risk\\simulator.py": "d8248f17f47cde6c45c7f50b8e9168ef5c47650a25f85883237b9baed02de4ac",
+      "risk\\verify.py": "c4362cfd22cdb0551eef8461a0953e18f1d7e3b1913f804b7158bf7837cc055d",
+      "optimization\\__init__.py": "e351b7d8c26cf840c51b7ebe6d0dd30bdd4f86bfb38c94e05e34550fb3085c22",
+      "optimization\\optimizer.py": "0cdadd104ad1f22ab913feca3843b18c2c1888aa37598cf14662a363f355a09a"
+    },
+    "environment": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "duckdb": "1.5.6"
+    },
+    "as_of": "2026-10-30T05:52:24.069798+00:00",
+    "start": "2026-10-30 06:00:00+00:00",
+    "hours": 4,
+    "coverage": {
+      "requested": 4,
+      "eligible": 4,
+      "fraction": 1.0,
+      "exclusions": {}
+    },
+    "provenance": {
+      "forecast_path": "data\\f5\\controlled-inputs\\f4\\forecasts\\c7ec125a87838a08f01c3f2543c9735f27ad970d5137e3c352b107580860504f",
+      "gbfs_path": "data\\f5\\controlled-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T055223966081-2abf91fc",
+      "data_mode": "controlled_fixture",
+      "forecast_id": "c7ec125a87838a08f01c3f2543c9735f27ad970d5137e3c352b107580860504f",
+      "forecast_manifest_sha256": "e5c70377c52e53714c4680e401ddbf83df25213901299c75ee1992cef15c0ff7",
+      "dataset_id": "4e6961f8287bd53d76de16489c95545d7c1a6dfb6ed665e61e53ee8fe0258787",
+      "model_bundle_id": "ef0fbd72abcaeab28cfb5d97718a981401e880d1b76d8013372bfd312651f940",
+      "source_snapshot_id": "44a207dafa90cd4d2cc2cb586e710ae9ea89a446e16c988d267b72b7a2d89536",
+      "gold_publication_id": "d35f3d4888749c315632ab6bd72401dbe0d80557510435655c70d9fd47ee0d0f",
+      "accuracy_evidence_mode": "approximate retrospective",
+      "operational_promotion": "NOT VERIFIED; Seasonal Naive fallback only",
+      "published_at": "2026-10-30T05:52:23.925207+00:00",
+      "published_rows_sha256": "3ded33bcda3221c01467d89563966290a8ccab0586ba6662e070b4cdc30530fe",
+      "gbfs_collection_id": "20261030T055223966081-2abf91fc",
+      "gbfs_quality_sha256": "21e79f0d24eebba205eddfb1a1fea7c42280345a8c234e7ef339d3b8f4d4c7c8",
+      "gbfs_silver_sha256": "9d7fca6844a0e6c05a48bcd04bebd9cc8654ff9fcd561687cdc06f78de29d389",
+      "gbfs_bronze_manifest_sha256": "e1f4448eca8716618c94fafcac3d5487eacc2a03908d69d721e9da97eee07fe1",
+      "gbfs_feeds": {
+        "gbfs": {
+          "version": "2.3",
+          "last_updated": "2026-10-30T05:52:23+00:00",
+          "ttl": 60,
+          "source_age_seconds": 0.968731,
+          "stale": false,
+          "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+          "received_at_utc": "2026-10-30T05:52:23.968731+00:00",
+          "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+          "checksum": "a5e9c6e2dcb42156c0436e533f95b3504288ff173ac842e8825b1648d7bddae1",
+          "bytes": 250
+        },
+        "station_status": {
+          "version": "2.3",
+          "last_updated": "2026-10-30T05:52:23+00:00",
+          "ttl": 60,
+          "source_age_seconds": 0.969783,
+          "stale": false,
+          "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+          "received_at_utc": "2026-10-30T05:52:23.969783+00:00",
+          "url": "https://gbfs.lyft.com/test/station_status.json",
+          "checksum": "cad6adcfbd569a4f39405ac988e603f7a9a0b9db1e122373b3a68fc8041c2866",
+          "bytes": 698
+        },
+        "station_information": {
+          "version": "2.3",
+          "last_updated": "2026-10-30T05:52:23+00:00",
+          "ttl": 60,
+          "source_age_seconds": 0.97031,
+          "stale": false,
+          "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+          "received_at_utc": "2026-10-30T05:52:23.970310+00:00",
+          "url": "https://gbfs.lyft.com/test/station_information.json",
+          "checksum": "6aa7dab8bdd2600ca0d0107e63a14fb621969c020c1008c219674c01ab444b6f",
+          "bytes": 544
+        }
+      },
+      "station_mapping": "Unique same-collection GBFS short_name -> trip station_id; no fuzzy/current-to-historical backfill"
+    },
+    "initial_stations": [
+      {
+        "station_id": "000",
+        "gbfs_id": "controlled-000",
+        "capacity": 10,
+        "bikes": 8,
+        "docks": 2,
+        "installed": true,
+        "renting": true,
+        "returning": true,
+        "lat": 40.7,
+        "lon": -74.0
+      },
+      {
+        "station_id": "001",
+        "gbfs_id": "controlled-001",
+        "capacity": 10,
+        "bikes": 1,
+        "docks": 9,
+        "installed": true,
+        "renting": true,
+        "returning": true,
+        "lat": 40.701,
+        "lon": -74.0
+      },
+      {
+        "station_id": "002",
+        "gbfs_id": "controlled-002",
+        "capacity": 10,
+        "bikes": 8,
+        "docks": 2,
+        "installed": true,
+        "renting": true,
+        "returning": true,
+        "lat": 40.702000000000005,
+        "lon": -74.0
+      },
+      {
+        "station_id": "003",
+        "gbfs_id": "controlled-003",
+        "capacity": 10,
+        "bikes": 1,
+        "docks": 9,
+        "installed": true,
+        "renting": true,
+        "returning": true,
+        "lat": 40.703,
+        "lon": -74.0
+      }
+    ],
+    "observed_trip_forecast_means": {
+      "000": [
+        [
+          1.0,
+          0.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ]
+      ],
+      "001": [
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          0.0,
+          2.0
+        ]
+      ],
+      "002": [
+        [
+          3.0,
+          3.0
+        ],
+        [
+          3.0,
+          3.0
+        ],
+        [
+          0.0,
+          3.0
+        ],
+        [
+          3.0,
+          0.0
+        ]
+      ],
+      "003": [
+        [
+          3.0,
+          3.0
+        ],
+        [
+          0.0,
+          3.0
+        ],
+        [
+          3.0,
+          0.0
+        ],
+        [
+          3.0,
+          3.0
+        ]
+      ]
+    },
+    "draws": 288,
+    "outcomes": 864,
+    "attempt_events": 16314,
+    "comparisons": [
+      {
+        "scale": 0.5,
+        "order": "uniform",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 2.15625,
+                "min": 0.0,
+                "max": 6.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.1875,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_total": {
+                "mean": 3.34375,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 7.0
+              },
+              "scenario_objective": {
+                "mean": 3.34375,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 7.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 12.5,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 0.0001889999839477241,
+            "resources": {
+              "simulation_wall_seconds": 0.03857590025290847,
+              "peak_process_rss_bytes": 146104320,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 0.1875,
+                "min": 0.0,
+                "max": 2.0,
+                "p05": 0.0,
+                "p95": 1.0
+              },
+              "unserved_arrivals": {
+                "mean": 0.4375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_total": {
+                "mean": 0.625,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "scenario_objective": {
+                "mean": 0.8917170481399458,
+                "min": 0.26671704813994584,
+                "max": 7.266717048139946,
+                "p05": 0.26671704813994584,
+                "p95": 2.2667170481399457
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 1.766717048139946,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 0.0002286000526510179,
+            "resources": {
+              "simulation_wall_seconds": 0.0057950999471358955,
+              "peak_process_rss_bytes": 146104320,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 0.1875,
+                "min": 0.0,
+                "max": 2.0,
+                "p05": 0.0,
+                "p95": 1.0
+              },
+              "unserved_arrivals": {
+                "mean": 0.4375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_total": {
+                "mean": 0.625,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "scenario_objective": {
+                "mean": 0.8917170481399458,
+                "min": 0.26671704813994584,
+                "max": 7.266717048139946,
+                "p05": 0.26671704813994584,
+                "p95": 2.2667170481399457
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 1.766717048139946,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.7667170481399455,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.5546411999966949,
+            "resources": {
+              "simulation_wall_seconds": 0.006468299892731011,
+              "peak_process_rss_bytes": 146104320,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 2.71875,
+          "optimizer": 2.71875
+        }
+      },
+      {
+        "scale": 0.5,
+        "order": "departures_first",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 3.03125,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 6.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.15625,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_total": {
+                "mean": 4.1875,
+                "min": 0.0,
+                "max": 14.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "scenario_objective": {
+                "mean": 4.1875,
+                "min": 0.0,
+                "max": 14.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 12.5,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 0.0001889999839477241,
+            "resources": {
+              "simulation_wall_seconds": 0.005661899922415614,
+              "peak_process_rss_bytes": 146137088,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 0.5,
+                "min": 0.0,
+                "max": 3.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_arrivals": {
+                "mean": 0.4375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_total": {
+                "mean": 0.9375,
+                "min": 0.0,
+                "max": 8.0,
+                "p05": 0.0,
+                "p95": 3.0
+              },
+              "scenario_objective": {
+                "mean": 1.204217048139946,
+                "min": 0.26671704813994584,
+                "max": 8.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 3.2667170481399457
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 1.766717048139946,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 0.0002286000526510179,
+            "resources": {
+              "simulation_wall_seconds": 0.0061752001056447625,
+              "peak_process_rss_bytes": 146137088,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 0.5,
+                "min": 0.0,
+                "max": 3.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_arrivals": {
+                "mean": 0.4375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_total": {
+                "mean": 0.9375,
+                "min": 0.0,
+                "max": 8.0,
+                "p05": 0.0,
+                "p95": 3.0
+              },
+              "scenario_objective": {
+                "mean": 1.204217048139946,
+                "min": 0.26671704813994584,
+                "max": 8.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 3.2667170481399457
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 1.766717048139946,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.7667170481399455,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.5546411999966949,
+            "resources": {
+              "simulation_wall_seconds": 0.005999599816277623,
+              "peak_process_rss_bytes": 146137088,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 3.25,
+          "optimizer": 3.25
+        }
+      },
+      {
+        "scale": 0.5,
+        "order": "arrivals_first",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 1.78125,
+                "min": 0.0,
+                "max": 6.0,
+                "p05": 0.0,
+                "p95": 4.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.5,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_total": {
+                "mean": 3.28125,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 6.0
+              },
+              "scenario_objective": {
+                "mean": 3.28125,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 6.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 12.5,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 0.0001889999839477241,
+            "resources": {
+              "simulation_wall_seconds": 0.0053469998529180884,
+              "peak_process_rss_bytes": 146157568,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 0.09375,
+                "min": 0.0,
+                "max": 1.0,
+                "p05": 0.0,
+                "p95": 1.0
+              },
+              "unserved_arrivals": {
+                "mean": 0.4375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_total": {
+                "mean": 0.53125,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "scenario_objective": {
+                "mean": 0.7979670481399459,
+                "min": 0.26671704813994584,
+                "max": 7.266717048139946,
+                "p05": 0.26671704813994584,
+                "p95": 2.2667170481399457
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 1.766717048139946,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 0.0002286000526510179,
+            "resources": {
+              "simulation_wall_seconds": 0.005870700173545629,
+              "peak_process_rss_bytes": 146157568,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 0.09375,
+                "min": 0.0,
+                "max": 1.0,
+                "p05": 0.0,
+                "p95": 1.0
+              },
+              "unserved_arrivals": {
+                "mean": 0.4375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "unserved_total": {
+                "mean": 0.53125,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 2.0
+              },
+              "scenario_objective": {
+                "mean": 0.7979670481399459,
+                "min": 0.26671704813994584,
+                "max": 7.266717048139946,
+                "p05": 0.26671704813994584,
+                "p95": 2.2667170481399457
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 1.766717048139946,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.7667170481399455,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.5546411999966949,
+            "resources": {
+              "simulation_wall_seconds": 0.005647500045597553,
+              "peak_process_rss_bytes": 146157568,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 2.75,
+          "optimizer": 2.75
+        }
+      },
+      {
+        "scale": 1.0,
+        "order": "uniform",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 4.53125,
+                "min": 0.0,
+                "max": 11.0,
+                "p05": 0.0,
+                "p95": 9.0
+              },
+              "unserved_arrivals": {
+                "mean": 2.84375,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 7.0
+              },
+              "unserved_total": {
+                "mean": 7.375,
+                "min": 0.0,
+                "max": 16.0,
+                "p05": 1.0,
+                "p95": 14.0
+              },
+              "scenario_objective": {
+                "mean": 7.375,
+                "min": 0.0,
+                "max": 16.0,
+                "p05": 1.0,
+                "p95": 14.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 11.0,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 3.840000135824084e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.009112000174354762,
+              "peak_process_rss_bytes": 146206720,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 1.40625,
+                "min": 0.0,
+                "max": 9.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.34375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_total": {
+                "mean": 2.75,
+                "min": 0.0,
+                "max": 11.0,
+                "p05": 0.0,
+                "p95": 9.0
+              },
+              "scenario_objective": {
+                "mean": 3.0167170481399457,
+                "min": 0.26671704813994584,
+                "max": 11.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 9.266717048139945
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 3.2667170481399457,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 6.75999908708036e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.009680799848865718,
+              "peak_process_rss_bytes": 146206720,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 1.71875,
+                "min": 0.0,
+                "max": 9.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.1875,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 4.0
+              },
+              "unserved_total": {
+                "mean": 2.90625,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 9.0
+              },
+              "scenario_objective": {
+                "mean": 3.1618475401166215,
+                "min": 0.25559754011662156,
+                "max": 10.255597540116622,
+                "p05": 0.25559754011662156,
+                "p95": 9.255597540116622
+              },
+              "delivered": {
+                "mean": 5.0,
+                "min": 5.0,
+                "max": 5.0,
+                "p05": 5.0,
+                "p95": 5.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 5,
+            "vehicles": 2,
+            "movement_cost": 2.5559754011662155,
+            "surrogate_objective": 1.2555975401166215,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.2555975401166215,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.009695800021290779,
+            "resources": {
+              "simulation_wall_seconds": 0.009524700464680791,
+              "peak_process_rss_bytes": 146206720,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 4.625,
+          "optimizer": 4.46875
+        }
+      },
+      {
+        "scale": 1.0,
+        "order": "departures_first",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 7.0,
+                "min": 1.0,
+                "max": 15.0,
+                "p05": 2.0,
+                "p95": 12.0
+              },
+              "unserved_arrivals": {
+                "mean": 2.84375,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 7.0
+              },
+              "unserved_total": {
+                "mean": 9.84375,
+                "min": 2.0,
+                "max": 18.0,
+                "p05": 2.0,
+                "p95": 16.0
+              },
+              "scenario_objective": {
+                "mean": 9.84375,
+                "min": 2.0,
+                "max": 18.0,
+                "p05": 2.0,
+                "p95": 16.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 11.0,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 3.840000135824084e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.009317899821326137,
+              "peak_process_rss_bytes": 146235392,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 3.03125,
+                "min": 0.0,
+                "max": 12.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.34375,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_total": {
+                "mean": 4.375,
+                "min": 0.0,
+                "max": 14.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "scenario_objective": {
+                "mean": 4.641717048139946,
+                "min": 0.26671704813994584,
+                "max": 14.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 10.266717048139945
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 3.2667170481399457,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 6.75999908708036e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.009840200014878064,
+              "peak_process_rss_bytes": 146235392,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 3.5,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.1875,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 4.0
+              },
+              "unserved_total": {
+                "mean": 4.6875,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "scenario_objective": {
+                "mean": 4.9430975401166215,
+                "min": 0.25559754011662156,
+                "max": 13.255597540116622,
+                "p05": 0.25559754011662156,
+                "p95": 10.255597540116622
+              },
+              "delivered": {
+                "mean": 5.0,
+                "min": 5.0,
+                "max": 5.0,
+                "p05": 5.0,
+                "p95": 5.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 5,
+            "vehicles": 2,
+            "movement_cost": 2.5559754011662155,
+            "surrogate_objective": 1.2555975401166215,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.2555975401166215,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.009695800021290779,
+            "resources": {
+              "simulation_wall_seconds": 0.009850800095591694,
+              "peak_process_rss_bytes": 146235392,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 5.46875,
+          "optimizer": 5.15625
+        }
+      },
+      {
+        "scale": 1.0,
+        "order": "arrivals_first",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 3.75,
+                "min": 0.0,
+                "max": 11.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "unserved_arrivals": {
+                "mean": 3.375,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 7.0
+              },
+              "unserved_total": {
+                "mean": 7.125,
+                "min": 0.0,
+                "max": 15.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "scenario_objective": {
+                "mean": 7.125,
+                "min": 0.0,
+                "max": 15.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 11.0,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 3.840000135824084e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.010578300105407834,
+              "peak_process_rss_bytes": 146247680,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 1.09375,
+                "min": 0.0,
+                "max": 9.0,
+                "p05": 0.0,
+                "p95": 4.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.6875,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 5.0
+              },
+              "unserved_total": {
+                "mean": 2.78125,
+                "min": 0.0,
+                "max": 11.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "scenario_objective": {
+                "mean": 3.0479670481399457,
+                "min": 0.26671704813994584,
+                "max": 11.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 8.266717048139945
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 3.2667170481399457,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 6.75999908708036e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.011277900135610253,
+              "peak_process_rss_bytes": 146247680,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 1.3125,
+                "min": 0.0,
+                "max": 9.0,
+                "p05": 0.0,
+                "p95": 4.0
+              },
+              "unserved_arrivals": {
+                "mean": 1.5,
+                "min": 0.0,
+                "max": 7.0,
+                "p05": 0.0,
+                "p95": 4.0
+              },
+              "unserved_total": {
+                "mean": 2.8125,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 8.0
+              },
+              "scenario_objective": {
+                "mean": 3.0680975401166215,
+                "min": 0.25559754011662156,
+                "max": 10.255597540116622,
+                "p05": 0.25559754011662156,
+                "p95": 8.255597540116622
+              },
+              "delivered": {
+                "mean": 5.0,
+                "min": 5.0,
+                "max": 5.0,
+                "p05": 5.0,
+                "p95": 5.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 5,
+            "vehicles": 2,
+            "movement_cost": 2.5559754011662155,
+            "surrogate_objective": 1.2555975401166215,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.2555975401166215,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.009695800021290779,
+            "resources": {
+              "simulation_wall_seconds": 0.010872800019569695,
+              "peak_process_rss_bytes": 146247680,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 4.34375,
+          "optimizer": 4.3125
+        }
+      },
+      {
+        "scale": 1.5,
+        "order": "uniform",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 6.25,
+                "min": 0.0,
+                "max": 15.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "unserved_arrivals": {
+                "mean": 5.40625,
+                "min": 0.0,
+                "max": 16.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "unserved_total": {
+                "mean": 11.65625,
+                "min": 0.0,
+                "max": 31.0,
+                "p05": 1.0,
+                "p95": 19.0
+              },
+              "scenario_objective": {
+                "mean": 11.65625,
+                "min": 0.0,
+                "max": 31.0,
+                "p05": 1.0,
+                "p95": 19.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 9.5,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 3.3699965570122004e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.018854200199712068,
+              "peak_process_rss_bytes": 146280448,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 3.34375,
+                "min": 0.0,
+                "max": 12.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "unserved_arrivals": {
+                "mean": 3.875,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "unserved_total": {
+                "mean": 7.21875,
+                "min": 0.0,
+                "max": 20.0,
+                "p05": 0.0,
+                "p95": 14.0
+              },
+              "scenario_objective": {
+                "mean": 7.485467048139945,
+                "min": 0.26671704813994584,
+                "max": 20.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 14.266717048139945
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 4.766717048139946,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 6.440002471208572e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.019383400038350374,
+              "peak_process_rss_bytes": 146280448,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 3.9375,
+                "min": 0.0,
+                "max": 14.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "unserved_arrivals": {
+                "mean": 3.625,
+                "min": 0.0,
+                "max": 12.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "unserved_total": {
+                "mean": 7.5625,
+                "min": 0.0,
+                "max": 23.0,
+                "p05": 0.0,
+                "p95": 14.0
+              },
+              "scenario_objective": {
+                "mean": 7.806978032093298,
+                "min": 0.24447803209329724,
+                "max": 23.244478032093298,
+                "p05": 0.24447803209329724,
+                "p95": 14.244478032093298
+              },
+              "delivered": {
+                "mean": 4.0,
+                "min": 4.0,
+                "max": 4.0,
+                "p05": 4.0,
+                "p95": 4.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 4,
+            "vehicles": 2,
+            "movement_cost": 2.4447803209329724,
+            "surrogate_objective": 1.7444780320932973,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.7444780320932973,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.01134309999179095,
+            "resources": {
+              "simulation_wall_seconds": 0.01882769976509735,
+              "peak_process_rss_bytes": 146280448,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 4.4375,
+          "optimizer": 4.09375
+        }
+      },
+      {
+        "scale": 1.5,
+        "order": "departures_first",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 10.875,
+                "min": 2.0,
+                "max": 20.0,
+                "p05": 3.0,
+                "p95": 18.0
+              },
+              "unserved_arrivals": {
+                "mean": 5.96875,
+                "min": 0.0,
+                "max": 16.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "unserved_total": {
+                "mean": 16.84375,
+                "min": 4.0,
+                "max": 33.0,
+                "p05": 4.0,
+                "p95": 26.0
+              },
+              "scenario_objective": {
+                "mean": 16.84375,
+                "min": 4.0,
+                "max": 33.0,
+                "p05": 4.0,
+                "p95": 26.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 9.5,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 3.3699965570122004e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.018376200052443892,
+              "peak_process_rss_bytes": 146305024,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 7.25,
+                "min": 1.0,
+                "max": 19.0,
+                "p05": 2.0,
+                "p95": 15.0
+              },
+              "unserved_arrivals": {
+                "mean": 4.53125,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 11.0
+              },
+              "unserved_total": {
+                "mean": 11.78125,
+                "min": 1.0,
+                "max": 25.0,
+                "p05": 2.0,
+                "p95": 22.0
+              },
+              "scenario_objective": {
+                "mean": 12.047967048139945,
+                "min": 1.266717048139946,
+                "max": 25.266717048139945,
+                "p05": 2.2667170481399457,
+                "p95": 22.266717048139945
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 4.766717048139946,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 6.440002471208572e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.019388799904845655,
+              "peak_process_rss_bytes": 146305024,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 8.25,
+                "min": 0.0,
+                "max": 19.0,
+                "p05": 2.0,
+                "p95": 15.0
+              },
+              "unserved_arrivals": {
+                "mean": 4.375,
+                "min": 0.0,
+                "max": 12.0,
+                "p05": 0.0,
+                "p95": 11.0
+              },
+              "unserved_total": {
+                "mean": 12.625,
+                "min": 0.0,
+                "max": 25.0,
+                "p05": 3.0,
+                "p95": 21.0
+              },
+              "scenario_objective": {
+                "mean": 12.869478032093298,
+                "min": 0.24447803209329724,
+                "max": 25.244478032093298,
+                "p05": 3.2444780320932973,
+                "p95": 21.244478032093298
+              },
+              "delivered": {
+                "mean": 4.0,
+                "min": 4.0,
+                "max": 4.0,
+                "p05": 4.0,
+                "p95": 4.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 4,
+            "vehicles": 2,
+            "movement_cost": 2.4447803209329724,
+            "surrogate_objective": 1.7444780320932973,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.7444780320932973,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.01134309999179095,
+            "resources": {
+              "simulation_wall_seconds": 0.018439599953126162,
+              "peak_process_rss_bytes": 146305024,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 5.0625,
+          "optimizer": 4.21875
+        }
+      },
+      {
+        "scale": 1.5,
+        "order": "arrivals_first",
+        "policies": {
+          "no_action": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 5.0,
+                "min": 0.0,
+                "max": 15.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "unserved_arrivals": {
+                "mean": 6.78125,
+                "min": 1.0,
+                "max": 17.0,
+                "p05": 1.0,
+                "p95": 13.0
+              },
+              "unserved_total": {
+                "mean": 11.78125,
+                "min": 2.0,
+                "max": 32.0,
+                "p05": 2.0,
+                "p95": 20.0
+              },
+              "scenario_objective": {
+                "mean": 11.78125,
+                "min": 2.0,
+                "max": 32.0,
+                "p05": 2.0,
+                "p95": 20.0
+              },
+              "delivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 0,
+            "vehicles": 0,
+            "movement_cost": 0,
+            "surrogate_objective": 9.5,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 3.3699965570122004e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.014399599807802588,
+              "peak_process_rss_bytes": 146333696,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "heuristic": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 2.46875,
+                "min": 0.0,
+                "max": 10.0,
+                "p05": 0.0,
+                "p95": 9.0
+              },
+              "unserved_arrivals": {
+                "mean": 5.03125,
+                "min": 0.0,
+                "max": 14.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "unserved_total": {
+                "mean": 7.5,
+                "min": 0.0,
+                "max": 20.0,
+                "p05": 0.0,
+                "p95": 14.0
+              },
+              "scenario_objective": {
+                "mean": 7.766717048139945,
+                "min": 0.26671704813994584,
+                "max": 20.266717048139945,
+                "p05": 0.26671704813994584,
+                "p95": 14.266717048139945
+              },
+              "delivered": {
+                "mean": 6.0,
+                "min": 6.0,
+                "max": 6.0,
+                "p05": 6.0,
+                "p95": 6.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 6,
+            "vehicles": 2,
+            "movement_cost": 2.6671704813994586,
+            "surrogate_objective": 4.766717048139946,
+            "solver": {
+              "status": "not_needed"
+            },
+            "planning_seconds": 6.440002471208572e-05,
+            "resources": {
+              "simulation_wall_seconds": 0.014983800007030368,
+              "peak_process_rss_bytes": 146333696,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          },
+          "optimizer": {
+            "totals": {
+              "unserved_departures": {
+                "mean": 2.84375,
+                "min": 0.0,
+                "max": 12.0,
+                "p05": 0.0,
+                "p95": 9.0
+              },
+              "unserved_arrivals": {
+                "mean": 4.78125,
+                "min": 0.0,
+                "max": 13.0,
+                "p05": 0.0,
+                "p95": 10.0
+              },
+              "unserved_total": {
+                "mean": 7.625,
+                "min": 0.0,
+                "max": 24.0,
+                "p05": 0.0,
+                "p95": 13.0
+              },
+              "scenario_objective": {
+                "mean": 7.869478032093298,
+                "min": 0.24447803209329724,
+                "max": 24.244478032093298,
+                "p05": 0.24447803209329724,
+                "p95": 13.244478032093298
+              },
+              "delivered": {
+                "mean": 4.0,
+                "min": 4.0,
+                "max": 4.0,
+                "p05": 4.0,
+                "p95": 4.0
+              },
+              "undelivered": {
+                "mean": 0.0,
+                "min": 0.0,
+                "max": 0.0,
+                "p05": 0.0,
+                "p95": 0.0
+              }
+            },
+            "constraint_violations": 0,
+            "planned_bikes": 4,
+            "vehicles": 2,
+            "movement_cost": 2.4447803209329724,
+            "surrogate_objective": 1.7444780320932973,
+            "solver": {
+              "status": 0,
+              "message": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+              "objective": 1.7444780320932973,
+              "mip_gap": 0.0
+            },
+            "planning_seconds": 0.01134309999179095,
+            "resources": {
+              "simulation_wall_seconds": 0.01467840006807819,
+              "peak_process_rss_bytes": 146333696,
+              "scope": "Shared process high-water; not isolated marginal policy RAM"
+            }
+          }
+        },
+        "simulated_unserved_gain_vs_no_action": {
+          "no_action": 0.0,
+          "heuristic": 4.28125,
+          "optimizer": 4.15625
+        }
+      }
+    ],
+    "risk_uniform_scale1": {
+      "no_action": {
+        "000": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 0,
+            "repeats": 32,
+            "fraction": 0.0,
+            "mc_standard_error": 0.0,
+            "mc_wilson_95": [
+              0.0,
+              0.1071791982550706
+            ]
+          },
+          "full": {
+            "outcomes": 6,
+            "repeats": 32,
+            "fraction": 0.1875,
+            "mc_standard_error": 0.06899813176818631,
+            "mc_wilson_95": [
+              0.08889544689565954,
+              0.3530915520137596
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "001": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 26,
+            "repeats": 32,
+            "fraction": 0.8125,
+            "mc_standard_error": 0.06899813176818631,
+            "mc_wilson_95": [
+              0.6469084479862404,
+              0.9111045531043405
+            ]
+          },
+          "full": {
+            "outcomes": 2,
+            "repeats": 32,
+            "fraction": 0.0625,
+            "mc_standard_error": 0.0427908248050911,
+            "mc_wilson_95": [
+              0.017310567031640967,
+              0.2014712314415458
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "002": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 2,
+            "repeats": 32,
+            "fraction": 0.0625,
+            "mc_standard_error": 0.0427908248050911,
+            "mc_wilson_95": [
+              0.017310567031640967,
+              0.2014712314415458
+            ]
+          },
+          "full": {
+            "outcomes": 26,
+            "repeats": 32,
+            "fraction": 0.8125,
+            "mc_standard_error": 0.06899813176818631,
+            "mc_wilson_95": [
+              0.6469084479862404,
+              0.9111045531043405
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "003": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 28,
+            "repeats": 32,
+            "fraction": 0.875,
+            "mc_standard_error": 0.05846339666834283,
+            "mc_wilson_95": [
+              0.7193169451834978,
+              0.9502986561251991
+            ]
+          },
+          "full": {
+            "outcomes": 2,
+            "repeats": 32,
+            "fraction": 0.0625,
+            "mc_standard_error": 0.0427908248050911,
+            "mc_wilson_95": [
+              0.017310567031640967,
+              0.2014712314415458
+            ]
+          },
+          "renting": true,
+          "returning": true
+        }
+      },
+      "heuristic": {
+        "000": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 6,
+            "repeats": 32,
+            "fraction": 0.1875,
+            "mc_standard_error": 0.06899813176818631,
+            "mc_wilson_95": [
+              0.08889544689565954,
+              0.3530915520137596
+            ]
+          },
+          "full": {
+            "outcomes": 0,
+            "repeats": 32,
+            "fraction": 0.0,
+            "mc_standard_error": 0.0,
+            "mc_wilson_95": [
+              0.0,
+              0.1071791982550706
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "001": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 11,
+            "repeats": 32,
+            "fraction": 0.34375,
+            "mc_standard_error": 0.08396166117267452,
+            "mc_wilson_95": [
+              0.20410437924433172,
+              0.5168891202103778
+            ]
+          },
+          "full": {
+            "outcomes": 6,
+            "repeats": 32,
+            "fraction": 0.1875,
+            "mc_standard_error": 0.06899813176818631,
+            "mc_wilson_95": [
+              0.08889544689565954,
+              0.3530915520137596
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "002": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 3,
+            "repeats": 32,
+            "fraction": 0.09375,
+            "mc_standard_error": 0.05152697639950359,
+            "mc_wilson_95": [
+              0.032401551298366194,
+              0.24218154728387864
+            ]
+          },
+          "full": {
+            "outcomes": 16,
+            "repeats": 32,
+            "fraction": 0.5,
+            "mc_standard_error": 0.08838834764831845,
+            "mc_wilson_95": [
+              0.33630882869327483,
+              0.6636911713067252
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "003": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 16,
+            "repeats": 32,
+            "fraction": 0.5,
+            "mc_standard_error": 0.08838834764831845,
+            "mc_wilson_95": [
+              0.33630882869327483,
+              0.6636911713067252
+            ]
+          },
+          "full": {
+            "outcomes": 5,
+            "repeats": 32,
+            "fraction": 0.15625,
+            "mc_standard_error": 0.06418623720763665,
+            "mc_wilson_95": [
+              0.0686442028250571,
+              0.3175414959753039
+            ]
+          },
+          "renting": true,
+          "returning": true
+        }
+      },
+      "optimizer": {
+        "000": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 0,
+            "repeats": 32,
+            "fraction": 0.0,
+            "mc_standard_error": 0.0,
+            "mc_wilson_95": [
+              0.0,
+              0.1071791982550706
+            ]
+          },
+          "full": {
+            "outcomes": 0,
+            "repeats": 32,
+            "fraction": 0.0,
+            "mc_standard_error": 0.0,
+            "mc_wilson_95": [
+              0.0,
+              0.1071791982550706
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "001": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 18,
+            "repeats": 32,
+            "fraction": 0.5625,
+            "mc_standard_error": 0.08769509500251425,
+            "mc_wilson_95": [
+              0.3932559113685198,
+              0.7183466888495963
+            ]
+          },
+          "full": {
+            "outcomes": 5,
+            "repeats": 32,
+            "fraction": 0.15625,
+            "mc_standard_error": 0.06418623720763665,
+            "mc_wilson_95": [
+              0.0686442028250571,
+              0.3175414959753039
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "002": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 3,
+            "repeats": 32,
+            "fraction": 0.09375,
+            "mc_standard_error": 0.05152697639950359,
+            "mc_wilson_95": [
+              0.032401551298366194,
+              0.24218154728387864
+            ]
+          },
+          "full": {
+            "outcomes": 16,
+            "repeats": 32,
+            "fraction": 0.5,
+            "mc_standard_error": 0.08838834764831845,
+            "mc_wilson_95": [
+              0.33630882869327483,
+              0.6636911713067252
+            ]
+          },
+          "renting": true,
+          "returning": true
+        },
+        "003": {
+          "status": "ok",
+          "empty": {
+            "outcomes": 16,
+            "repeats": 32,
+            "fraction": 0.5,
+            "mc_standard_error": 0.08838834764831845,
+            "mc_wilson_95": [
+              0.33630882869327483,
+              0.6636911713067252
+            ]
+          },
+          "full": {
+            "outcomes": 5,
+            "repeats": 32,
+            "fraction": 0.15625,
+            "mc_standard_error": 0.06418623720763665,
+            "mc_wilson_95": [
+              0.0686442028250571,
+              0.3175414959753039
+            ]
+          },
+          "renting": true,
+          "returning": true
+        }
+      }
+    },
+    "measurements": {
+      "elapsed_seconds": 1.5274921000236645,
+      "peak_rss_bytes": 146337792
+    },
+    "full_cli_seconds": 3.1698551999870688,
+    "repeat_cli_seconds": 1.0900016000377946,
+    "repeat_exact_id": true,
+    "oracle": {
+      "status": "PASS",
+      "result_id": "3403a0eb33544546f5892476900bfb62e4bf06cf074c79cd07c554c0b9ce90b0",
+      "paired_draws": 288,
+      "outcomes": 864,
+      "inventory_ledger_checks": 50958,
+      "conservation_cost_risk_metric_mismatches": 0,
+      "method": "Separate free-dock/inventory/cargo ledger; independent Haversine/cost, attempt accounting and summary metrics; no production helpers",
+      "source_audit": {
+        "feeds": {
+          "station_information": {
+            "source_age_at_asof_seconds": 1.069798,
+            "ttl": 60,
+            "expiry": "2026-10-30T05:53:23+00:00",
+            "received_at": "2026-10-30T05:52:23.970310+00:00",
+            "raw_sha256": "6aa7dab8bdd2600ca0d0107e63a14fb621969c020c1008c219674c01ab444b6f"
+          },
+          "station_status": {
+            "source_age_at_asof_seconds": 1.069798,
+            "ttl": 60,
+            "expiry": "2026-10-30T05:53:23+00:00",
+            "received_at": "2026-10-30T05:52:23.969783+00:00",
+            "raw_sha256": "cad6adcfbd569a4f39405ac988e603f7a9a0b9db1e122373b3a68fc8041c2866"
+          }
+        },
+        "computed_feed_rejections": [],
+        "raw_state_stations_checked": 4,
+        "forecast_published_at": "2026-10-30T05:52:23.925207+00:00"
+      },
+      "elapsed_seconds": 0.29937610001070425,
+      "verifier_sha256": "c4362cfd22cdb0551eef8461a0953e18f1d7e3b1913f804b7158bf7837cc055d"
+    },
+    "reproduce": "uv run --locked --group ml python -m tests.integration.test_risk",
+    "actual_cli": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m citibike.risk run --data-dir data --forecast data\\f5\\controlled-inputs\\f4\\forecasts\\c7ec125a87838a08f01c3f2543c9735f27ad970d5137e3c352b107580860504f --gbfs data\\f5\\controlled-inputs\\gbfs\\silver\\f2-gbfs-2\\20261030T055223966081-2abf91fc --as-of 2026-10-30T05:52:24.069798+00:00 --config data\\f5\\controlled-config.json",
+    "decision": "No operational recommendation. Optimizer improves no-action in 9/9 cells, ties heuristic in 3/9 and loses in 6/9; surrogate optimum is not minimum simulated loss.",
+    "end": "2026-10-30T10:00:00+00:00",
+    "horizon_minutes_including_lead_in": 247.5988367
+  },
+  "assumptions": [
+    "SCENARIO ONLY: Poisson attempts use published observed trip forecasts as means, not latent-demand estimates.",
+    "Independent station/hour/type counts; returns are exogenous, not linked to simulated rentals. Fleet is an open subsystem.",
+    "Uniform within-hour events or all departures/arrivals in the first half-hour; demand scales are assumptions, not fitted intervals.",
+    "No demand is modeled between as-of and the next complete forecast hour; lead-in hold may be optimistic.",
+    "GBFS operating flags and capacity remain fixed after as-of; disabled/unknown slots capacity-bikes-docks stay blocked.",
+    "GBFS TTL validates the INITIAL snapshot only, not future observations over the simulation horizon.",
+    "All transport departs at as-of; one direct loaded trip per vehicle, no fleet reuse, depot routing or operator cost claims.",
+    "Haversine/specified speed plus handling gives scenario travel times, not measured street routes.",
+    "Delivery wins exact-time ties, then station/type/sequence; undeliverable cargo remains on its vehicle to horizon end.",
+    "Optimizer is optimal only for L1 inventory-target + weighted movement-cost surrogate; simulated losses can worsen.",
+    "Risk is ever-empty/full fraction including initial state among assumed draws; Monte Carlo Wilson intervals are not calibration.",
+    "No field validation/operational uplift/economic saving claim; Seasonal Naive/unavailable F4 fallback retained."
+  ],
+  "resources_scope": "Shared-host warm/cache state; simulation timer excludes source adapter; full CLI includes adapter and new run; RSS is process high-water, not isolated marginal policy RAM or SLA.",
+  "optimization_method": {
+    "solver": "scipy.optimize.milp / bundled HiGHS, existing locked ML group; no new dependency",
+    "reference": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.milp.html",
+    "targets": "clip((bikes+docks)/2 + sum_departures*scale - sum_arrivals*scale,0,bikes+docks); zero demand -> initial bikes",
+    "objective": "sum abs(initial_bikes - outbound + inbound - target) + cost_weight*(bike_km*cost_per_bike_km + vehicles*cost_per_vehicle)",
+    "constraints": "integer nonnegative x_ij/y_ij; x<=vehicle_capacity*y; sum y<=vehicles; outgoing<=initial bikes; incoming<=initial docks; installed/renting donor and installed/returning receiver; arrival inside horizon",
+    "stop": "<=10 seconds default, <=10000 nodes, mip_rel_gap=0; nonoptimal -> unavailable plan, partial run, no active promotion",
+    "heuristic": "Independent high>0.75 / low<0.25 stock ratio; nearest direct pairs, target midpoint; no action for zero demand",
+    "cost_units": "relative scenario units, not company money; no vehicle reuse/real street routing"
+  },
+  "regressions": {
+    "F1": {
+      "publication_id": "69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284",
+      "verified_at": "2026-10-30T05:47:16.332044+00:00",
+      "stage_values": {
+        "independent_raw_csv": 3860371,
+        "silver": 3860371,
+        "gold": 3860371,
+        "postgresql": 3860371,
+        "api_kpi": 3860371,
+        "api_hourly_sum": 3860371,
+        "dashboard_attribute": 3860371,
+        "dashboard_visible_text": 3860371
+      },
+      "artifact_checksums": {
+        "quarantine.parquet": "e4c58cfd691789fb64a11cc8e0f1e56213f3530a2eb15cadb5a35898d2dd678e",
+        "ride_hours.parquet": "d23f2f88c744c9af55a574dceefc97955403117bd3619b7cb6abb47d3b62e627",
+        "row_ledger.parquet": "df9701b63082fdc5d41294440ff544fc1f59f36a910a2ea75845f5fcb71bb573",
+        "silver.parquet": "3a482fdf2e71f8b3bdd4ed3c3e43e3ee500e566bc7c4b44b2b164dfcae6575f1",
+        "station_hours.parquet": "24112f1b09066082a3e7e13b2cfa2ccf038e2f55936399afe9612858abc86817"
+      }
+    },
+    "F3": {
+      "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+      "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+      "verified_at": "2026-10-30T05:42:55.450307+00:00",
+      "independent_silver": {
+        "n": 92076054,
+        "duration_us": 71705881866028000,
+        "departures": 92027342,
+        "arrivals": 91804709,
+        "arrival_rows": 92076567,
+        "route_n": 91766264,
+        "geo_n": 92027342
+      },
+      "reconciliation_mismatches": 0,
+      "html_count": 92076054,
+      "filtered_http_reconciliation": "station, route rankings/durations, categories and separate departure/arrival peaks matched independent Silver"
+    },
+    "F4": {
+      "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+      "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+      "gold_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+      "feature_schema": "e03aa1e2cae7f11ce9b2f7abd5197f888b1b533540017bec4b31f4a11f87d5d3",
+      "label_oracle": {
+        "nonzero_groups": 1046111,
+        "observed_events": 4708937,
+        "mismatches": 0,
+        "lost_positive_groups": 0,
+        "source": "direct accepted Silver, separate start/end predicates"
+      },
+      "feature_oracle": {
+        "sampled_origins_station_horizons": 128,
+        "mismatches": 0,
+        "method": "independent available-at range joins over Silver-reconciled labels"
+      },
+      "validation_independent_audit": {
+        "independently_recomputed_prediction_rows": 1082284,
+        "metric_mismatches": 0,
+        "fold_leakage_rows": 0,
+        "files": [
+          {
+            "file": "0-departures-seasonal_naive.parquet",
+            "checksum": "aa8e4e8bb6abbbc30d8c15e67515308b56ca161a1091bf94d6177f32a60acfbc",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-departures-poisson_default.parquet",
+            "checksum": "4ad48d8b823ef738c9048fba43f61bc5adebbd9e7a3d7505dafd1e885f51417c",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-departures-lightgbm_default.parquet",
+            "checksum": "b4ef5d96845b78f9c12973dd4981009920c66b70c48a8771045a646bae9627cb",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-departures-catboost_default.parquet",
+            "checksum": "6266aac74d314a29a6a0fbf5f5aefc7272c06fdf1d9f613152af4e7efebe401f",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-departures-poisson_bounded.parquet",
+            "checksum": "691b7034bd24e64d2150f8ce933b40814d7bee12782c017445237e2876a47484",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-departures-lightgbm_bounded.parquet",
+            "checksum": "b3c6b31a8db1881b6f744768afda191a58212270f91abdcf7a828af4ee2edf8e",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-departures-catboost_bounded.parquet",
+            "checksum": "d571d398e73c91b73ed638fc694b6865b06024ab9696189131c2e273e8b36c2b",
+            "rows": 17355,
+            "evaluation_rows_hash": "89147baff2502637e0614a57e3247b02534b89f63c61875d70e0ee73d40cafe7"
+          },
+          {
+            "file": "0-arrivals-seasonal_naive.parquet",
+            "checksum": "32d7239d6320130c08fe1e631982113108edf0aef5ef150c6c2f598c8f4811f0",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "0-arrivals-poisson_default.parquet",
+            "checksum": "f3f21f0ef52706eb87049a4bd12e2ecd6e00c469af3c42c8ff2f1c14213f32d6",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "0-arrivals-lightgbm_default.parquet",
+            "checksum": "0af731169752e49be5f6a09845e1080e278a565f5dfdc30db0fbf103da26c014",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "0-arrivals-catboost_default.parquet",
+            "checksum": "85530af798ccf59dfb9bd17ee5104755e186e9a10e836f61888b38ed7a0a4b48",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "0-arrivals-poisson_bounded.parquet",
+            "checksum": "627ef780c64ad444a88feffed42815281ec4d57e9b9f58b9f80603e683444caf",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "0-arrivals-lightgbm_bounded.parquet",
+            "checksum": "e3355765eff735d15a27671d5fe5f8a0d031fc7889b92b76d78d473a7b9fa085",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "0-arrivals-catboost_bounded.parquet",
+            "checksum": "bb98e86785e7f0a5fd91e80987bae772fee2966aeed17a37e8f05d01532bbec3",
+            "rows": 17355,
+            "evaluation_rows_hash": "03011427b9f79e23b243ec46bf6f44f47223f77158f0e063b07ee7f0cd34502c"
+          },
+          {
+            "file": "1-departures-seasonal_naive.parquet",
+            "checksum": "54e1f7636320e5a81488e912e6c88084889f8e2de626af1e17c61a280e1d94fd",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-departures-poisson_default.parquet",
+            "checksum": "6b9827edef8514719e6bdbed5836690ea468b18d735d4dd6a26db6f2b26fe09f",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-departures-lightgbm_default.parquet",
+            "checksum": "91fd14bf719531f1024b6ac721a2711aa00d5e4fb9837eff8fc6c2811797a3f2",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-departures-catboost_default.parquet",
+            "checksum": "3b6dc107890c974adb6fcc71c60233b549fbd830b31eced11d4651f97a272a9f",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-departures-poisson_bounded.parquet",
+            "checksum": "138d5b853c1c3a4badaac4f308277a505bb02f8e2b2d5e6c0ecceb5d74999277",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-departures-lightgbm_bounded.parquet",
+            "checksum": "828ba8175c2a9f013d644ae15c5cca67aeea0fc71be164059851bcaa8c3a9f3f",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-departures-catboost_bounded.parquet",
+            "checksum": "e4510d9524d32871ad46ef275c256d0f32ef02042ff87cfbd3791e2405848169",
+            "rows": 18889,
+            "evaluation_rows_hash": "ad7e6cdfb04c66dfb7174c6de78343fd5c560f73d36c9c9f961b06b3e26d2be4"
+          },
+          {
+            "file": "1-arrivals-seasonal_naive.parquet",
+            "checksum": "1f39dcd51c73c1f862961090067ebbedeaa7e1a912ff6dbbe802aaeed755f8ae",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "1-arrivals-poisson_default.parquet",
+            "checksum": "cec57de93317e49e33ab5ed1360e0c0d9021612b49a964448e893916ffb77237",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "1-arrivals-lightgbm_default.parquet",
+            "checksum": "f08fd317dcce2354bc07d2971715cd94cdc8f367ae46dc4843cdc1eadadf888f",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "1-arrivals-catboost_default.parquet",
+            "checksum": "b41b0f1362e8d176a8f1c55117f0e4388e83883d47aa0968f0b8f37cdc8daf55",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "1-arrivals-poisson_bounded.parquet",
+            "checksum": "e7ed8fa5d3cff3cb3d94d43604488d75ed08b019fac39bb08092a1e9da6c5b3c",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "1-arrivals-lightgbm_bounded.parquet",
+            "checksum": "02e448f7ee99e23e4392deed992e4d81ffb1734edf8d2fcd77a55ec94d0c3bad",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "1-arrivals-catboost_bounded.parquet",
+            "checksum": "5841f6e5f5b54a497565cce1c32d0c4458f9b1ec1014d8b7e67608fb74edd0bd",
+            "rows": 18889,
+            "evaluation_rows_hash": "13cb5c496caadbc4d0424cefacb5ad33e39a3e0f3fa016236581c6057fa380be"
+          },
+          {
+            "file": "2-departures-seasonal_naive.parquet",
+            "checksum": "3b6c02f0f1437fc66f2b73ca7b4730ea7dcd0fcef5b945f809a7e5d9749fbcf4",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-departures-poisson_default.parquet",
+            "checksum": "cf4340f8c8b06a3826eb501b15c7667af4a5fd18b84b7e527ecb6059ec4ab709",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-departures-lightgbm_default.parquet",
+            "checksum": "c60f273f153c2a12f7b1e0c05b845eea5a87096825af1403d8de12d3275ab1fc",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-departures-catboost_default.parquet",
+            "checksum": "446a082176d3df8e48836f588ae56d5695d6541d134f1b3eed8af66bb65547e8",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-departures-poisson_bounded.parquet",
+            "checksum": "adb1f64b1dd86e1675740befb800244fd539abe79ab77ad4f57c7a5546a5ebd5",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-departures-lightgbm_bounded.parquet",
+            "checksum": "95674bd3c145abea42d829719569e3dcc231fe949523d1b88108fc3e60121bca",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-departures-catboost_bounded.parquet",
+            "checksum": "8137a00e422b0d21ee3633bca55c28a714f2475f9e401983aeb63fe891d1df9e",
+            "rows": 20888,
+            "evaluation_rows_hash": "0cc67901454491a572c4fdee6a19bbf76443363473f2845e6488b006305be43c"
+          },
+          {
+            "file": "2-arrivals-seasonal_naive.parquet",
+            "checksum": "0974007dd2aaad97413ca24195c3dba81bbfb7379085277453971a95b5a9aeb5",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "2-arrivals-poisson_default.parquet",
+            "checksum": "ca9c537cef4d8f255428c0bd76a28dcefb145b3e2bfa7be81b05322164e79670",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "2-arrivals-lightgbm_default.parquet",
+            "checksum": "6dfcbf61e4a1787ea2517c0dc3da7941fedab79d6472945eae713bc1dda04463",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "2-arrivals-catboost_default.parquet",
+            "checksum": "1da57063e6ee235637cbbf384f8230eeb13b7de4f9cdec16581f45343aa9edfe",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "2-arrivals-poisson_bounded.parquet",
+            "checksum": "5c4e5a854d854a211eaaac430007cef179c6a1ec4ca0258afed871f6625da190",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "2-arrivals-lightgbm_bounded.parquet",
+            "checksum": "a75df3f6242704d2bf1dcc6d622cdbcab91975045d43cb2727552648c1d69058",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "2-arrivals-catboost_bounded.parquet",
+            "checksum": "27e6e8fead0a9ecfaf3d6dc422dff2d89210a697a3299426e2646375b45565cd",
+            "rows": 20888,
+            "evaluation_rows_hash": "3cbc491e46daddbbce5cbba259863fff6d7344e381f6c768eea4da4917513484"
+          },
+          {
+            "file": "3-departures-seasonal_naive.parquet",
+            "checksum": "006834848cc70376f270d4f821b6c006364f87f42c4cf246402b76432ab59d40",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-departures-poisson_default.parquet",
+            "checksum": "331221556c0d9703e049360a8a3722ef8bfc2adc0e24ed56e3e210b5e20f487b",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-departures-lightgbm_default.parquet",
+            "checksum": "27f7e595b2b81916b51b6dda9184d4cf6af009e79ba1731519d81f1b669ba7fa",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-departures-catboost_default.parquet",
+            "checksum": "be4a3a1840a513d3df811d3e5baf220fb1eca5d4a2771525661b4542da382c86",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-departures-poisson_bounded.parquet",
+            "checksum": "aeac6514eb8552be6b94694e96469293d760661e92ccc4dbfe9e68d25973f5b1",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-departures-lightgbm_bounded.parquet",
+            "checksum": "35843c43c91a54c99255a5dfee61a336c756f31713690cd9d2836fe766f3e68c",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-departures-catboost_bounded.parquet",
+            "checksum": "11b34ed3166974504a35206acd08d188ca85f3fe4e97e034875057f3446c71b7",
+            "rows": 20174,
+            "evaluation_rows_hash": "9d7aec62636ce9e75c827d498dc90c7001cd1f6980b4a849383bfb8ec983c4bf"
+          },
+          {
+            "file": "3-arrivals-seasonal_naive.parquet",
+            "checksum": "0b27e81882cd72e6621505877ca694307fe224fb16c54b4aa8ebfef46d872e72",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          },
+          {
+            "file": "3-arrivals-poisson_default.parquet",
+            "checksum": "b57d9afcfb0bf09ddf536db968bfe7da193bee6fb4da7432a539da89c91513f5",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          },
+          {
+            "file": "3-arrivals-lightgbm_default.parquet",
+            "checksum": "9434629e67ae1adc71a5a9a59ed0fdaba0a3f1557860541e8d8c3bbc1cb788b0",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          },
+          {
+            "file": "3-arrivals-catboost_default.parquet",
+            "checksum": "487c12c1b9faaa24b9b667363120313bb86269c2609c4fe292c23344ee82ddbf",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          },
+          {
+            "file": "3-arrivals-poisson_bounded.parquet",
+            "checksum": "ad89db89cf628e7ec2684f2b663a11f7312cf74eaa588b3c8b3e4cac4cc9076d",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          },
+          {
+            "file": "3-arrivals-lightgbm_bounded.parquet",
+            "checksum": "94039d2985484dcba376153408143efb6970b1a7f72ed66634725792916c3f91",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          },
+          {
+            "file": "3-arrivals-catboost_bounded.parquet",
+            "checksum": "e9bb0ce5c49c029f453e17f48b406b47182c680b1e4b43d1bf8069a8db44ff4b",
+            "rows": 20174,
+            "evaluation_rows_hash": "c57652b2dccba52dfab094a68c755b4d7d0e5767fa8dddff84760bdf6e3f84c9"
+          }
+        ]
+      },
+      "final_independent_audit": {
+        "independently_recomputed_prediction_rows": 447730,
+        "metric_mismatches": 0,
+        "fold_leakage_rows": 0,
+        "files": [
+          {
+            "file": "0-departures-seasonal_naive.parquet",
+            "checksum": "e6f971f7310271016f5c94fb74f4863479fcca582e6f06879e088140b62051c2",
+            "rows": 44773,
+            "evaluation_rows_hash": "6c856e15cca43a3a649466370612964ab7359c8e3defe1308ee6e1578457025c"
+          },
+          {
+            "file": "0-departures-catboost_bounded.parquet",
+            "checksum": "e4fe92a91b13ab412bb5809d0952d28ba6afde8291089f7701c227669fb272c5",
+            "rows": 44773,
+            "evaluation_rows_hash": "6c856e15cca43a3a649466370612964ab7359c8e3defe1308ee6e1578457025c"
+          },
+          {
+            "file": "0-departures-catboost_default.parquet",
+            "checksum": "66416b4d1e735bcb28bec852450c7d23a7450de91db345ae500b2d907c6a5a30",
+            "rows": 44773,
+            "evaluation_rows_hash": "6c856e15cca43a3a649466370612964ab7359c8e3defe1308ee6e1578457025c"
+          },
+          {
+            "file": "0-departures-lightgbm_bounded.parquet",
+            "checksum": "ce44d77875ce2cb08d12e5798d69dcc65ef65c6938f0abbf068473d6855f9e54",
+            "rows": 44773,
+            "evaluation_rows_hash": "6c856e15cca43a3a649466370612964ab7359c8e3defe1308ee6e1578457025c"
+          },
+          {
+            "file": "0-departures-poisson_bounded.parquet",
+            "checksum": "3aa0d6664dab2a747e0e38e6652e8daefe5139ce8336633883ee16e8b503e5e6",
+            "rows": 44773,
+            "evaluation_rows_hash": "6c856e15cca43a3a649466370612964ab7359c8e3defe1308ee6e1578457025c"
+          },
+          {
+            "file": "0-arrivals-seasonal_naive.parquet",
+            "checksum": "08bb84a54867247a8457448aca2a63a2df6c229778e2d2bfcf189a255a62997b",
+            "rows": 44773,
+            "evaluation_rows_hash": "1bc805b125626c9f505f9dd6cca85244d5e4b840e697adca2caafe6f7eb7a4bb"
+          },
+          {
+            "file": "0-arrivals-catboost_bounded.parquet",
+            "checksum": "15e418a7a9e3f4e7104f73da2756963d00984eb1164d6d6827a8dc48209c16a0",
+            "rows": 44773,
+            "evaluation_rows_hash": "1bc805b125626c9f505f9dd6cca85244d5e4b840e697adca2caafe6f7eb7a4bb"
+          },
+          {
+            "file": "0-arrivals-catboost_default.parquet",
+            "checksum": "08cde0b25848d75b9d599c8450f9c23b30ad4b67fe7ce018e8c556b919ee443a",
+            "rows": 44773,
+            "evaluation_rows_hash": "1bc805b125626c9f505f9dd6cca85244d5e4b840e697adca2caafe6f7eb7a4bb"
+          },
+          {
+            "file": "0-arrivals-lightgbm_bounded.parquet",
+            "checksum": "c41563d7014c1b7e598c9535cd8f7dc5feeece552cbcc5c009759442a7f2eed3",
+            "rows": 44773,
+            "evaluation_rows_hash": "1bc805b125626c9f505f9dd6cca85244d5e4b840e697adca2caafe6f7eb7a4bb"
+          },
+          {
+            "file": "0-arrivals-poisson_bounded.parquet",
+            "checksum": "b8ced680a8d694998ea817e6da6b2738244e200f44bc5805a08cb065771caa01",
+            "rows": 44773,
+            "evaluation_rows_hash": "1bc805b125626c9f505f9dd6cca85244d5e4b840e697adca2caafe6f7eb7a4bb"
+          }
+        ]
+      },
+      "serving": {
+        "publication_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+        "postgres_rows": 3072,
+        "http_rows": 3072,
+        "mismatches": 0
+      }
+    },
+    "F4_research_independent_audit": {
+      "prediction_rows": 2663114,
+      "diagnostic_groups": 2760,
+      "pooled_slice_groups": 20,
+      "metric_mismatches": 0,
+      "row_membership_mismatches": 0,
+      "PIT_mismatches": 0,
+      "saved_model_parity_sample_rows_per_trial": 32,
+      "frozen_files_unchanged": true
+    },
+    "controlled_forecast_http": {
+      "data_mode": "controlled_fixture",
+      "status": "PASS",
+      "rows": 192,
+      "method": "Existing tests.integration.forecast_smoke --api-url, disposable PG and separate local HTTP API",
+      "isolated_database": "bikeflow_test_a99090812469473f99c3c605d002ebfb",
+      "api_url": "http://127.0.0.1:59455",
+      "real_publication_before": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+      "real_publication_after": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+      "serving_unchanged": true
+    },
+    "file_sha256": {
+      "f1": "f871c0a272effe420918249c2ce94850dee168857abdbb5b32b28a873c07c612",
+      "f3": "bbf5a2aabc73b7ac22cb35bc3eb3a86d9aa0fdf68898921d3bd927fdb9f15c8e",
+      "f4": "52461315875cada0a9ff39db986ff93e7538190d6d7d9a096b2f372c0ea6267a"
+    },
+    "protected_files": 1361,
+    "guard_sha256": "b0ccfd4beb7f130dbdb0946864a0f8e518a052fb09e61619e5d3ebc2d75a1a86"
+  },
+  "checks": [
+    {
+      "command": "uv sync --locked --group ml",
+      "status": "PASS"
+    },
+    {
+      "command": "uv run --locked ruff check .",
+      "status": "PASS"
+    },
+    {
+      "command": "uv run --locked ruff format --check .",
+      "status": "PASS"
+    },
+    {
+      "command": "uv run --locked mypy",
+      "status": "PASS"
+    },
+    {
+      "command": "uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration --basetemp .cache/dt",
+      "status": "PASS",
+      "passed": 144,
+      "seconds": 170.05,
+      "warnings": "one existing StarletteDeprecationWarning"
+    },
+    {
+      "command": "uv build",
+      "status": "PASS"
+    }
+  ],
+  "not_run": [
+    "Real risk/policy metrics: no compatible fresh GBFS",
+    "F4 real fitting/reselection/predict/publish",
+    "Production SLA/load and field calibration/economic effect",
+    "F6-F8"
+  ],
+  "dod": [
+    {
+      "id": "1",
+      "criterion": "Read-only F4 publication/lineage + GBFS raw/Silver adapter",
+      "status": "PASS",
+      "evidence": "Published manifest/rows exact; hashes, raw source oracle, schema/model checks; controlled PG integration"
+    },
+    {
+      "id": "2",
+      "criterion": "One as-of / TTL / mapping / missing gates",
+      "status": "PASS",
+      "evidence": "Two real rejected collections + raw freshness oracle; stale/future/missing/duplicate/capacity tests"
+    },
+    {
+      "id": "3",
+      "criterion": "Discrete inventory/capacity/operating/transport simulation",
+      "status": "PASS",
+      "evidence": "Per-event inventory+free docks+blocked+cargo ledger, partial delivery and closed tests"
+    },
+    {
+      "id": "4",
+      "criterion": "Seed-based events / no false paired gain",
+      "status": "PASS",
+      "evidence": "288 same materialized draws, 864 outcomes, shared event hashes; no policy sees evaluation events when planning"
+    },
+    {
+      "id": "5",
+      "criterion": "Scenario empty/full fractions / uncertainty / coverage",
+      "status": "PASS",
+      "evidence": "Ever-boundary outcomes and Monte Carlo Wilson/SE independently checked; unavailable/non-operating risk null"
+    },
+    {
+      "id": "6",
+      "criterion": "No-action / independent threshold heuristic / MILP",
+      "status": "PASS",
+      "evidence": "Three policies, integer stock/docks/fleet/direct-trip/time/cost constraints; no routing claim"
+    },
+    {
+      "id": "7",
+      "criterion": "Independent constraints and cost oracle",
+      "status": "PASS",
+      "evidence": "50958 ledger reconciliations, no mismatches; independent small exhaustive optimum and tampering negative"
+    },
+    {
+      "id": "8",
+      "criterion": "Demand scale/order sensitivity and resources",
+      "status": "PASS",
+      "evidence": "3 scales x3 orders x32 repeats; policy and total wall/process high-water, honest optimizer-vs-heuristic outcome"
+    },
+    {
+      "id": "9",
+      "criterion": "Immutable CLI / repeat / partial failure",
+      "status": "PASS",
+      "evidence": "Exact repeat ID; isolated fixture pointer; failed/partial/unavailable keep last valid version; persisted failure request"
+    },
+    {
+      "id": "10",
+      "criterion": "Compatible real-input F5 simulation E2E",
+      "status": "NOT VERIFIED",
+      "evidence": "Official status feeds stale at actual receipt/as-of; 0/64 eligible in both collections, risk=null; no real policy metrics"
+    },
+    {
+      "id": "11",
+      "criterion": "Frozen F0-F4 behavior / contracts / E2E",
+      "status": "PASS",
+      "evidence": "1361 protected fingerprints; fresh F1/F3/F4 and controlled PG/HTTP smoke"
+    },
+    {
+      "id": "12",
+      "criterion": "Locked checks / build / evidence / CI delivery",
+      "status": "PARTIAL",
+      "evidence": "Local 144 tests/lint/types PASS; build/audit/push/actual CI/checkpoint/bundle recorded after execution"
+    },
+    {
+      "id": "13",
+      "criterion": "Scientific limits / no operational or economy claims / no F6",
+      "status": "PASS",
+      "evidence": "Explicit assumptions, uncalibrated fractions, published-trip means, F4 fallback and F6-F8 NOT RUN"
+    }
+  ],
+  "next_step": "Obtain genuinely fresh compatible GBFS and still-valid published F4 forecasts; run and independently verify real F5 E2E, then F5 acceptance. Do not start F6.",
+  "local_delivery_audit": {
+    "status": "PASS",
+    "changed_files": 16,
+    "local_links": 54,
+    "packages": [
+      {
+        "path": "dist\\citibike-0.1.0-py3-none-any.whl",
+        "bytes": 202707,
+        "sha256": "bdfef0557ce207dc4d988a4659239bf3be30d2fc3035bfd66774cd675915c16c"
+      },
+      {
+        "path": "dist\\citibike-0.1.0.tar.gz",
+        "bytes": 172616,
+        "sha256": "0b97d96a8ee3d4553e6a0bdbf6a8fa650901ada2c4360b2c8ee654bfefd7a7fa"
+      }
+    ],
+    "protected_files": 1361,
+    "scope_history_secrets_package_source_recipe": "PASS"
+  }
+}

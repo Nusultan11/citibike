@@ -249,7 +249,42 @@ Read-only API закрепляет publication и возвращает provenanc
 Даты F1/F3 — полуоткрытое окно America/New_York; параметры проверяет OpenAPI.
 Нет публикации — `empty`, не нулевой спрос; недоступная БД — 503; неверный диапазон
 — 422. F1/F3 IDs не являются forecast IDs. Карта, полноценные прогнозные web views
-и рекомендации относятся к F5/F6, не к текущему UI.
+и рекомендации в UI относятся к F6.
+
+## F5 — сценарный риск и перевозки
+
+**PARTIAL:** CLI, simulator, threshold heuristic и bounded SciPy MILP проверены
+на controlled integration. Два официальных GBFS collections оказались stale
+при собственном TTL: реальные входы отклонены, risk=null, real E2E NOT VERIFIED.
+[Evidence и ограничения](docs/evidence/f5-risk.md), [машинный результат](docs/evidence/f5-risk.json).
+
+```sh
+# Воспроизводимый controlled F4→disposable PostgreSQL→GBFS→F5 + independent oracle:
+uv run --locked --group ml python -m tests.integration.test_risk
+
+# Повторный расчёт сохранённого результата независимым ledger, без serving writes:
+uv run --locked --group ml python -m citibike.risk verify --result data/f5/results/3403a0eb33544546f5892476900bfb62e4bf06cf074c79cd07c554c0b9ce90b0
+```
+
+`python -m citibike.risk run` требует явный timezone-aware `--as-of` и принимает
+`--forecast`, `--gbfs`, `--config`, `--stations`, `--data-dir`. Forecast должен
+совпадать с фактической публикацией PostgreSQL, быть опубликован к as-of и
+покрывать полные будущие часы. GBFS проверяется по original JSON/Parquet,
+received/source timestamps, positive TTL и уникальному short_name mapping.
+Нет совместимых inputs — immutable unavailable result и exit2, предыдущая
+валидная версия сохраняется. Пропущенные станции имеют null risk с причиной.
+Results находятся в ignored `data/f5/results`; `active.json` допустим только для
+real_official, fixtures используют отдельный `active_controlled.json`.
+
+Config задаёт hours/repeats/seed, demand scales и event orders, число/ёмкость
+транспорта, скорость, handling time и относительную стоимость. Три политики
+получают одинаковые сохранённые события. Poisson attempts, exogenous returns,
+постоянные operating flags и blocked docks — сценарные допущения. Initial GBFS
+TTL не подтверждает будущую наблюдаемость. Оптимизатор решает inventory-target
+surrogate, не полный routing и не гарантирует минимальные simulated failures.
+Wilson intervals характеризуют Monte Carlo precision, не калибровку реальных
+отказов. Operational promotion F4 NOT VERIFIED; Seasonal Naive/unavailable
+fallback сохранён. Новых зависимостей, API, migrations и F5 web UI нет.
 
 ## Проверки и CI
 
@@ -293,11 +328,12 @@ forecast/analytics smoke и F1 outage/recovery. Полная история и r
 | Bounded search и все trials, ML_SPEC §4 | `VERIFIED`: immutable protocol до fits; 138/138 real outcomes (default/bounded, ablation, stress, repeats), worker timeout/RSS gates, durable failures на controlled negative tests. Frozen legacy evaluation сохранён; новые исследования запускаются отдельным `research --protocol`, без нового Optuna/MLflow |
 | Operational champion, ML_SPEC §5 | `NOT VERIFIED`: forward/shadow evaluation отсутствует. Local champion manifests выбирают baseline, это fallback без доказанного operational uplift; strict current input gate не заменяет forward evaluation |
 | MLflow lifecycle, ML_SPEC §7 | `PLANNED` для F7: local manifests не MLflow Registry; требование не отменено |
-| Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F5–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
+| Risk/Optimization, ML_SPEC §6 | `IMPLEMENTED/VERIFIED` на controlled scenarios; real-input unavailable gates проверены, real F5 E2E `NOT VERIFIED`, фаза PARTIAL. [F5 evidence](docs/evidence/f5-risk.md) |
+| Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F6–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
 
-Эти ограничения должны участвовать в корректирующей независимой приёмке F4
-после закрытия F2 и в проверке входов перед F5. Коррекция F2 не меняет модели,
-frozen selection или final-test и не закрывает оставшиеся требования F4.
+F2/F3/F4 приняты пользователем в задании F5 с явно сохранённым F3 performance debt
+и NOT VERIFIED operational promotion F4. Эти ограничения передаются в F5;
+frozen selection/final-test/serving не переизбираются.
 
 ## Требования и продолжение разработки
 
@@ -313,9 +349,9 @@ frozen selection или final-test и не закрывает оставшиес
 Процесс по [AGENTS.md](AGENTS.md) и [bikeflow-step](.agents/skills/bikeflow-step/SKILL.md):
 **один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
 приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
-допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая
-приёмка корректирующего F4 с учётом явно сохранённых ограничений. F5 начинается
-только после приёмки и проверки зависимостей ROADMAP; автоматически не переходить.
+допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — закрыть
+F5 real E2E при совместимых свежих GBFS/forecast inputs, затем независимая приёмка
+F5. F6–F8 автоматически не начинать.
 
 [Citi Bike System Data](https://citibikenyc.com/system-data),
 [Data Sharing Policy](https://citibikenyc.com/data-sharing-policy).

@@ -20,7 +20,7 @@ jobs:
       - run: uv run --locked ruff check .
       - run: uv run --locked ruff format --check .
       - run: uv run --locked mypy
-      - run: uv run --locked pytest -q tests/unit
+      - run: uv run --locked --group ml pytest -q tests/unit
       - run: uv run --locked pytest -q tests/data_contracts
       - run: uv run --locked --group ml pytest -q tests/ml
       - run: uv run --locked python -m tests.fixtures_history --data-dir .cache/f2-ci
@@ -73,6 +73,7 @@ jobs:
       - run: uv run --locked python tests/integration/smoke.py --expect-data empty
       - run: uv run --locked pytest -q tests/integration/test_serving.py tests/integration/test_analytics.py
       - run: uv run --locked --group ml pytest -q tests/integration/test_forecasting.py
+      - run: uv run --locked --group ml pytest -q tests/integration/test_risk.py
       - run: uv run --locked --group ml python -m tests.integration.forecast_smoke
       - run: uv run --locked python -m tests.integration.analytics_smoke
       - run: uv run --locked python -m tests.fixtures --output .cache/f1-fixture.zip
