@@ -1,6 +1,6 @@
 {
   "phase": "F5",
-  "status": "PARTIAL",
+  "status": "COMPLETED",
   "generated_at": "2026-10-30T05:56:21.839767+00:00",
   "base_commit": "ea6a4a50efe66413f74a3af7d9edc647f83a9e2c",
   "independent_acceptance": "F2/F3/F4 accepted in user request; F5 pending",
@@ -4064,8 +4064,8 @@
     {
       "id": "12",
       "criterion": "Locked checks / build / evidence / CI delivery",
-      "status": "PARTIAL",
-      "evidence": "Current144 tests159.68s, locked checks/build, fresh F1/F3/F4 PASS; corrective audit/commit/push/actual CI/checkpoint/bundle pending."
+      "status": "PASS",
+      "evidence": "144 current tests159.68s, locked checks/build/audit,2251 protected files; evidence6564645 pushed, actual CI41032384782 all3 jobs success. Final own SHA/CI/tag/bundle verified and reported after docs push."
     },
     {
       "id": "13",
@@ -4110,7 +4110,7 @@
   },
   "dod10_correction": {
     "stage": "F5 corrective DoD10",
-    "status": "PARTIAL pending actual CI; real-asof scenario VERIFIED",
+    "status": "COMPLETED in recorded-asof scenario scope; current live readiness NOT VERIFIED",
     "verified_at": "2026-10-30T09:12:14.024950+00:00",
     "base_commit": "4e6af30a78400cf88234568b5a04a4e73fa0fbf1",
     "baseline_ci": {
@@ -15787,17 +15787,30 @@
       "packages": [
         {
           "path": "dist\\citibike-0.1.0-py3-none-any.whl",
-          "bytes": 203103,
-          "sha256": "4e41688472e2c1f52bd5fa63d67a303df9d9ee8ea8bb73624a517f1bb98e0f4f"
+          "bytes": 203168,
+          "sha256": "68057114fa29430f1e3cd019a4e6b6085470d4abdea9238d6b2582a5ecfed3a6"
         },
         {
           "path": "dist\\citibike-0.1.0.tar.gz",
-          "bytes": 173401,
-          "sha256": "042993be7c830e67393ee2d73e2221a2f003e5c7bfd3f2b96f5ed42ba5e22030"
+          "bytes": 173549,
+          "sha256": "5746f4ed9cdd85ed07d07a5e2aeabf92d97ebff919ccf36a380dcc34f1a60631"
         }
       ],
       "protected_files": 2251
+    },
+    "git_delivery": {
+      "evidence_commit": "6564645dc1e23f2033d166e1e6c76ff99ee203e9",
+      "message": "docs(risk): verify official F5 scenario at recorded as-of",
+      "remote_sha_verified": true,
+      "actual_ci": "https://github.com/Nusultan11/citibike/actions/runs/41032384782",
+      "ci_status": "completed/success",
+      "jobs": {
+        "python": "success",
+        "frontend": "success",
+        "docker-smoke": "success"
+      },
+      "final_delivery": "Final own SHA/CI/checkpoint/bundle checked after final docs push and reported in chat, without recursive self-SHA commits."
     }
   },
-  "updated_at": "2026-10-30T09:12:14.032402+00:00"
+  "updated_at": "2026-10-30T09:23:48.453994+00:00"
 }

@@ -15,7 +15,7 @@ Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
 | F2 | Inventory, 24 NYC месяца 2024-10…2026-09, 104 CSV, canonical Silver, GBFS collections | **92 076 567** canonical из **92 085 994** входных; [EDA](docs/evidence/f2-analysis.md), [evidence](docs/evidence/f2-history.json) |
 | F3 | Gold, фильтры, временная/географическая аналитика, маршруты, GBFS intervals, `/analytics` | Default start-window **92 076 054**; [контракт](docs/analytics-contract.md), [сверка](docs/evidence/f3-analytics.json), [benchmark](docs/evidence/f3-performance.md), [UI](docs/evidence/f3-ui.json) |
 | F4 | Departures/arrivals на 24 часа, Seasonal Naive/Poisson/LightGBM/CatBoost, backtest, batch/API | Cohort 64 станции; [контракт и catalog](docs/forecasting-contract.md), [эксперимент](docs/evidence/f4-forecasting.md), [evidence](docs/evidence/f4-forecasting.json) |
-| F5 | Scenario risk, threshold heuristic, bounded transport MILP и CLI; corrective delivery ожидает CI | [Controlled comparison и real-official as-of replay](docs/evidence/f5-risk.md):3/64 eligible; это не текущий live risk |
+| F5 | `COMPLETED` в сценарном recorded-as-of scope: risk, heuristic, bounded transport MILP и CLI | [Controlled comparison и real-official as-of replay](docs/evidence/f5-risk.md):3/64 eligible; это не текущий live risk |
 | F6–F8 | `PLANNED`: полные product views, Prefect/MLflow automation, production hardening | Не реализованы; критерии и зависимости — [ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) |
 
 Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Принятие
@@ -255,7 +255,7 @@ Read-only API закрепляет publication и возвращает provenanc
 
 ## F5 — сценарный риск и перевозки
 
-**PARTIAL до corrective CI:** DoD10 проверен на real_official recorded-as-of
+**COMPLETED в сценарном объёме:** DoD10 проверен на real_official recorded-as-of
 replay:3/64 eligible на фактически записанный collection-end
 `2026-10-30T06:36:54.163891+00:00`, forecasts07:00–11:00 UTC. Все три политики и
 independent oracle прошли. Это согласованная симуляция того наблюдения, не live
@@ -355,8 +355,7 @@ frozen selection/final-test/serving не переизбираются.
 Процесс по [AGENTS.md](AGENTS.md) и [bikeflow-step](.agents/skills/bikeflow-step/SKILL.md):
 **один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
 приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
-допустимы при PARTIAL/BLOCKED или дефектах приёмки. После corrective delivery
-ближайшая работа — независимая приёмка F5 с явно указанным recorded-as-of scope
+допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая приёмка F5 с явно указанным recorded-as-of scope
 и ограничениями current live inputs. F6–F8 автоматически не начинать.
 
 [Citi Bike System Data](https://citibikenyc.com/system-data),

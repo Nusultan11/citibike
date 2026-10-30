@@ -1,4 +1,4 @@
-# F5 — Risk & Optimization: PARTIAL до corrective CI
+# F5 — Risk & Optimization: COMPLETED (recorded-as-of scope)
 
 DoD10 **VERIFIED для recorded-as-of real_official replay**,3/64 eligible. Это не live-риск на время исполнения. Актуальная корректирующая запись и ограничения — в последнем разделе; нижеследующее исходное evidence checkpoint4e6af30 сохранено как история.
 
@@ -181,7 +181,7 @@ Independent oracle **288 paired draws /864 outcomes /14526 ledger checks /0 mism
 
 ### Проверки и актуальный DoD
 
-Locked sync/Ruff/format/mypy/build PASS; полный suite **144 passed,159.68s**, один existing Starlette warning. Fresh F1 independent raw→UI3860371, F3 Silver/PG/HTTP/HTML92076054/0 mismatch, F4 label/PIT/frozen validation/final/research и serving3072/3072/0 mismatch — PASS.2251 protected fingerprints PASS. Новых modules/tests/dependencies/API/migrations/инфраструктуры нет. Diff/secrets/package/source-recipe audit PASS:4 целевых файла,55 local links; wheel203103B/sdist173401B без datasets/cache/env/models. Git/actual CI/checkpoint/bundle ещё ожидают завершения delivery.
+Locked sync/Ruff/format/mypy/build PASS; полный suite **144 passed,159.68s**, один existing Starlette warning. Fresh F1 independent raw→UI3860371, F3 Silver/PG/HTTP/HTML92076054/0 mismatch, F4 label/PIT/frozen validation/final/research и serving3072/3072/0 mismatch — PASS.2251 protected fingerprints PASS. Новых modules/tests/dependencies/API/migrations/инфраструктуры нет. Diff/secrets/package/source-recipe audit PASS:4 целевых файла,55 local links; wheel203168B/sdist173549B без datasets/cache/env/models. Evidence `6564645dc1e23f2033d166e1e6c76ff99ee203e9` pushed, [actual CI41032384782](https://github.com/Nusultan11/citibike/actions/runs/41032384782) completed/success, python/frontend/docker-smoke все success. Итоговые own docs SHA/CI/checkpoint/bundle проверяются после push и сообщаются в чате.
 
 | DoD | Status | Current evidence |
 |---|---|---|
@@ -196,7 +196,7 @@ Locked sync/Ruff/format/mypy/build PASS; полный suite **144 passed,159.68s
 | 9. Immutable CLI / repeat / partial failure | PASS | Exact repeat ID; isolated fixture pointer; failed/partial/unavailable keep last valid version; persisted failure request |
 | 10. Compatible real-input F5 simulation E2E | PASS | Official GBFS at recorded actual asof06:36:54.163891 +published F4;3/64 eligible, numerical3-policy replay99f703b; independent288 draws/864 outcomes/14526 ledger checks,0 mismatch. NOT live-at-execution risk. |
 | 11. Frozen F0-F4 behavior / contracts / E2E | PASS | 1361 protected fingerprints; fresh F1/F3/F4 and controlled PG/HTTP smoke |
-| 12. Locked checks / build / evidence / CI delivery | PARTIAL | Current144 tests159.68s, locked checks/build, fresh F1/F3/F4 PASS; corrective audit/commit/push/actual CI/checkpoint/bundle pending. |
+| 12. Locked checks / build / evidence / CI delivery | PASS | Current144 tests159.68s, locked/build/audit/2251 hashes; evidence6564645 pushed, actual CI41032384782 all3 jobs success; итоговые docs SHA/CI/checkpoint/bundle проверяются и сообщаются в чате |
 | 13. Scientific limits / no operational or economy claims / no F6 | PASS | Explicit assumptions, uncalibrated fractions, published-trip means, F4 fallback and F6-F8 NOT RUN |
 
 ### Exact reproduction
@@ -211,3 +211,5 @@ uv run --locked --group ml python -m citibike.risk verify --result data/f5/resul
 Все actual child argv/exit codes и HTTP hooks приведены в JSON; старые controlled/rejected evidence остались неизменными. Field calibration/hidden demand/operator money/production SLA и strict F4 promotion не доказаны. F6–F8 NOT RUN.
 
 Следующий шаг после delivery — независимая приёмка F5 с явно указанным recorded-as-of scope; F6 не начинать.
+
+Итог: **F5 COMPLETED в согласованном сценарном recorded-as-of scope,13/13 DoD PASS**. Current live readiness/field calibration и F4 operational promotion NOT VERIFIED, независимая приёмка F5 отдельно.
