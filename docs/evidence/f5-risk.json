@@ -4059,8 +4059,8 @@
     {
       "id": "12",
       "criterion": "Locked checks / build / evidence / CI delivery",
-      "status": "PARTIAL",
-      "evidence": "Local 144 tests/lint/types PASS; build/audit/push/actual CI/checkpoint/bundle recorded after execution"
+      "status": "PASS",
+      "evidence": "144 local tests, locked lint/types/build/audit; code44fddad pushed and actual CI41011696935 python/frontend/docker-smoke success. Final docs SHA/CI/checkpoint/bundle verified and reported after final push."
     },
     {
       "id": "13",
@@ -4073,20 +4073,34 @@
   "local_delivery_audit": {
     "status": "PASS",
     "changed_files": 16,
-    "local_links": 54,
+    "local_links": 55,
     "packages": [
       {
         "path": "dist\\citibike-0.1.0-py3-none-any.whl",
-        "bytes": 202707,
-        "sha256": "bdfef0557ce207dc4d988a4659239bf3be30d2fc3035bfd66774cd675915c16c"
+        "bytes": 202787,
+        "sha256": "9a998f3829030cf6fea8d7de3eda4ccede30b4e9fae000c7b1e2e78ffe412d7e"
       },
       {
         "path": "dist\\citibike-0.1.0.tar.gz",
-        "bytes": 172616,
-        "sha256": "0b97d96a8ee3d4553e6a0bdbf6a8fa650901ada2c4360b2c8ee654bfefd7a7fa"
+        "bytes": 172779,
+        "sha256": "0e7b52b7944d5f45c2cc64fa57c2b4e1e8f015a585329fc99910850d92953e26"
       }
     ],
     "protected_files": 1361,
     "scope_history_secrets_package_source_recipe": "PASS"
+  },
+  "git_delivery": {
+    "code_commit": "44fddad2b365c32116269d2763d82c8a8e37130f",
+    "message": "feat(risk): add bounded F5 simulation and transport planning",
+    "code_remote_sha_verified": true,
+    "code_ci": "https://github.com/Nusultan11/citibike/actions/runs/41011696935",
+    "code_ci_status": "completed/success",
+    "jobs": {
+      "python": "success",
+      "frontend": "success",
+      "docker-smoke": "success"
+    },
+    "phase_status": "PARTIAL; real E2E NOT VERIFIED",
+    "final_documentation_delivery": "Final own SHA/CI/tag/remote/bundle are checked after final docs push and reported in chat; no recursive self-SHA commits."
   }
 }

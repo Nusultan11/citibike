@@ -3,7 +3,7 @@
 Независимая аналитическая и прогнозно-рекомендательная платформа на публичных
 данных Citi Bike. История поездок проходит ZIP → immutable Bronze → Silver
 Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
-Факты, прогнозы и будущие сценарные рекомендации имеют разные источники и статусы.
+Факты, прогнозы и сценарные результаты имеют разные источники и статусы.
 Опубликованные поездки не измеряют скрытый спрос; симуляция не доказывает экономию.
 
 ## Реализовано и подтверждено
@@ -15,10 +15,12 @@ Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
 | F2 | Inventory, 24 NYC месяца 2024-10…2026-09, 104 CSV, canonical Silver, GBFS collections | **92 076 567** canonical из **92 085 994** входных; [EDA](docs/evidence/f2-analysis.md), [evidence](docs/evidence/f2-history.json) |
 | F3 | Gold, фильтры, временная/географическая аналитика, маршруты, GBFS intervals, `/analytics` | Default start-window **92 076 054**; [контракт](docs/analytics-contract.md), [сверка](docs/evidence/f3-analytics.json), [benchmark](docs/evidence/f3-performance.md), [UI](docs/evidence/f3-ui.json) |
 | F4 | Departures/arrivals на 24 часа, Seasonal Naive/Poisson/LightGBM/CatBoost, backtest, batch/API | Cohort 64 станции; [контракт и catalog](docs/forecasting-contract.md), [эксперимент](docs/evidence/f4-forecasting.md), [evidence](docs/evidence/f4-forecasting.json) |
-| F5–F8 | `PLANNED`: risk/optimization, полные product views, Prefect/MLflow automation, production hardening | Не реализованы; критерии и зависимости — [ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) |
+| F5 | `PARTIAL`: scenario risk, threshold heuristic, bounded transport MILP и CLI | [Controlled comparison / real-input unavailable](docs/evidence/f5-risk.md); real E2E NOT VERIFIED |
+| F6–F8 | `PLANNED`: полные product views, Prefect/MLflow automation, production hardening | Не реализованы; критерии и зависимости — [ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) |
 
-Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Это не
-подтверждение новых требований ZIP и не независимая приёмка F4 пользователем.
+Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Принятие
+F2/F3/F4 пользователем подтверждено заданием F5 с сохранёнными ограничениями;
+старые записи сами по себе не подтверждают новые требования ZIP.
 `VERIFIED` означает фактически пройденную указанную проверку, `NOT VERIFIED` —
 недостаток доказательств; старые evidence не объявляются повторно проверенными.
 Текущие проверки документации и расхождения записаны в новой записи §6.

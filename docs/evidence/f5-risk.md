@@ -70,7 +70,7 @@ Immutable inputs/plans/events/outcomes/manifests — ignored data/f5. Git сод
 
 ## Проверки / DoD
 
-Locked sync/Ruff/format/mypy — PASS. Полный suite144 passed,170.05s, один existing Starlette warning. Controlled module, real CLI gates, independent oracle, fresh F1/F3/F4 и isolated forecast smoke — PASS. Build/package/diff/secrets/source-recipe audit — PASS:16 целевых файлов,54 local links; wheel202707B/sdist172616B без данных/кэша/env/models, migrations001–005 сохранены. Actual CI/delivery пока ожидаются.
+Locked sync/Ruff/format/mypy — PASS. Полный suite144 passed,170.05s, один existing Starlette warning. Controlled module, real CLI gates, independent oracle, fresh F1/F3/F4 и isolated forecast smoke — PASS. Build/package/diff/secrets/source-recipe audit — PASS:16 целевых файлов,55 local links; wheel202787B/sdist172779B без данных/кэша/env/models, migrations001–005 сохранены. Code/evidence `44fddad2b365c32116269d2763d82c8a8e37130f` pushed, [actual CI41011696935](https://github.com/Nusultan11/citibike/actions/runs/41011696935) completed/success: python/frontend/docker-smoke, включая новые F5 tests и прежние E2E. Итоговые docs SHA/CI/checkpoint/bundle проверяются после push и сообщаются в чате.
 
 Fresh regressions: F1 все8 raw→UI значений3860371; F3 Silver/PG/HTTP/HTML92076054,0 mismatches; F4 labels1046111 groups/4708937 events, PIT/frozen validation/final и corrective2663114 rows PASS, serving3072/3072,0 mismatches. Real selection/model/final lock/forecasts, applied migrations и1361 protected hashes сохранены.
 
@@ -87,7 +87,7 @@ Fresh regressions: F1 все8 raw→UI значений3860371; F3 Silver/PG/HTT
 | 9. Immutable CLI / repeat / partial failure | PASS | Exact repeat ID; isolated fixture pointer; failed/partial/unavailable keep last valid version; persisted failure request |
 | 10. Compatible real-input F5 simulation E2E | NOT VERIFIED | Official status feeds stale at actual receipt/as-of; 0/64 eligible in both collections, risk=null; no real policy metrics |
 | 11. Frozen F0-F4 behavior / contracts / E2E | PASS | 1361 protected fingerprints; fresh F1/F3/F4 and controlled PG/HTTP smoke |
-| 12. Locked checks / build / evidence / CI delivery | PARTIAL | Local 144 tests/lint/types PASS; build/audit/push/actual CI/checkpoint/bundle recorded after execution |
+| 12. Locked checks / build / evidence / CI delivery | PASS | 144 tests, locked checks/build/audit, code44fddad pushed, actual CI41011696935 all3 jobs success; финальные docs SHA/CI/checkpoint/bundle проверяются и сообщаются в отчёте |
 | 13. Scientific limits / no operational or economy claims / no F6 | PASS | Explicit assumptions, uncalibrated fractions, published-trip means, F4 fallback and F6-F8 NOT RUN |
 
 ## Воспроизведение
