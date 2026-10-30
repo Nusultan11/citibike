@@ -144,3 +144,178 @@ Real strict batch `1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81
 Полный CLI predict+publish на финальном batch из прошедшего CI code SHA `1c5d5d753bf4c817728aa9e8c8b8e691fda8871b`: **7.7726736s** (предыдущие batches 11.7243199s и 8.2651219s). Замер включает запуск двух CLI, не training/backtest. Оба <300s для данного cohort; это не citywide SLA. RSS — process high-water measurement, не изолированная estimator memory. Shared host / sequential runs, concurrent-load SLA — NOT VERIFIED.
 
 Fresh F1 raw→UI regression: [f4-f1-regression.json](f4-f1-regression.json), все 8 stage values 3860371. Final local tests **92 passed**, один существующий StarletteDeprecationWarning; Ruff/format/mypy (92 files), locked sync, package build, frontend npm ci/lint/typecheck/build, Docker/HTTP проходят. Фактические SHA и CI фиксируются в ROADMAP §6 после push. MLflow Registry automation — F7; здесь immutable local manifests, не Registry. Prediction intervals не заявлены; F5–F8 не реализуются.
+
+## Корректирующий validation-only protocol
+
+Protocol `8729cb7cc4aac8efbe3ddda02c6bc972804c69fbf365b9a9ce35093f2d1a6050`, saved 2026-10-30T04:00:01.602462+00:00 before new trials. Dataset `d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5`. Run `b6565ab502b14bcd7481dd25362ea6fabb63a39caaf99364e6f65389c1fb8618`; mode **approximate retrospective**.
+
+Предыдущие разделы — прежний frozen evaluation. Этот раздел содержит только новые validation trials; Sep2026 final scores не участвовали в новом сравнении. Existing selection/model/forecast IDs и serving сохранены.
+
+Outcomes: `{'success': 138, 'failed': 0, 'not_run': 0}`. Resources: `{'invocation_seconds': 2288.375, 'cumulative_worker_seconds': 2286.05700000003, 'parent_peak_rss_bytes': 398503936}`. Per-trial native process RSS/wall/parameters/status/error/seed/input versions сохранены в immutable trials; компактные ссылки/checksums и результаты находятся в F4 JSON.
+
+### Bounded search и ablation
+
+Macro metrics — невзвешенное среднее по validation folds. N по каждому fold явен в JSON; пропущенный/нулевой actual denominator WAPE остаётся N/A. Counts0/1–4/5–19/20+ заданы до fits по принятому F2 EDA; weekday peak-hour и count>=20 — разные диагностические определения.
+
+| Target | Configuration | Macro MAE | WAPE | RMSE | Bias | Wins | >20% degraded key slices |
+|---|---|---:|---:|---:|---:|---:|---:|
+| departures | seasonal_naive | 1.7544 | 0.8062 | 3.3839 | -0.1891 | 0/4 | 0 |
+| departures | poisson_default | 2.0736 | 0.9241 | 3.7020 | 0.0541 | 1/4 | 64 |
+| departures | lightgbm_default | 1.5960 | 0.7096 | 3.0166 | -0.4003 | 3/4 | 12 |
+| departures | catboost_default | 1.5199 | 0.6646 | 2.9129 | -0.5455 | 3/4 | 10 |
+| departures | poisson_bounded | 1.7683 | 0.7807 | 3.5431 | -0.3183 | 1/4 | 41 |
+| departures | lightgbm_bounded | 1.5665 | 0.6919 | 2.9478 | -0.4356 | 3/4 | 12 |
+| departures | catboost_bounded | 1.5245 | 0.6684 | 2.8980 | -0.4643 | 3/4 | 14 |
+| departures | poisson_bounded__without_calendar | 3.2509 | 1.5353 | 6.2064 | 1.9562 | 0/4 | 118 |
+| departures | poisson_bounded__without_station_identity | 1.7801 | 0.7692 | 3.3562 | -0.6223 | 2/4 | 42 |
+| departures | poisson_bounded__without_demand_profile | 2.0898 | 0.9110 | 3.8677 | -0.7231 | 1/4 | 72 |
+| departures | lightgbm_bounded__without_calendar | 1.7784 | 0.8162 | 3.3689 | -0.1591 | 2/4 | 22 |
+| departures | lightgbm_bounded__without_station_identity | 1.5932 | 0.7064 | 2.9807 | -0.4016 | 3/4 | 15 |
+| departures | lightgbm_bounded__without_demand_profile | 1.5933 | 0.6980 | 3.0782 | -0.5249 | 3/4 | 14 |
+| departures | catboost_bounded__without_calendar | 1.7849 | 0.8209 | 3.3345 | -0.0061 | 2/4 | 19 |
+| departures | catboost_bounded__without_station_identity | 1.5394 | 0.6733 | 2.9290 | -0.4895 | 3/4 | 15 |
+| departures | catboost_bounded__without_demand_profile | 1.6176 | 0.7076 | 3.1324 | -0.5336 | 3/4 | 16 |
+| arrivals | seasonal_naive | 1.7479 | 0.8048 | 3.4448 | -0.1864 | 0/4 | 0 |
+| arrivals | poisson_default | 2.0973 | 0.9338 | 3.8516 | 0.0442 | 1/4 | 67 |
+| arrivals | lightgbm_default | 1.5709 | 0.6960 | 3.0330 | -0.3858 | 3/4 | 15 |
+| arrivals | catboost_default | 1.5067 | 0.6580 | 2.9616 | -0.5780 | 3/4 | 11 |
+| arrivals | poisson_bounded | 1.7821 | 0.7846 | 3.6279 | -0.3582 | 1/4 | 48 |
+| arrivals | lightgbm_bounded | 1.5684 | 0.6941 | 2.9967 | -0.4100 | 3/4 | 16 |
+| arrivals | catboost_bounded | 1.4957 | 0.6545 | 2.9051 | -0.4825 | 3/4 | 14 |
+| arrivals | poisson_bounded__without_calendar | 3.3204 | 1.5665 | 6.3092 | 1.9797 | 0/4 | 123 |
+| arrivals | poisson_bounded__without_station_identity | 1.7955 | 0.7747 | 3.5039 | -0.6493 | 2/4 | 49 |
+| arrivals | poisson_bounded__without_demand_profile | 2.1036 | 0.9168 | 3.9610 | -0.7216 | 1/4 | 77 |
+| arrivals | lightgbm_bounded__without_calendar | 1.7816 | 0.8193 | 3.4500 | -0.1466 | 2/4 | 27 |
+| arrivals | lightgbm_bounded__without_station_identity | 1.5878 | 0.7067 | 3.0275 | -0.3506 | 3/4 | 20 |
+| arrivals | lightgbm_bounded__without_demand_profile | 1.5935 | 0.6996 | 3.1400 | -0.5187 | 3/4 | 11 |
+| arrivals | catboost_bounded__without_calendar | 1.7787 | 0.8212 | 3.3902 | -0.0333 | 2/4 | 22 |
+| arrivals | catboost_bounded__without_station_identity | 1.5172 | 0.6637 | 2.9507 | -0.4946 | 3/4 | 17 |
+| arrivals | catboost_bounded__without_demand_profile | 1.6180 | 0.7110 | 3.1978 | -0.5076 | 3/4 | 15 |
+
+Ablation сравнивает каждый bounded algorithm с тем же algorithm без одной группы на идентичных evaluation rows. horizon_h сохранён. Seasonal Naive независим: удаление определяющих profile/station/calendar связей меняет его семантику, поэтому baseline ablation неприменима. Profiles косвенно кодируют station/calendar; это сравнение колонок, не причинный вклад информации.
+
+| Target | Removed group / model | ΔMAE по folds (ablated − full) |
+|---|---|---|
+| departures | poisson_bounded__without_calendar | +0.0230, +1.9463, +2.9521, +1.0089 |
+| departures | poisson_bounded__without_station_identity | +0.0568, +0.1894, -0.0322, -0.1668 |
+| departures | poisson_bounded__without_demand_profile | +0.2721, +0.6301, +0.2933, +0.0905 |
+| departures | lightgbm_bounded__without_calendar | -0.0035, +0.0731, +0.5063, +0.2715 |
+| departures | lightgbm_bounded__without_station_identity | +0.0611, -0.0287, +0.0576, +0.0169 |
+| departures | lightgbm_bounded__without_demand_profile | -0.1088, +0.2308, -0.0798, +0.0651 |
+| departures | catboost_bounded__without_calendar | -0.0108, +0.0888, +0.7951, +0.1685 |
+| departures | catboost_bounded__without_station_identity | +0.0325, +0.0244, +0.0297, -0.0271 |
+| departures | catboost_bounded__without_demand_profile | -0.0907, +0.3102, +0.0643, +0.0887 |
+| arrivals | poisson_bounded__without_calendar | +0.0210, +2.0329, +3.0571, +1.0423 |
+| arrivals | poisson_bounded__without_station_identity | +0.0491, +0.1900, -0.0357, -0.1500 |
+| arrivals | poisson_bounded__without_demand_profile | +0.2404, +0.6363, +0.2894, +0.1195 |
+| arrivals | lightgbm_bounded__without_calendar | +0.0016, +0.0649, +0.5135, +0.2727 |
+| arrivals | lightgbm_bounded__without_station_identity | +0.0453, -0.0476, +0.0390, +0.0411 |
+| arrivals | lightgbm_bounded__without_demand_profile | -0.1180, +0.2350, -0.0823, +0.0658 |
+| arrivals | catboost_bounded__without_calendar | +0.0030, +0.0680, +0.8758, +0.1853 |
+| arrivals | catboost_bounded__without_station_identity | +0.0433, +0.0141, +0.0379, -0.0093 |
+| arrivals | catboost_bounded__without_demand_profile | -0.1167, +0.3408, +0.1500, +0.1151 |
+
+### Stress, ошибки и стабильность
+
+Stress candidate выбран только по validation majority/resource gates и macro MAE среди прежних bounded configurations; parameter search не расширялся. Train уменьшен до половины фактических полных station/origin blocks. Evaluation population неизменна.
+
+| Target | Candidate | Fold | Train full/half | MAE full/half | ΔMAE |
+|---|---|---:|---:|---:|---:|
+| departures | catboost_bounded | 0 | 49560/24768 | 2.1389/2.1398 | +0.0008 |
+| departures | catboost_bounded | 1 | 79992/39984 | 1.6360/1.6715 | +0.0355 |
+| departures | catboost_bounded | 2 | 79992/39984 | 1.2531/1.2434 | -0.0097 |
+| departures | catboost_bounded | 3 | 79992/39984 | 1.0699/1.0375 | -0.0325 |
+| arrivals | catboost_bounded | 0 | 49560/24768 | 2.1437/2.1731 | +0.0294 |
+| arrivals | catboost_bounded | 1 | 79992/39984 | 1.5907/1.6182 | +0.0275 |
+| arrivals | catboost_bounded | 2 | 79992/39984 | 1.1917/1.2277 | +0.0360 |
+| arrivals | catboost_bounded | 3 | 79992/39984 | 1.0567/1.0235 | -0.0332 |
+
+### Zero/nonzero, rare и peak errors
+
+Pooled metrics ниже пересчитаны из сумм ошибок, квадратов ошибок и actual по четырём folds; это другой знаменатель, чем macro scores выше. Zero WAPE не определена. Показаны baseline и validation score leader.
+
+| Target | Model | Slice | N | MAE | WAPE | RMSE | Bias |
+|---|---|---|---:|---:|---:|---:|---:|
+| departures | catboost_default | actual:zero | 37217 | 0.5416 | N/A | 1.0264 | 0.5416 |
+| departures | catboost_default | actual:nonzero | 40089 | 2.3764 | 0.5337 | 4.0416 | -1.4428 |
+| departures | catboost_default | actual:rare_1_4 | 28053 | 1.2168 | 0.6430 | 1.6966 | -0.1865 |
+| departures | catboost_default | actual:middle_5_19 | 10984 | 4.1759 | 0.4692 | 5.1901 | -3.4110 |
+| departures | catboost_default | actual:peak_ge20 | 1052 | 14.5110 | 0.5522 | 16.2622 | -14.3929 |
+| departures | seasonal_naive | actual:zero | 37217 | 0.5887 | N/A | 1.5636 | 0.5887 |
+| departures | seasonal_naive | actual:nonzero | 40089 | 2.8312 | 0.6359 | 4.4814 | -0.7960 |
+| departures | seasonal_naive | actual:rare_1_4 | 28053 | 1.7529 | 0.9263 | 2.7405 | 0.1149 |
+| departures | seasonal_naive | actual:middle_5_19 | 10984 | 4.7145 | 0.5297 | 5.9338 | -2.1367 |
+| departures | seasonal_naive | actual:peak_ge20 | 1052 | 11.9240 | 0.4538 | 14.0500 | -11.0856 |
+| arrivals | catboost_bounded | actual:zero | 37594 | 0.5225 | N/A | 1.0144 | 0.5225 |
+| arrivals | catboost_bounded | actual:nonzero | 39712 | 2.3624 | 0.5268 | 4.0827 | -1.3137 |
+| arrivals | catboost_bounded | actual:rare_1_4 | 27870 | 1.2552 | 0.6728 | 1.7787 | -0.1394 |
+| arrivals | catboost_bounded | actual:middle_5_19 | 10735 | 3.9958 | 0.4457 | 5.0570 | -3.0226 |
+| arrivals | catboost_bounded | actual:peak_ge20 | 1107 | 14.3987 | 0.5342 | 16.4411 | -14.3061 |
+| arrivals | seasonal_naive | actual:zero | 37594 | 0.5680 | N/A | 1.5231 | 0.5680 |
+| arrivals | seasonal_naive | actual:nonzero | 39712 | 2.8595 | 0.6377 | 4.6041 | -0.7843 |
+| arrivals | seasonal_naive | actual:rare_1_4 | 27870 | 1.7261 | 0.9252 | 2.7280 | 0.0861 |
+| arrivals | seasonal_naive | actual:middle_5_19 | 10735 | 4.8134 | 0.5369 | 6.1003 | -1.9950 |
+| arrivals | seasonal_naive | actual:peak_ge20 | 1107 | 12.4472 | 0.4618 | 14.5676 | -10.9566 |
+
+### Крупные station/hour ошибки
+
+Top groups относятся к одному указанному validation fold, не ко всей городской сети и не к pooled station ranking.
+
+| Target | Model | Field/key | Fold | N | MAE | Bias |
+|---|---|---|---:|---:|---:|---:|
+| departures | catboost_default | station_id:6753.08 | 0 | 336 | 11.3028 | -11.2796 |
+| departures | catboost_default | station_id:6230.02 | 0 | 336 | 8.6364 | -8.5027 |
+| departures | catboost_default | station_id:5703.13 | 0 | 336 | 6.1165 | -5.9768 |
+| departures | catboost_default | local_hour:18 | 0 | 728 | 4.3758 | -4.2044 |
+| departures | catboost_default | local_hour:17 | 0 | 728 | 4.2170 | -4.0196 |
+| departures | catboost_default | local_hour:19 | 0 | 728 | 3.4596 | -3.2896 |
+| departures | seasonal_naive | station_id:6753.08 | 0 | 336 | 6.9732 | -6.4196 |
+| departures | seasonal_naive | station_id:6753.08 | 2 | 336 | 6.5417 | 5.6369 |
+| departures | seasonal_naive | station_id:7288.04 | 2 | 336 | 6.3631 | 5.9881 |
+| departures | seasonal_naive | local_hour:18 | 0 | 728 | 3.6470 | -3.1580 |
+| departures | seasonal_naive | local_hour:18 | 2 | 883 | 3.6149 | 2.8924 |
+| departures | seasonal_naive | local_hour:17 | 2 | 883 | 3.6002 | 2.8822 |
+| arrivals | catboost_bounded | station_id:6753.08 | 0 | 336 | 11.7084 | -11.6866 |
+| arrivals | catboost_bounded | station_id:6230.02 | 0 | 336 | 8.9746 | -8.8568 |
+| arrivals | catboost_bounded | station_id:5703.13 | 0 | 336 | 6.7881 | -6.5829 |
+| arrivals | catboost_bounded | local_hour:18 | 0 | 728 | 4.8099 | -4.6360 |
+| arrivals | catboost_bounded | local_hour:17 | 0 | 728 | 4.6614 | -4.4545 |
+| arrivals | catboost_bounded | local_hour:19 | 0 | 728 | 3.6522 | -3.4692 |
+| arrivals | seasonal_naive | station_id:6753.08 | 0 | 336 | 6.8690 | -6.4940 |
+| arrivals | seasonal_naive | station_id:6753.08 | 2 | 336 | 6.4940 | 5.6667 |
+| arrivals | seasonal_naive | station_id:7288.04 | 2 | 336 | 6.3095 | 6.1488 |
+| arrivals | seasonal_naive | local_hour:17 | 2 | 883 | 3.9241 | 3.2854 |
+| arrivals | seasonal_naive | local_hour:18 | 2 | 883 | 3.8211 | 3.2118 |
+| arrivals | seasonal_naive | local_hour:18 | 1 | 793 | 3.7503 | -1.9142 |
+
+Validation JSON содержит zero/nonzero/rare/peak, low/high/new-known slices, top station/hour MAE/bias и largest residuals для каждого trial; fold MAE/bias/min/max/std и coverage, count-distribution TV между validation окнами. Cohort vs F2 city monthly TV — разные populations и длины окон; это composition diagnostic, не causal drift и не citywide точность. Отсутствующие slices не заполнены нулями.
+
+| Target | Lowest-score configuration | Passed research gates | Operational |
+|---|---|---|---|
+| departures | catboost_default | seasonal_naive | Seasonal Naive fallback; promotion NOT VERIFIED |
+| arrivals | catboost_bounded | seasonal_naive | Seasonal Naive fallback; promotion NOT VERIFIED |
+
+### Проверяемые выводы
+
+- departures: lowest validation macro MAE 1.5199 (catboost_default) против baseline 1.7544; fold range [1.0650,2.1118], std 0.4075. Majority 3/4; degraded key slices 10. Research gate candidate: seasonal_naive; это не смена опубликованного champion.
+- departures actual:zero: leader MAE 0.5416, baseline 0.5887, N=37217; leader bias +0.5416. Положительный bias означает overprediction, редкий peak slice не доказывает переносимость на всю сеть.
+- departures actual:peak_ge20: leader MAE 14.5110, baseline 11.9240, N=1052; leader bias -14.3929. Положительный bias означает overprediction, редкий peak slice не доказывает переносимость на всю сеть.
+- arrivals: lowest validation macro MAE 1.4957 (catboost_bounded) против baseline 1.7479; fold range [1.0567,2.1437], std 0.4225. Majority 3/4; degraded key slices 14. Research gate candidate: seasonal_naive; это не смена опубликованного champion.
+- arrivals actual:zero: leader MAE 0.5225, baseline 0.5680, N=37594; leader bias +0.5225. Положительный bias означает overprediction, редкий peak slice не доказывает переносимость на всю сеть.
+- arrivals actual:peak_ge20: leader MAE 14.3987, baseline 12.4472, N=1107; leader bias -14.3061. Положительный bias означает overprediction, редкий peak slice не доказывает переносимость на всю сеть.
+
+Research gate требует majority wins, отсутствие >20% деградации значимых key segments, ресурсы и fit warnings. Низкий средний score сам по себе не проходит эти gates. Strict publication availability и forward/shadow evidence отсутствуют: operational uplift не доказан. Baseline/unavailable fallback сохранён; новые final fits/reselection и переключение опубликованного champion не выполнялись.
+
+### Независимая сверка / воспроизводимость
+
+Independent audit: `{'prediction_rows': 2663114, 'diagnostic_groups': 2760, 'pooled_slice_groups': 20, 'metric_mismatches': 0, 'row_membership_mismatches': 0, 'PIT_mismatches': 0, 'saved_model_parity_sample_rows_per_trial': 32, 'frozen_files_unchanged': True}`; repeat fits: `[{'prediction_type': 'departures', 'exact_prediction_values_repeat': True}, {'prediction_type': 'arrivals', 'exact_prediction_values_repeat': True}]`.
+Метрики пересчитаны stdlib oracle по всем prediction rows; station/hour diagnostics — отдельным SQL; row membership — двусторонним EXCEPT ALL; PIT/embargo — SQL; сохранённые модели заново загружены и сверены с prediction samples. Все failures сохраняют error/status и input hashes. Controlled failed/timeout/changed-population tests — отдельные fixture доказательства механизма, не вымышленные failed real fits.
+
+```sh
+uv run --locked --group ml python -m citibike.forecasting protocol
+uv run --locked --group ml python -m citibike.forecasting research --protocol data/f4/research_protocols/8729cb7cc4aac8efbe3ddda02c6bc972804c69fbf365b9a9ce35093f2d1a6050
+uv run --locked --group ml python -m citibike.forecasting verify --serving
+```
+`--protocol` принимает directory `data/f4/research_protocols/8729cb7cc4aac8efbe3ddda02c6bc972804c69fbf365b9a9ce35093f2d1a6050`. Повтор research переиспользует immutable outcomes, включая failures. Ресурсы — shared-host OS process high-water; RSS gate не OS memory quota и не production SLA.
+
+Ограничения: Cohort64, about 2.56% known-ID events; not citywide; New validation diagnostics do not open/reselect by final test; F2 city station-hour and F4 daily-origin cohort populations differ; Source availability +45d is a retrospective assumption, not historical fact; Weather is outcome-only after prediction; no GBFS/capacity/short lag added.

@@ -26,12 +26,15 @@ def main() -> None:
             "publish",
             "activate",
             "verify",
+            "protocol",
+            "research",
         ],
     )
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     parser.add_argument("--gold", type=Path)
     parser.add_argument("--weather-json", type=Path)
     parser.add_argument("--dataset", type=Path)
+    parser.add_argument("--protocol", type=Path)
     parser.add_argument("--experiment", type=Path)
     parser.add_argument("--selection", type=Path)
     parser.add_argument("--model", type=Path)
@@ -49,7 +52,22 @@ def main() -> None:
     args = parser.parse_args()
     root = args.data_dir
     result: object
-    if args.command == "build":
+    if args.command in ("protocol", "research"):
+        from citibike.forecasting.experiment import research, research_protocol
+
+        if args.final:
+            parser.error("Corrective research is validation-only; --final forbidden")
+        if args.command == "protocol":
+            result = research_protocol(root, args.dataset or active(root, "datasets"))
+        else:
+            if args.protocol is None:
+                parser.error("research requires a frozen --protocol path")
+            result = research(root, args.protocol)
+            from citibike.forecasting.artifacts import checked
+
+            if checked(result)["status"] != "completed":
+                raise SystemExit(f"PARTIAL research; immutable outcomes: {result}")
+    elif args.command == "build":
         from citibike.features.dataset import build
 
         gold = args.gold or Path(read_json(root / "f3/active.json")["path"])

@@ -1,5 +1,6 @@
 """Main CI: publish a controlled forecast and inspect real HTTP; no real claims."""
 
+import argparse
 import tempfile
 from pathlib import Path
 
@@ -13,6 +14,9 @@ from tests.fixtures_forecasting import gold_fixture
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--api-url", default="http://127.0.0.1:8000")
+    args = parser.parse_args()
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
         dataset = build(root, gold_fixture(root), station_count=4, smoke=True)
@@ -23,7 +27,7 @@ def main() -> None:
         assert publish(forecast) == version
         with httpx.Client(timeout=30) as client:
             response = client.get(
-                "http://127.0.0.1:8000/v3/forecasts",
+                args.api_url.rstrip("/") + "/v3/forecasts",
                 params={"publication_id": version, "limit": 200},
             )
             response.raise_for_status()

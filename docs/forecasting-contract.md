@@ -133,3 +133,51 @@ API алгоритмов проверены по первичным источн
 [PoissonRegressor](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.PoissonRegressor.html),
 [LightGBM](https://lightgbm.readthedocs.io/en/latest/pythonapi/lightgbm.LGBMRegressor.html),
 [CatBoost Poisson / Exponent](https://catboost.ai/docs/en/concepts/python-reference_catboostregressor_predict).
+
+## Корректирующий validation-only protocol
+
+Версия `f4-research-1`. Отдельный immutable protocol сохраняется командой
+`python -m citibike.forecasting protocol` **до новых fits**; запуск требует
+`research --protocol <directory>`. Он фиксирует dataset/F2 EDA/code/environment
+hashes, прежние active pointers/manifests/test locks и запрещает final windows.
+Старые selection/model/forecast IDs и опубликованный champion не переключаются.
+
+- Population, четыре validation windows, seed42, полный eligible evaluation,
+  max80000 train rows/тип/fold и hash sampling station/origin blocks прежние.
+- Bounded search: прежние семь configurations, без расширения параметров.
+  Ablation: для **bounded** Poisson/LightGBM/CatBoost полная конфигурация против
+  удаления одной группы: calendar (UTC/local hour, weekday/month/weekend/holiday/
+  DST), station identity (`station_id`), demand profile (четыре profile fields).
+  Структурный `horizon_h` остаётся. Это 16 configurations ×4 folds ×2 targets
+  =128 trials. Baseline Seasonal Naive самостоятельный; удалять определяющие его
+  station/calendar/profile связи без смены семантики нельзя.
+- Profiles косвенно кодируют station/calendar. Удаление явных колонок не означает
+  полного удаления этой информации и не измеряет причинный вклад группы.
+- Stress: не более одного bounded кандидата на target, выбранного **только** по
+  majority validation wins/resource gates и minimum macro MAE (lexical tie).
+  Ещё четыре fits/target на половине фактических train-блоков, округление вниз до
+  полного 24h block; evaluation rows/hashes неизменны. При отсутствии кандидата
+  причина неприменимости фиксируется. Ещё два независимых повторных fits
+  `lightgbm_bounded`, fold0, проверяют exact prediction-values hashes.
+- Верхний бюджет: 138 trials; sequential fits, 2 threads; 300s fit,
+  330s hard worker wall timeout; 2GiB measured child peak RSS gate (проверяется
+  после завершения, не OS memory quota); cumulative worker wall <=5400s.
+  Timeout/crash/fit/quality/resource failures сохраняются immutable сразу.
+  Исчерпание бюджета явно даёт PARTIAL/not_run, без подмены пропущенных trials.
+  Повтор команды переиспользует сохранённые outcomes, включая failures.
+- MAE/WAPE/RMSE/bias/coverage и прежние key segments сохраняются. Дополнительные
+  outcome slices: zero, nonzero, counts1–4, 5–19, >=20; station/hour residuals,
+  NY target-month distributions и fold stability. Пороги согласованы с F2 EDA,
+  не выбираются по final test. Cohort64 и весь город имеют разные populations.
+- ERA5 policy2 используется только для outcome diagnostics **после prediction**,
+  не входит в model matrix. Новых weather/GBFS/short-lag features нет.
+- Сравнения/исследовательский лидер validation-only не заменяют frozen selection.
+  Прежние majority/no-critical-segment-degradation/resource gates применяются
+  отдельно от strict availability и forward/shadow gates. При отсутствии
+  forward/shadow evidence operational promotion — NOT VERIFIED; опубликованный
+  Seasonal Naive остаётся fallback либо unavailable при невалидных inputs.
+
+Полные trial/model/prediction manifests остаются в ignored `data/f4`; Git содержит
+компактное дополнение прежних F4 evidence. Старый frozen evaluation отделён от
+новых trials; дополнительные final fits или повторный test-driven selection
+этим протоколом не разрешены.

@@ -26,7 +26,9 @@ def metrics(actual: list[float], predicted: list[float]) -> dict[str, Any]:
     }
 
 
-def segmented(frame: Any, values: list[float]) -> dict[str, dict[str, Any]]:
+def segmented(
+    frame: Any, values: list[float], *, research: bool = False
+) -> dict[str, dict[str, Any]]:
     data = frame.copy()
     data["predicted"] = values
     masks: dict[str, Any] = {
@@ -42,6 +44,23 @@ def segmented(frame: Any, values: list[float]) -> dict[str, dict[str, Any]]:
     masks["weekday"] = data["weekday"] < 5
     masks["weekend"] = data["weekday"] >= 5
     masks["holiday"] = data["holiday"] == 1
+    if research:
+        masks.update(
+            {
+                "actual:zero": data["actual"] == 0,
+                "actual:nonzero": data["actual"] > 0,
+                "actual:rare_1_4": data["actual"].between(1, 4),
+                "actual:middle_5_19": data["actual"].between(5, 19),
+                "actual:peak_ge20": data["actual"] >= 20,
+            }
+        )
+        months = (
+            data["target_hour_utc"]
+            .dt.tz_convert("America/New_York")
+            .dt.strftime("%Y-%m")
+        )
+        for month in sorted(months.unique()):
+            masks["target_month:" + month] = months == month
     for name in ("cold", "heat", "heavy_rain", "observed"):
         field = "eval_weather_" + name
         if field in data:
@@ -67,3 +86,53 @@ def segmented(frame: Any, values: list[float]) -> dict[str, dict[str, Any]]:
         for name, mask in masks.items()
         if bool(mask.any())
     }
+
+
+def error_analysis(frame: Any, values: list[float]) -> dict[str, Any]:
+    """Validation-only diagnostics; observed count thresholds predate this run."""
+    data = frame.copy()
+    data["predicted"] = values
+    data["residual"] = data["predicted"] - data["actual"]
+    data["absolute"] = data["residual"].abs()
+    result: dict[str, Any] = {}
+    for field in ("station_id", "local_hour"):
+        groups = []
+        for name, group in data.groupby(field, sort=True):
+            groups.append(
+                {
+                    "key": str(name),
+                    **metrics(
+                        group["actual"].astype(float).tolist(),
+                        group["predicted"].tolist(),
+                    ),
+                }
+            )
+        result[field] = sorted(groups, key=lambda r: (-r["mae"], r["key"]))[:10]
+    result["largest_residuals"] = (
+        data.sort_values(
+            ["absolute", "station_id", "target_hour_utc", "horizon_h"],
+            ascending=[False, True, True, True],
+        )
+        .head(10)[
+            [
+                "station_id",
+                "forecast_origin_utc",
+                "target_hour_utc",
+                "horizon_h",
+                "actual",
+                "predicted",
+                "residual",
+            ]
+        ]
+        .astype(str)
+        .to_dict("records")
+    )
+    result["actual_histogram"] = {
+        "0": int((data["actual"] == 0).sum()),
+        "1": int((data["actual"] == 1).sum()),
+        "2-4": int(data["actual"].between(2, 4).sum()),
+        "5-9": int(data["actual"].between(5, 9).sum()),
+        "10-19": int(data["actual"].between(10, 19).sum()),
+        "20+": int((data["actual"] >= 20).sum()),
+    }
+    return result

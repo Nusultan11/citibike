@@ -27,6 +27,8 @@ def create(
     kind: str,
     identifier: str,
     builder: Callable[[Path], dict[str, Any]],
+    *,
+    activate: bool = True,
 ) -> Path:
     target = root / "f4" / kind / identifier
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -52,7 +54,7 @@ def create(
             write_json(stage / "manifest.json", report)
             publish_directory(stage, target)
     report = checked(target)
-    if kind != "forecasts" or report["status"] == "ok":
+    if activate and (kind != "forecasts" or report["status"] == "ok"):
         write_json(
             root / "f4" / f"active_{kind}.json", {"id": identifier, "path": str(target)}
         )

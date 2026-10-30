@@ -15,6 +15,228 @@ from citibike.forecasting.verify import oracle_file, provenance, verify
 from citibike.storage import write_json
 
 
+@pytest.mark.parametrize(
+    "algorithm", ["poisson_bounded", "lightgbm_bounded", "catboost_bounded"]
+)
+@pytest.mark.parametrize("group", list(models.GROUPS))
+def test_group_ablation_removes_inputs_and_retains_saved_parity(
+    forecast_workflow: dict[str, Path], tmp_path: Path, algorithm: str, group: str
+) -> None:
+    with duckdb.connect() as db:
+        frame = db.execute(
+            """SELECT * FROM read_parquet(?) WHERE eligibility='eligible'
+            AND prediction_type='departures' ORDER BY station_id,forecast_origin_utc
+            LIMIT 128""",
+            [str(forecast_workflow["dataset"] / "examples.parquet")],
+        ).df()
+    config = {**models.configurations(True)[algorithm], "drop_groups": [group]}
+    fitted, info = models.fit(frame, config)
+    assert "horizon_h" in fitted["feature_names"]
+    assert not set(models.GROUPS[group]) & set(fitted["feature_names"])
+    values, _ = models.predict(fitted, frame)
+    changed = frame.copy()
+    for name in models.GROUPS[group]:
+        changed[name] = "unseen" if name == "station_id" else 99999
+    assert models.predict(fitted, changed)[0] == values
+    path = tmp_path / "ablated.joblib"
+    models.save(path, fitted)
+    assert models.predict(models.load(path), frame)[0] == values
+    assert info["training_rows"] == 128
+
+
+def test_baseline_group_removal_and_unknown_schema_are_rejected() -> None:
+    with pytest.raises(ValueError, match="semantics"):
+        models.feature_names(
+            {"algorithm": "seasonal_naive", "drop_groups": ["calendar"]}
+        )
+    with pytest.raises(ValueError, match="Unknown ablation"):
+        models.feature_names({"algorithm": "poisson", "drop_groups": ["weather"]})
+
+
+def test_research_protocol_trial_failure_durability_and_population(
+    forecast_workflow: dict[str, Path], tmp_path: Path
+) -> None:
+    from citibike.forecasting.experiment import (
+        checked_protocol,
+        research_inputs,
+        research_protocol,
+        research_trial,
+    )
+    from citibike.ingestion.archive import checksum
+    from citibike.storage import read_json
+
+    p = forecast_workflow
+    frozen = {str(f): f.read_bytes() for f in (p["root"] / "f4").glob("active_*.json")}
+    protocol_path = research_protocol(p["root"], p["dataset"])
+    protocol = checked_protocol(protocol_path)
+    assert research_protocol(p["root"], p["dataset"]) == protocol_path
+    assert not list((p["root"] / "f4").glob("active_research_protocols.json"))
+    inputs = research_inputs(p["root"], protocol)
+    split = checked(inputs)["splits"][0]
+    train, score = inputs / split["train_file"], inputs / split["validation_file"]
+    request = {
+        "protocol_id": protocol["id"],
+        "dataset_id": protocol["plan"]["dataset_id"],
+        "fold": 0,
+        "prediction_type": "departures",
+        "name": "invalid_controlled_trial",
+        "parameters": {"algorithm": "invalid"},
+        "fit_asof": split["fit_asof"],
+        "train_file": str(train),
+        "train_file_sha256": checksum(train),
+        "evaluation_file": str(score),
+        "evaluation_file_sha256": checksum(score),
+        "evaluation_rows_hash": split["populations"]["departures"][
+            "evaluation_rows_hash"
+        ],
+        "budgets": protocol["plan"]["budgets"],
+        "seed": 42,
+        "purpose": "controlled_negative",
+    }
+    failed = research_trial(p["root"], request, isolated=False)
+    failure = checked(failed)
+    assert failure["status"] == "failed" and failure["error"]["type"] == "ValueError"
+    assert research_trial(p["root"], request, isolated=False) == failed
+    assert (failed / "manifest.json").exists()
+    good = {
+        **request,
+        "name": "controlled_success",
+        "parameters": {"algorithm": "seasonal_naive"},
+    }
+    success = research_trial(p["root"], good, isolated=True)
+    result = checked(success)
+    assert result["status"] == "success", result.get("error")
+    assert (
+        result["parity_rows"] == split["populations"]["departures"]["evaluation_rows"]
+    )
+    from citibike.forecasting.verify import oracle_file
+
+    assert (
+        oracle_file(success / result["predictions"], result["metrics"])
+        == result["parity_rows"]
+    )
+    bad_population = {**good, "name": "wrong_rows", "evaluation_rows_hash": "bad"}
+    assert (
+        checked(research_trial(p["root"], bad_population, isolated=False))["error"][
+            "message"
+        ]
+        == "Trial population changed"
+    )
+    unavailable = {
+        **good,
+        "name": "unavailable_label",
+        "fit_asof": "2024-10-01T00:00:00+00:00",
+    }
+    assert (
+        checked(research_trial(p["root"], unavailable, isolated=False))["error"][
+            "message"
+        ]
+        == "Unavailable training label"
+    )
+    source_mismatch = {
+        **good,
+        "name": "source_hash_mismatch",
+        "train_file_sha256": "bad",
+    }
+    assert (
+        checked(research_trial(p["root"], source_mismatch, isolated=False))["error"][
+            "message"
+        ]
+        == "Trial input checksum mismatch"
+    )
+    budget = {
+        **good,
+        "name": "timeout",
+        "budgets": {**good["budgets"], "worker_wall_seconds": 0.001},
+    }
+    timeout = checked(research_trial(p["root"], budget, isolated=True))
+    assert (
+        timeout["status"] == "failed" and timeout["error"]["type"] == "TimeoutExpired"
+    )
+    for file, content in frozen.items():
+        assert Path(file).read_bytes() == content
+    tampered = read_json(protocol_path / "manifest.json")
+    tampered["plan"]["windows"] = []
+    other = tmp_path / "tampered"
+    write_json(other / "manifest.json", tampered)
+    with pytest.raises(ValueError, match="protocol/code"):
+        checked_protocol(other)
+    from citibike.forecasting.experiment import RESEARCH_VERSION
+    from citibike.storage import identity
+
+    forged = read_json(protocol_path / "manifest.json")
+    forged["plan"]["windows"] = [checked(p["dataset"])["config"]["final"]]
+    forged["id"] = identity([RESEARCH_VERSION, forged["plan"]])
+    write_json(other / "manifest.json", forged)
+    with pytest.raises(ValueError, match="declared validation"):
+        checked_protocol(other)
+
+
+def test_research_complete_repeat_preserves_frozen_selection(
+    forecast_workflow: dict[str, Path],
+    tmp_path: Path,
+) -> None:
+    from citibike.forecasting.experiment import research, research_protocol
+
+    p = forecast_workflow
+    pointers = {
+        str(f): f.read_bytes() for f in (p["root"] / "f4").glob("active_*.json")
+    }
+    protocol = research_protocol(p["root"], p["dataset"])
+    run = research(p["root"], protocol, isolated=False)
+    result = checked(run)
+    assert result["status"] == "completed", result["outcome_counts"]
+    assert not result["final_test_accessed"]
+    assert result["outcome_counts"]["failed"] == 0
+    population: dict[tuple[int, str], set[str]] = {}
+    repeat: dict[tuple[str, str], str] = {}
+    for item in result["trials"]:
+        r = checked(Path(item["path"]))
+        key = (r["fold"], r["prediction_type"])
+        population.setdefault(key, set()).add(r["evaluation_rows_hash"])
+        if r["fold"] == 0:
+            repeat[r["prediction_type"], r["model_name"]] = r["prediction_values_hash"]
+    assert all(len(hashes) == 1 for hashes in population.values())
+    for kind in ("departures", "arrivals"):
+        assert (
+            repeat[kind, "lightgbm_bounded"] == repeat[kind, "lightgbm_bounded__repeat"]
+        )
+    assert research(p["root"], protocol, isolated=False) == run
+    from citibike.forecasting.verify import research_evidence
+
+    independent = research_evidence(p["root"])
+    assert independent["independent_audit"]["metric_mismatches"] == 0
+    assert independent["independent_audit"]["prediction_rows"] > 0
+    from citibike.forecasting.verify import research_markdown
+
+    markdown = tmp_path / "f4-forecasting.md"
+    markdown.write_text("# Frozen history\n", encoding="utf-8")
+    research_markdown(independent, markdown)
+    research_markdown(independent, markdown)
+    text = markdown.read_text(encoding="utf-8")
+    assert text.startswith("# Frozen history\n")
+    assert text.count("## Корректирующий validation-only protocol") == 1
+    for file, content in pointers.items():
+        assert Path(file).read_bytes() == content
+
+
+def test_independent_diagnostic_oracle_detects_wrong_groups(
+    forecast_workflow: dict[str, Path],
+) -> None:
+    from citibike.forecasting.metrics import error_analysis
+    from citibike.forecasting.verify import diagnostic_oracle
+
+    report = checked(forecast_workflow["experiment"])
+    file = forecast_workflow["experiment"] / report["results"][0]["predictions"]
+    with duckdb.connect() as db:
+        frame = db.execute("SELECT * FROM read_parquet(?)", [str(file)]).df()
+    expected = error_analysis(frame, frame["predicted"].tolist())
+    assert diagnostic_oracle(file, expected) > 0
+    expected["station_id"][0]["mae"] += 1
+    with pytest.raises(ValueError, match="station/hour"):
+        diagnostic_oracle(file, expected)
+
+
 def test_real_transform_fixture_repeat_and_independent_audit(
     forecast_workflow: dict[str, Path],
     tmp_path: Path,

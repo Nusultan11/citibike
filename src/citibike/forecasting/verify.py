@@ -22,6 +22,7 @@ def oracle_file(path: Path, expected: dict[str, Any]) -> int:
     # Deliberately independent of forecasting.metrics / pandas / sklearn.
     accum: dict[str, list[float]] = {}
     total = 0
+    research_slices = any(k.startswith("actual:") for k in expected)
     with duckdb.connect() as db:
         db.execute("SET TimeZone='UTC'")
         cursor = db.execute("SELECT * FROM read_parquet(?)", [str(path)])
@@ -59,6 +60,15 @@ def oracle_file(path: Path, expected: dict[str, Any]) -> int:
                     else "autumn"
                 )
                 labels.append("season:" + season)
+                if research_slices:
+                    labels += ["actual:zero" if actual == 0 else "actual:nonzero"]
+                    if 1 <= actual <= 4:
+                        labels.append("actual:rare_1_4")
+                    elif 5 <= actual <= 19:
+                        labels.append("actual:middle_5_19")
+                    elif actual >= 20:
+                        labels.append("actual:peak_ge20")
+                    labels.append("target_month:" + local.strftime("%Y-%m"))
                 if row["new_known"]:
                     labels.append("new_known")
                 if row["holiday"]:
@@ -101,6 +111,651 @@ def oracle_file(path: Path, expected: dict[str, Any]) -> int:
             elif not math.isclose(value, wanted, rel_tol=1e-8, abs_tol=1e-8):
                 raise ValueError(f"Independent {label}/{key} metric mismatch")
     return total
+
+
+def diagnostic_oracle(path: Path, expected: dict[str, Any]) -> int:
+    """SQL audit of pandas diagnostics; no call to metrics/error_analysis."""
+    checked_groups = 0
+    with duckdb.connect() as db:
+        db.read_parquet(str(path)).create_view("predictions")
+        for field in ("station_id", "local_hour"):
+            rows = db.execute(f"""SELECT {field}::VARCHAR,count(*),sum(actual),
+                avg(abs(predicted-actual)),
+                sqrt(avg(pow(predicted-actual,2))),avg(predicted-actual)
+                FROM predictions GROUP BY 1 ORDER BY 4 DESC,1""").fetchall()
+            by_key = {r[0]: r for r in rows}
+            if len(expected[field]) != min(10, len(rows)):
+                raise ValueError("Diagnostic top-group coverage mismatch")
+            for given in expected[field]:
+                row = by_key[given["key"]]
+                values = dict(
+                    zip(
+                        ("n", "actual_sum", "mae", "rmse", "bias"), row[1:], strict=True
+                    )
+                )
+                if any(
+                    not math.isclose(
+                        float(given[k]), float(v), rel_tol=1e-8, abs_tol=1e-8
+                    )
+                    for k, v in values.items()
+                ):
+                    raise ValueError("Independent station/hour error mismatch")
+                if given["mae"] + 1e-9 < rows[min(9, len(rows) - 1)][3]:
+                    raise ValueError("Diagnostic top group not maximal")
+                checked_groups += 1
+        histogram = dict(
+            db.execute("""SELECT CASE WHEN actual=0 THEN '0'
+            WHEN actual=1 THEN '1' WHEN actual<5 THEN '2-4'
+            WHEN actual<10 THEN '5-9' WHEN actual<20 THEN '10-19'
+            ELSE '20+' END bin,count(*) FROM predictions GROUP BY 1""").fetchall()
+        )
+        if any(
+            histogram.get(k, 0) != v for k, v in expected["actual_histogram"].items()
+        ):
+            raise ValueError("Independent count distribution mismatch")
+        maximum = db.execute(
+            "SELECT max(abs(predicted-actual)) FROM predictions"
+        ).fetchone()
+        for row in expected["largest_residuals"]:
+            found = db.execute(
+                """SELECT actual,predicted,residual FROM predictions
+                WHERE station_id=? AND forecast_origin_utc=?::TIMESTAMPTZ
+                AND target_hour_utc=?::TIMESTAMPTZ AND horizon_h=?""",
+                [
+                    row["station_id"],
+                    row["forecast_origin_utc"],
+                    row["target_hour_utc"],
+                    int(row["horizon_h"]),
+                ],
+            ).fetchall()
+            if len(found) != 1 or any(
+                not math.isclose(float(row[k]), v, rel_tol=1e-8, abs_tol=1e-8)
+                for k, v in zip(
+                    ("actual", "predicted", "residual"), found[0], strict=True
+                )
+            ):
+                raise ValueError("Independent largest residual mismatch")
+        if (
+            maximum
+            and expected["largest_residuals"]
+            and not math.isclose(
+                abs(float(expected["largest_residuals"][0]["residual"])),
+                maximum[0],
+                rel_tol=1e-8,
+                abs_tol=1e-8,
+            )
+        ):
+            raise ValueError("Largest residual not maximal")
+    return checked_groups
+
+
+def research_evidence(root: Path) -> dict[str, Any]:
+    """Audit new validation only; do not select/publish/open final-test outcomes."""
+    from statistics import mean, pstdev
+
+    from citibike.features.contracts import TYPES
+    from citibike.forecasting import models
+    from citibike.forecasting.experiment import checked_protocol, promotion
+
+    summary_path = active(root, "research")
+    summary = checked(summary_path)
+    protocol = checked_protocol(Path(summary["protocol_path"]))
+    plan = protocol["plan"]
+    inputs_path = Path(summary["inputs_path"])
+    inputs = checked(inputs_path)
+    reports = []
+    oracle_rows = 0
+    diagnostic_groups = 0
+    for item in summary["trials"]:
+        if item["status"] == "not_run":
+            reports.append(item)
+            continue
+        path = Path(item["path"])
+        trial = checked(path)
+        request = trial["request"]
+        if (
+            request["protocol_id"] != protocol["id"]
+            or request["dataset_id"] != plan["dataset_id"]
+        ):
+            raise ValueError("Mixed research trial provenance")
+        if utc(trial["created_at"]) < utc(protocol["created_at"]):
+            raise ValueError("Trial preceded frozen protocol")
+        if trial["final_test_accessed"] or trial["status"] != item["status"]:
+            raise ValueError("Research final/state audit mismatch")
+        if trial["status"] == "success":
+            predictions = path / trial["predictions"]
+            oracle_rows += oracle_file(predictions, trial["metrics"])
+            diagnostic_groups += diagnostic_oracle(predictions, trial["diagnostics"])
+            split = inputs["splits"][trial["fold"]]
+            if (
+                trial["metrics"]["all"]["n"]
+                != split["populations"][trial["prediction_type"]]["evaluation_rows"]
+            ):
+                raise ValueError("Research sample coverage mismatch")
+            if (
+                trial["evaluation_rows_hash"]
+                != split["populations"][trial["prediction_type"]][
+                    "evaluation_rows_hash"
+                ]
+            ):
+                raise ValueError("Research evaluation population hash mismatch")
+            with duckdb.connect() as db:
+                db.execute("SET TimeZone='UTC'")
+                db.read_parquet(str(predictions)).create_view("predictions")
+                db.read_parquet(request["evaluation_file"]).create_view("reference")
+                # EXCEPT ALL, not the executor's serialized row-hash helper.
+                columns = (
+                    "station_id,forecast_origin_utc,target_hour_utc,horizon_h,actual"
+                )
+                for left, right in (
+                    ("predictions", "reference"),
+                    ("reference", "predictions"),
+                ):
+                    value = db.execute(
+                        f"""SELECT count(*) FROM(SELECT {columns} FROM {left}
+                        WHERE prediction_type=? EXCEPT ALL SELECT {columns} FROM {right}
+                        WHERE prediction_type=?)""",
+                        [trial["prediction_type"]] * 2,
+                    ).fetchone()
+                    if value != (0,):
+                        raise ValueError("Independent research row membership mismatch")
+                train = db.execute(
+                    """SELECT count(*) FROM read_parquet(?)
+                    WHERE feature_available_at>forecast_origin_utc
+                    OR max_event_at>=forecast_origin_utc OR label_available_at>?
+                    OR target_hour_utc+INTERVAL '1 hour'>=?::TIMESTAMPTZ""",
+                    [
+                        request["train_file"],
+                        utc(split["fit_asof"]),
+                        split["evaluation_target_min"],
+                    ],
+                ).fetchone()
+                if train != (0,):
+                    raise ValueError(
+                        "Independent research train availability/embargo failure"
+                    )
+                frame = db.execute(
+                    "SELECT * FROM reference WHERE prediction_type=? "
+                    "ORDER BY station_id,forecast_origin_utc,horizon_h LIMIT 32",
+                    [trial["prediction_type"]],
+                ).df()
+                expected = db.execute(
+                    "SELECT predicted FROM predictions "
+                    "ORDER BY station_id,forecast_origin_utc,horizon_h LIMIT 32"
+                ).fetchall()
+            fitted = models.load(path / trial["model_file"])
+            excluded = {
+                f
+                for group in request["parameters"].get("drop_groups", [])
+                for f in plan["catalog_groups"][group]
+            }
+            if (
+                excluded & set(fitted["feature_names"])
+                or "horizon_h" not in fitted["feature_names"]
+            ):
+                raise ValueError("Ablated features entered model matrix")
+            values, _ = models.predict(fitted, frame)
+            if any(
+                not math.isclose(v, e[0], abs_tol=1e-10, rel_tol=1e-10)
+                for v, e in zip(values, expected, strict=True)
+            ):
+                raise ValueError("Independent saved-model parity mismatch")
+            budget = plan["budgets"]
+            if (
+                trial["measurements"]["fit_seconds"] > budget["fit_seconds"]
+                or trial["measurements"]["peak_rss_bytes"] > budget["peak_rss_bytes"]
+            ):
+                raise ValueError("Successful trial exceeded resource gate")
+        elif not trial.get("error"):
+            raise ValueError("Failed trial error outcome missing")
+        reports.append({"path": str(path), **trial})
+    full = [
+        r
+        for r in reports
+        if r.get("request", {}).get("purpose") in ("ablation", "bounded_search")
+    ]
+    expected_count = len(plan["windows"]) * len(TYPES) * len(plan["configurations"])
+    if len(full) != expected_count:
+        raise ValueError("Research trial coverage incomplete")
+    comparisons = []
+    ablation = []
+    decisions = {}
+    distributions = []
+    repeats = []
+    for kind in TYPES:
+        baseline = [
+            r
+            for r in full
+            if r.get("model_name") == "seasonal_naive"
+            and r.get("prediction_type") == kind
+            and r["status"] == "success"
+        ]
+        means = {}
+        gates = {}
+        for name in plan["configurations"]:
+            rows = [
+                r
+                for r in full
+                if r.get("model_name") == name
+                and r.get("prediction_type") == kind
+                and r["status"] == "success"
+            ]
+            if len(rows) != len(plan["windows"]):
+                comparisons.append(
+                    {
+                        "prediction_type": kind,
+                        "name": name,
+                        "status": "incomplete",
+                        "successful_folds": len(rows),
+                    }
+                )
+                continue
+            scores = [r["metrics"]["all"]["mae"] for r in rows]
+            means[name] = mean(scores)
+            gate = (
+                promotion(rows, baseline, strict_validation=False)
+                if len(baseline) == len(rows)
+                else None
+            )
+            gates[name] = gate
+            comparisons.append(
+                {
+                    "prediction_type": kind,
+                    "name": name,
+                    "status": "success",
+                    "macro_metrics": {
+                        metric: mean(
+                            r["metrics"]["all"][metric]
+                            for r in rows
+                            if r["metrics"]["all"][metric] is not None
+                        )
+                        if any(r["metrics"]["all"][metric] is not None for r in rows)
+                        else None
+                        for metric in ("mae", "wape", "rmse", "bias")
+                    },
+                    "fold_mae": scores,
+                    "fold_bias": [r["metrics"]["all"]["bias"] for r in rows],
+                    "mae_std": pstdev(scores),
+                    "mae_min": min(scores),
+                    "mae_max": max(scores),
+                    "fold_evaluation_rows": [r["metrics"]["all"]["n"] for r in rows],
+                    "gate": gate,
+                }
+            )
+            if "__without_" in name:
+                original = name.split("__without_")[0]
+                matched = [
+                    r
+                    for r in full
+                    if r.get("model_name") == original
+                    and r.get("prediction_type") == kind
+                    and r["status"] == "success"
+                ]
+                if len(matched) == len(rows):
+                    original_by_fold = {r["fold"]: r for r in matched}
+                    ablation.append(
+                        {
+                            "prediction_type": kind,
+                            "name": name,
+                            "reference": original,
+                            "group": name.split("__without_")[1],
+                            "mae_delta_by_fold": [
+                                r["metrics"]["all"]["mae"]
+                                - original_by_fold[r["fold"]]["metrics"]["all"]["mae"]
+                                for r in rows
+                            ],
+                            "identical_populations": all(
+                                r["evaluation_rows_hash"]
+                                == original_by_fold[r["fold"]]["evaluation_rows_hash"]
+                                for r in rows
+                            ),
+                        }
+                    )
+        eligible = [
+            n
+            for n, g in gates.items()
+            if n != "seasonal_naive"
+            and g
+            and g["majority"]
+            and not g["degraded_segments"]
+            and g["resources_and_fit_ok"]
+        ]
+        decisions[kind] = {
+            "score_leader": min(means, key=lambda n: (means[n], n)) if means else None,
+            "research_gate_candidate": min(eligible, key=lambda n: (means[n], n))
+            if eligible
+            else "seasonal_naive",
+            "operational_fallback": "seasonal_naive; unavailable on invalid inputs",
+            "operational_promotion": (
+                "NOT VERIFIED: first-publication availability/forward/shadow absent"
+            ),
+            "published_selection_changed": False,
+        }
+        for r in baseline:
+            distributions.append(
+                {
+                    "fold": r["fold"],
+                    "prediction_type": kind,
+                    "histogram": r["diagnostics"]["actual_histogram"],
+                    "slices": {
+                        k: v
+                        for k, v in r["metrics"].items()
+                        if k.startswith(("actual:", "target_month:"))
+                    },
+                }
+            )
+        first = next(
+            (
+                r
+                for r in full
+                if r.get("model_name") == "lightgbm_bounded"
+                and r.get("prediction_type") == kind
+                and r.get("fold") == 0
+            ),
+            None,
+        )
+        repeated = next(
+            (
+                r
+                for r in reports
+                if r.get("model_name") == "lightgbm_bounded__repeat"
+                and r.get("prediction_type") == kind
+            ),
+            None,
+        )
+        ok = bool(
+            first
+            and repeated
+            and first["status"] == repeated["status"] == "success"
+            and first["prediction_values_hash"] == repeated["prediction_values_hash"]
+        )
+        repeats.append({"prediction_type": kind, "exact_prediction_values_repeat": ok})
+        if summary["status"] == "completed" and not ok:
+            raise ValueError("Research independent refit not reproducible")
+    # Actual histogram TV uses an overlap form, independent of F2's L1 formula.
+    shifts = []
+    for kind in TYPES:
+        rows = sorted(
+            (r for r in distributions if r["prediction_type"] == kind),
+            key=lambda r: r["fold"],
+        )
+        for a, b in zip(rows, rows[1:], strict=False):
+            x, y = a["histogram"], b["histogram"]
+            shifts.append(
+                {
+                    "prediction_type": kind,
+                    "from_fold": a["fold"],
+                    "to_fold": b["fold"],
+                    "total_variation": 1
+                    - sum(
+                        min(
+                            x.get(k, 0) / sum(x.values()), y.get(k, 0) / sum(y.values())
+                        )
+                        for k in x.keys() | y.keys()
+                    ),
+                }
+            )
+    pooled_slices = []
+    worst_groups = []
+    for kind in TYPES:
+        selected = {"seasonal_naive", decisions[kind]["score_leader"]}
+        for name in sorted(n for n in selected if n):
+            rows = [
+                r
+                for r in full
+                if r.get("prediction_type") == kind
+                and r.get("model_name") == name
+                and r["status"] == "success"
+            ]
+            if not rows:
+                continue
+            for label in (
+                "actual:zero",
+                "actual:nonzero",
+                "actual:rare_1_4",
+                "actual:middle_5_19",
+                "actual:peak_ge20",
+            ):
+                slices = [r["metrics"][label] for r in rows if label in r["metrics"]]
+                n = sum(m["n"] for m in slices)
+                total = math.fsum(m["actual_sum"] for m in slices)
+                absolute = math.fsum(m["mae"] * m["n"] for m in slices)
+                pooled_slices.append(
+                    {
+                        "prediction_type": kind,
+                        "name": name,
+                        "slice": label,
+                        "n": n,
+                        "actual_sum": total,
+                        "mae": absolute / n if n else None,
+                        "wape": absolute / total if total else None,
+                        "rmse": math.sqrt(
+                            math.fsum(m["rmse"] ** 2 * m["n"] for m in slices) / n
+                        )
+                        if n
+                        else None,
+                        "bias": math.fsum(m["bias"] * m["n"] for m in slices) / n
+                        if n
+                        else None,
+                    }
+                )
+            with duckdb.connect() as db:
+                db.read_parquet(
+                    [str(Path(r["path"]) / r["predictions"]) for r in rows]
+                ).create_view("pooled")
+                for label, predicate in {
+                    "actual:zero": "actual=0",
+                    "actual:nonzero": "actual>0",
+                    "actual:rare_1_4": "actual BETWEEN 1 AND 4",
+                    "actual:middle_5_19": "actual BETWEEN 5 AND 19",
+                    "actual:peak_ge20": "actual>=20",
+                }.items():
+                    value = db.execute(f"""SELECT count(*),coalesce(sum(actual),0),
+                        avg(abs(predicted-actual)),sum(abs(predicted-actual))/
+                        nullif(sum(actual),0),sqrt(avg(pow(predicted-actual,2))),
+                        avg(predicted-actual) FROM pooled
+                        WHERE {predicate}""").fetchone()
+                    assert value is not None
+                    given = next(
+                        r
+                        for r in pooled_slices
+                        if r["prediction_type"] == kind
+                        and r["name"] == name
+                        and r["slice"] == label
+                    )
+                    for field, wanted in zip(
+                        ("n", "actual_sum", "mae", "wape", "rmse", "bias"),
+                        value,
+                        strict=True,
+                    ):
+                        actual = given[field]
+                        if (actual is None) != (wanted is None) or (
+                            actual is not None
+                            and not math.isclose(
+                                actual, wanted, rel_tol=1e-8, abs_tol=1e-8
+                            )
+                        ):
+                            raise ValueError("Independent pooled error slice mismatch")
+            for field in ("station_id", "local_hour"):
+                groups = [
+                    {"fold": r["fold"], **m}
+                    for r in rows
+                    for m in r["diagnostics"][field]
+                ]
+                for group in sorted(
+                    groups, key=lambda m: (-m["mae"], m["fold"], m["key"])
+                )[:3]:
+                    worst_groups.append(
+                        {"prediction_type": kind, "name": name, "field": field, **group}
+                    )
+    stress_comparison = []
+    for r in reports:
+        if r.get("request", {}).get("purpose") != "stress" or r["status"] != "success":
+            continue
+        reference = r["model_name"].split("__stress_")[0]
+        original = next(
+            (
+                v
+                for v in full
+                if v.get("model_name") == reference
+                and v.get("fold") == r["fold"]
+                and v.get("prediction_type") == r["prediction_type"]
+                and v["status"] == "success"
+            ),
+            None,
+        )
+        if original:
+            stress_comparison.append(
+                {
+                    "prediction_type": r["prediction_type"],
+                    "fold": r["fold"],
+                    "reference": reference,
+                    "full_training_rows": original["measurements"]["training_rows"],
+                    "stress_training_rows": r["measurements"]["training_rows"],
+                    "full_metrics": original["metrics"]["all"],
+                    "stress_metrics": r["metrics"]["all"],
+                    "mae_delta": r["metrics"]["all"]["mae"]
+                    - original["metrics"]["all"]["mae"],
+                    "identical_evaluation": r["evaluation_rows_hash"]
+                    == original["evaluation_rows_hash"],
+                }
+            )
+    cohort_city = []
+    if plan["f2_eda"].get("path"):
+        f2 = read_json(Path(plan["f2_eda"]["path"]))["research"]["histograms"]
+        for r in full:
+            if r.get("model_name") != "seasonal_naive" or r["status"] != "success":
+                continue
+            with duckdb.connect() as db:
+                month_bins = db.execute(
+                    """SELECT
+                    strftime(timezone('America/New_York',target_hour_utc),'%Y-%m'),
+                    CASE WHEN actual=0 THEN '0' WHEN actual=1 THEN '1'
+                        WHEN actual<5 THEN '2-4' WHEN actual<10 THEN '5-9'
+                        WHEN actual<20 THEN '10-19' ELSE '20+' END,count(*)
+                    FROM read_parquet(?) GROUP BY 1,2""",
+                    [str(Path(r["path"]) / r["predictions"])],
+                ).fetchall()
+            for month in sorted({v[0] for v in month_bins}):
+                a = {v[1]: v[2] for v in month_bins if v[0] == month}
+                b = {
+                    v["bin"]: v["n"]
+                    for v in f2[month]
+                    if v["prediction_type"] == r["prediction_type"]
+                }
+                cohort_city.append(
+                    {
+                        "fold": r["fold"],
+                        "prediction_type": r["prediction_type"],
+                        "target_month": month,
+                        "cohort_n": sum(a.values()),
+                        "city_n": sum(b.values()),
+                        "cohort_histogram": a,
+                        "tv": 1
+                        - sum(
+                            min(
+                                a.get(k, 0) / sum(a.values()),
+                                b.get(k, 0) / sum(b.values()),
+                            )
+                            for k in a.keys() | b.keys()
+                        ),
+                        "interpretation": (
+                            "Different cohort/eligible/day-window populations; "
+                            "TV is descriptive composition, not proof of drift cause"
+                        ),
+                    }
+                )
+    return {
+        "version": "f4-research-1",
+        "verifier_code_sha256": checksum(Path(__file__)),
+        "verified_at": datetime.now(UTC).isoformat(),
+        "data_mode": plan["data_mode"],
+        "availability_mode": MODE,
+        "protocol": protocol,
+        "run_id": summary["id"],
+        "run_path": str(summary_path),
+        "status": summary["status"],
+        "outcome_counts": summary["outcome_counts"],
+        "measurements": summary["measurements"],
+        "inputs_id": inputs["id"],
+        "splits": inputs["splits"],
+        "decisions": decisions,
+        "comparisons": comparisons,
+        "pooled_error_slices": pooled_slices,
+        "worst_station_hour_groups": worst_groups,
+        "ablation": ablation,
+        "stress": summary["stress_decisions"],
+        "stress_comparison": stress_comparison,
+        "cohort_city_monthly_composition": cohort_city,
+        "count_distributions": distributions,
+        "fold_distribution_shifts": shifts,
+        "repeatability": repeats,
+        "independent_audit": {
+            "prediction_rows": oracle_rows,
+            "diagnostic_groups": diagnostic_groups,
+            "pooled_slice_groups": len(pooled_slices),
+            "metric_mismatches": 0,
+            "row_membership_mismatches": 0,
+            "PIT_mismatches": 0,
+            "saved_model_parity_sample_rows_per_trial": 32,
+            "frozen_files_unchanged": True,
+        },
+        "trials": [
+            {
+                k: r[k]
+                for k in (
+                    "id",
+                    "path",
+                    "status",
+                    "fold",
+                    "prediction_type",
+                    "model_name",
+                    "parameters",
+                    "measurements",
+                    "error",
+                    "evaluation_rows_hash",
+                    "prediction_values_hash",
+                    "feature_names",
+                    "parity_rows",
+                    "checksums",
+                    "created_at",
+                    "reason",
+                )
+                if k in r
+            }
+            | {
+                "metrics": {
+                    k: v
+                    for k, v in r.get("metrics", {}).items()
+                    if k == "all" or k.startswith(("actual:", "activity:"))
+                },
+                "diagnostics": r.get("diagnostics", {}),
+                "input_provenance": {
+                    k: r.get("request", {}).get(k)
+                    for k in (
+                        "protocol_id",
+                        "dataset_id",
+                        "inputs_id",
+                        "seed",
+                        "fit_asof",
+                        "purpose",
+                        "train_file_sha256",
+                        "evaluation_file_sha256",
+                    )
+                },
+            }
+            for r in reports
+        ],
+        "limitations": [
+            "Cohort64, about 2.56% known-ID events; not citywide",
+            "New validation diagnostics do not open/reselect by final test",
+            "F2 city station-hour and F4 daily-origin cohort populations differ",
+            "Source availability +45d is a retrospective assumption, "
+            "not historical fact",
+            "Weather is outcome-only after prediction; "
+            "no GBFS/capacity/short lag added",
+        ],
+    }
 
 
 def label_oracle(dataset: Path, data: dict[str, Any]) -> dict[str, Any]:
@@ -559,5 +1214,254 @@ def verify(root: Path, output: Path, *, serving: bool = False) -> Path:
             "with published forecast/API"
         ),
     }
+    if (root / "f4/active_research.json").exists():
+        corrective = research_evidence(root)
+        if output.exists():
+            previous = read_json(output)
+            if previous.get("dataset_id") != data["id"]:
+                raise ValueError("Cannot append research to another dataset evidence")
+            # Preserve the old frozen evaluation verbatim as JSON values.
+            previous["corrective_validation"] = corrective
+            previous["corrective_frozen_regression"] = {
+                k: evidence[k]
+                for k in (
+                    "verified_at",
+                    "label_oracle",
+                    "feature_oracle",
+                    "validation_independent_audit",
+                    "final_independent_audit",
+                    "serving",
+                )
+            }
+            evidence = previous
+        else:
+            evidence["corrective_validation"] = corrective
+        if output.name == "f4-forecasting.json":
+            research_markdown(corrective, output.with_suffix(".md"))
     write_json(output, evidence)
     return output
+
+
+def research_markdown(report: dict[str, Any], output: Path) -> None:
+    """Append to the existing report, preserving its historical frozen section."""
+    marker = "\n## Корректирующий validation-only protocol"
+    old = (
+        output.read_text(encoding="utf-8")
+        if output.exists()
+        else "# F4 — Forecasting\n"
+    )
+    old = old.split(marker)[0]
+    protocol = report["protocol"]
+    rows = [
+        marker,
+        "",
+        f"Protocol `{protocol['id']}`, saved {protocol['created_at']} before "
+        f"new trials. Dataset `{protocol['plan']['dataset_id']}`. "
+        f"Run `{report['run_id']}`; mode **{report['availability_mode']}**.",
+        "",
+        "Предыдущие разделы — прежний frozen evaluation. Этот раздел содержит "
+        "только новые validation trials; Sep2026 final scores не участвовали в новом "
+        "сравнении. Existing selection/model/forecast IDs и serving сохранены.",
+        "",
+        f"Outcomes: `{report['outcome_counts']}`. "
+        f"Resources: `{report['measurements']}`. Per-trial native process RSS/wall/"
+        "parameters/status/error/seed/input versions сохранены в immutable trials; "
+        "компактные ссылки/checksums и результаты находятся в F4 JSON.",
+        "",
+        "### Bounded search и ablation",
+        "",
+        "Macro metrics — невзвешенное среднее по validation folds. N по каждому "
+        "fold явен в JSON; пропущенный/нулевой actual denominator WAPE остаётся N/A. "
+        "Counts0/1–4/5–19/20+ заданы до fits по принятому F2 EDA; weekday peak-hour "
+        "и count>=20 — разные диагностические определения.",
+        "",
+        "| Target | Configuration | Macro MAE | WAPE | RMSE | Bias | "
+        "Wins | >20% degraded key slices |",
+        "|---|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for r in report["comparisons"]:
+        if r["status"] != "success":
+            rows.append(
+                f"| {r['prediction_type']} | {r['name']} | "
+                "incomplete | — | — | — | — | — |"
+            )
+            continue
+        m, g = r["macro_metrics"], r["gate"]
+        wape = f"{m['wape']:.4f}" if m["wape"] is not None else "N/A"
+        rows.append(
+            f"| {r['prediction_type']} | {r['name']} | {m['mae']:.4f} | "
+            f"{wape} | {m['rmse']:.4f} | {m['bias']:.4f} | "
+            f"{g['wins']}/{g['windows']} | {len(g['degraded_segments'])} |"
+            if g
+            else "| incomplete baseline |"
+        )
+    rows += [
+        "",
+        "Ablation сравнивает каждый bounded algorithm с тем же algorithm без "
+        "одной группы на идентичных evaluation rows. horizon_h сохранён. Seasonal "
+        "Naive независим: удаление определяющих profile/station/calendar связей "
+        "меняет его семантику, поэтому baseline ablation неприменима. Profiles "
+        "косвенно кодируют station/calendar; это сравнение колонок, не причинный "
+        "вклад информации.",
+        "",
+        "| Target | Removed group / model | ΔMAE по folds (ablated − full) |",
+        "|---|---|---|",
+    ]
+    for r in report["ablation"]:
+        values = ", ".join(f"{v:+.4f}" for v in r["mae_delta_by_fold"])
+        rows.append(f"| {r['prediction_type']} | {r['name']} | {values} |")
+    rows += [
+        "",
+        "### Stress, ошибки и стабильность",
+        "",
+        "Stress candidate выбран только по validation majority/resource gates и "
+        "macro MAE среди прежних bounded configurations; parameter search не "
+        "расширялся. Train уменьшен до половины фактических полных station/origin "
+        "blocks. Evaluation population неизменна.",
+        "",
+        "| Target | Candidate | Fold | Train full/half | MAE full/half | ΔMAE |",
+        "|---|---|---:|---:|---:|---:|",
+    ]
+    for r in report["stress_comparison"]:
+        rows.append(
+            f"| {r['prediction_type']} | {r['reference']} | {r['fold']} | "
+            f"{r['full_training_rows']}/{r['stress_training_rows']} | "
+            f"{r['full_metrics']['mae']:.4f}/{r['stress_metrics']['mae']:.4f} | "
+            f"{r['mae_delta']:+.4f} |"
+        )
+    rows += [
+        "",
+        "### Zero/nonzero, rare и peak errors",
+        "",
+        "Pooled metrics ниже пересчитаны из сумм ошибок, квадратов ошибок и "
+        "actual по четырём folds; это другой знаменатель, чем macro scores выше. "
+        "Zero WAPE не определена. Показаны baseline и validation score leader.",
+        "",
+        "| Target | Model | Slice | N | MAE | WAPE | RMSE | Bias |",
+        "|---|---|---|---:|---:|---:|---:|---:|",
+    ]
+    for r in report["pooled_error_slices"]:
+        metric_text = [
+            f"{r[k]:.4f}" if r[k] is not None else "N/A"
+            for k in ("mae", "wape", "rmse", "bias")
+        ]
+        rows.append(
+            f"| {r['prediction_type']} | {r['name']} | {r['slice']} | "
+            f"{r['n']} | " + " | ".join(metric_text) + " |"
+        )
+    rows += [
+        "",
+        "### Крупные station/hour ошибки",
+        "",
+        "Top groups относятся к одному указанному validation fold, "
+        "не ко всей городской сети и не к pooled station ranking.",
+        "",
+        "| Target | Model | Field/key | Fold | N | MAE | Bias |",
+        "|---|---|---|---:|---:|---:|---:|",
+    ]
+    for r in report["worst_station_hour_groups"]:
+        rows.append(
+            f"| {r['prediction_type']} | {r['name']} | {r['field']}:{r['key']} | "
+            f"{r['fold']} | {r['n']} | {r['mae']:.4f} | {r['bias']:.4f} |"
+        )
+    rows += [
+        "",
+        "Validation JSON содержит zero/nonzero/rare/peak, low/high/new-known "
+        "slices, top station/hour MAE/bias и largest residuals для каждого trial; "
+        "fold MAE/bias/min/max/std и coverage, count-distribution TV между "
+        "validation окнами. Cohort vs F2 city monthly TV — разные populations "
+        "и длины окон; это composition diagnostic, не causal drift и не citywide "
+        "точность. Отсутствующие slices не заполнены нулями.",
+        "",
+        "| Target | Lowest-score configuration | Passed research gates | Operational |",
+        "|---|---|---|---|",
+    ]
+    for kind, d in report["decisions"].items():
+        rows.append(
+            f"| {kind} | {d['score_leader']} | {d['research_gate_candidate']} | "
+            "Seasonal Naive fallback; promotion NOT VERIFIED |"
+        )
+    rows += ["", "### Проверяемые выводы", ""]
+    for kind, d in report["decisions"].items():
+        leader = next(
+            (
+                r
+                for r in report["comparisons"]
+                if r.get("name") == d["score_leader"] and r["prediction_type"] == kind
+            ),
+            None,
+        )
+        baseline = next(
+            (
+                r
+                for r in report["comparisons"]
+                if r.get("name") == "seasonal_naive" and r["prediction_type"] == kind
+            ),
+            None,
+        )
+        if leader and baseline:
+            a, b = leader["macro_metrics"]["mae"], baseline["macro_metrics"]["mae"]
+            rows.append(
+                f"- {kind}: lowest validation macro MAE {a:.4f} "
+                f"({d['score_leader']}) против baseline {b:.4f}; "
+                f"fold range [{leader['mae_min']:.4f},{leader['mae_max']:.4f}], "
+                f"std {leader['mae_std']:.4f}. "
+                f"Majority {leader['gate']['wins']}/{leader['gate']['windows']}; "
+                f"degraded key slices {len(leader['gate']['degraded_segments'])}. "
+                f"Research gate candidate: {d['research_gate_candidate']}; "
+                "это не смена опубликованного champion."
+            )
+        for label in ("actual:zero", "actual:peak_ge20"):
+            slices_by_name = {
+                r["name"]: r
+                for r in report["pooled_error_slices"]
+                if r["prediction_type"] == kind and r["slice"] == label
+            }
+            leader_slice = slices_by_name.get(d["score_leader"])
+            baseline_slice = slices_by_name.get("seasonal_naive")
+            if leader_slice and baseline_slice and leader_slice["n"]:
+                rows.append(
+                    f"- {kind} {label}: leader MAE {leader_slice['mae']:.4f}, "
+                    f"baseline {baseline_slice['mae']:.4f}, "
+                    f"N={leader_slice['n']}; leader bias "
+                    f"{leader_slice['bias']:+.4f}. "
+                    "Положительный bias означает overprediction, "
+                    "редкий peak slice не доказывает переносимость на всю сеть."
+                )
+    rows += [
+        "",
+        "Research gate требует majority wins, отсутствие >20% деградации "
+        "значимых key segments, ресурсы и fit warnings. Низкий средний score сам "
+        "по себе не проходит эти gates. Strict publication availability и "
+        "forward/shadow evidence отсутствуют: operational uplift не доказан. "
+        "Baseline/unavailable fallback сохранён; новые final fits/reselection "
+        "и переключение опубликованного champion не выполнялись.",
+        "",
+        "### Независимая сверка / воспроизводимость",
+        "",
+        f"Independent audit: `{report['independent_audit']}`; "
+        f"repeat fits: `{report['repeatability']}`.",
+        "Метрики пересчитаны stdlib oracle по всем prediction rows; station/hour "
+        "diagnostics — отдельным SQL; row membership — двусторонним EXCEPT ALL; "
+        "PIT/embargo — SQL; сохранённые модели заново загружены и сверены с "
+        "prediction samples. Все failures сохраняют error/status и input hashes. "
+        "Controlled failed/timeout/changed-population tests — отдельные fixture "
+        "доказательства механизма, не вымышленные failed real fits.",
+        "",
+        "```sh",
+        "uv run --locked --group ml python -m citibike.forecasting protocol",
+        "uv run --locked --group ml python -m citibike.forecasting research --protocol "
+        + "data/f4/research_protocols/"
+        + report["protocol"]["id"],
+        "uv run --locked --group ml python -m citibike.forecasting verify --serving",
+        "```",
+        "`--protocol` принимает directory "
+        f"`data/f4/research_protocols/{protocol['id']}`. "
+        "Повтор research переиспользует "
+        "immutable outcomes, включая failures. Ресурсы — shared-host OS process "
+        "high-water; RSS gate не OS memory quota и не production SLA.",
+        "",
+        "Ограничения: " + "; ".join(report["limitations"]) + ".",
+        "",
+    ]
+    output.write_text(old + "\n".join(rows), encoding="utf-8")
