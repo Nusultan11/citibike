@@ -15,7 +15,7 @@ Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
 | F2 | Inventory, 24 NYC месяца 2024-10…2026-09, 104 CSV, canonical Silver, GBFS collections | **92 076 567** canonical из **92 085 994** входных; [EDA](docs/evidence/f2-analysis.md), [evidence](docs/evidence/f2-history.json) |
 | F3 | Gold, фильтры, временная/географическая аналитика, маршруты, GBFS intervals, `/analytics` | Default start-window **92 076 054**; [контракт](docs/analytics-contract.md), [сверка](docs/evidence/f3-analytics.json), [benchmark](docs/evidence/f3-performance.md), [UI](docs/evidence/f3-ui.json) |
 | F4 | Departures/arrivals на 24 часа, Seasonal Naive/Poisson/LightGBM/CatBoost, backtest, batch/API | Cohort 64 станции; [контракт и catalog](docs/forecasting-contract.md), [эксперимент](docs/evidence/f4-forecasting.md), [evidence](docs/evidence/f4-forecasting.json) |
-| F5 | `PARTIAL`: scenario risk, threshold heuristic, bounded transport MILP и CLI | [Controlled comparison / real-input unavailable](docs/evidence/f5-risk.md); real E2E NOT VERIFIED |
+| F5 | Scenario risk, threshold heuristic, bounded transport MILP и CLI; corrective delivery ожидает CI | [Controlled comparison и real-official as-of replay](docs/evidence/f5-risk.md):3/64 eligible; это не текущий live risk |
 | F6–F8 | `PLANNED`: полные product views, Prefect/MLflow automation, production hardening | Не реализованы; критерии и зависимости — [ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) |
 
 Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Принятие
@@ -255,17 +255,21 @@ Read-only API закрепляет publication и возвращает provenanc
 
 ## F5 — сценарный риск и перевозки
 
-**PARTIAL:** CLI, simulator, threshold heuristic и bounded SciPy MILP проверены
-на controlled integration. Два официальных GBFS collections оказались stale
-при собственном TTL: реальные входы отклонены, risk=null, real E2E NOT VERIFIED.
+**PARTIAL до corrective CI:** DoD10 проверен на real_official recorded-as-of
+replay:3/64 eligible на фактически записанный collection-end
+`2026-10-30T06:36:54.163891+00:00`, forecasts07:00–11:00 UTC. Все три политики и
+independent oracle прошли. Это согласованная симуляция того наблюдения, не live
+risk на время исполнения. Поздние current-asof gates остались unavailable;
+прежние controlled и два rejected real evidence сохранены.
 [Evidence и ограничения](docs/evidence/f5-risk.md), [машинный результат](docs/evidence/f5-risk.json).
 
 ```sh
 # Воспроизводимый controlled F4→disposable PostgreSQL→GBFS→F5 + independent oracle:
 uv run --locked --group ml python -m tests.integration.test_risk
 
-# Повторный расчёт сохранённого результата независимым ledger, без serving writes:
-uv run --locked --group ml python -m citibike.risk verify --result data/f5/results/3403a0eb33544546f5892476900bfb62e4bf06cf074c79cd07c554c0b9ce90b0
+# Real-official replay; сохранённые inputs и прежняя PG publication обязательны:
+uv run --locked --group ml python -m citibike.risk run --data-dir data --forecast data/f4/forecasts/1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810 --gbfs data/f5/live-inputs/gbfs/silver/f2-gbfs-2/20261030T063651137970-27bd3fb5 --as-of 2026-10-30T06:36:54.163891+00:00 --config data/f5/config.json
+uv run --locked --group ml python -m citibike.risk verify --result data/f5/results/99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a
 ```
 
 `python -m citibike.risk run` требует явный timezone-aware `--as-of` и принимает
@@ -330,7 +334,7 @@ forecast/analytics smoke и F1 outage/recovery. Полная история и r
 | Bounded search и все trials, ML_SPEC §4 | `VERIFIED`: immutable protocol до fits; 138/138 real outcomes (default/bounded, ablation, stress, repeats), worker timeout/RSS gates, durable failures на controlled negative tests. Frozen legacy evaluation сохранён; новые исследования запускаются отдельным `research --protocol`, без нового Optuna/MLflow |
 | Operational champion, ML_SPEC §5 | `NOT VERIFIED`: forward/shadow evaluation отсутствует. Local champion manifests выбирают baseline, это fallback без доказанного operational uplift; strict current input gate не заменяет forward evaluation |
 | MLflow lifecycle, ML_SPEC §7 | `PLANNED` для F7: local manifests не MLflow Registry; требование не отменено |
-| Risk/Optimization, ML_SPEC §6 | `IMPLEMENTED/VERIFIED` на controlled scenarios; real-input unavailable gates проверены, real F5 E2E `NOT VERIFIED`, фаза PARTIAL. [F5 evidence](docs/evidence/f5-risk.md) |
+| Risk/Optimization, ML_SPEC §6 | `VERIFIED` controlled и real-official recorded-as-of scenario3/64. Current live readiness/calibration `NOT VERIFIED`; no-action дешевле по loss+λcost этого малого replay. [F5 evidence](docs/evidence/f5-risk.md) |
 | Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F6–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
 
 F2/F3/F4 приняты пользователем в задании F5 с явно сохранённым F3 performance debt
@@ -351,9 +355,9 @@ frozen selection/final-test/serving не переизбираются.
 Процесс по [AGENTS.md](AGENTS.md) и [bikeflow-step](.agents/skills/bikeflow-step/SKILL.md):
 **один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
 приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
-допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — закрыть
-F5 real E2E при совместимых свежих GBFS/forecast inputs, затем независимая приёмка
-F5. F6–F8 автоматически не начинать.
+допустимы при PARTIAL/BLOCKED или дефектах приёмки. После corrective delivery
+ближайшая работа — независимая приёмка F5 с явно указанным recorded-as-of scope
+и ограничениями current live inputs. F6–F8 автоматически не начинать.
 
 [Citi Bike System Data](https://citibikenyc.com/system-data),
 [Data Sharing Policy](https://citibikenyc.com/data-sharing-policy).
