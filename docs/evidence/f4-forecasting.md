@@ -145,6 +145,193 @@ Real strict batch `1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81
 
 Fresh F1 raw→UI regression: [f4-f1-regression.json](f4-f1-regression.json), все 8 stage values 3860371. Final local tests **92 passed**, один существующий StarletteDeprecationWarning; Ruff/format/mypy (92 files), locked sync, package build, frontend npm ci/lint/typecheck/build, Docker/HTTP проходят. Фактические SHA и CI фиксируются в ROADMAP §6 после push. MLflow Registry automation — F7; здесь immutable local manifests, не Registry. Prediction intervals не заявлены; F5–F8 не реализуются.
 
+## Постаудитное исследование A/B — 2026-11-01
+
+Отдельная validation-only работа F4, без повторной реализации этапа и без перехода
+к F6. Опубликованный контракт, selection, champion, forecast/PG/F5 и сентябрьский
+final не менялись. September 2026 уже раскрыт и не является новым independent test.
+Machine-readable результаты и ссылки на immutable artifacts —
+[f4-feature-research.json](f4-feature-research.json).
+
+**Решение: для обоих targets остаётся Seasonal Naive; research candidate нет.**
+Ни один из 10 вариантов не прошёл заранее зафиксированное правило: везде есть
+критическая деградация сегментов. Лучший по macro MAE — CatBoost+A в обеих
+populations, но его выигрыш держится в основном на fold0 и не устойчив по folds.
+Operational uplift не заявляется. Отсутствие улучшения здесь — результат, а не сбой.
+
+### Протокол
+
+Immutable protocol `a28aed18d7d2332728be83bd63d5ef88dc3729ec553b08b0065e19c05e484e07`
+сохранён **2026-11-01T15:13:00.126928Z, до первого fit** (`f4-feature-research-2`).
+Он фиксирует hashes source/datasets/features/executor/environment, обе populations,
+четыре прежних validation folds, seed42/2 threads, 11 variants, бюджеты, гипотезы,
+правило решения и 1859 защищённых файлов F4/F5. Выполнено 176 trials: 2 populations
+× 4 folds × 2 targets × 11 variants. Нового tuning нет: при прежних bounded
+hyperparameters проверяется гипотеза о признаках.
+
+Первый протокол `69a184b5…` (outcome `8ded0159…`, 160 trials) **отменён до чтения
+его метрик**: аудит кода нашёл, что Poisson+A не с чем сравнить, что из gate выпали
+прежние `weather:*` сегменты, что нет заранее заданного правила решения, а
+верификатор входит в hash fit-кода. Артефакты сохранены, как результаты не
+использованы. Предсказания 160 из 160 общих trials совпали с новым прогоном по hash.
+
+Группы признаков (формула, dtype, lineage, dependencies, available_at, max lag,
+missing policy и parity каждой колонки — в catalog, schema `b3ee8e1b…`):
+
+- **A:** sin/cos NY hour/weekday/month, ISO week-of-year, weekday AM/PM peak flags,
+  holiday×peak. Известный target calendar, включая DST.
+- **B:** latest/previous observed published-month mean и n, trend на календарный
+  month gap, expanding target-month seasonal mean/n. Каждая dependency доступна на
+  `min(origin, fold fit_as_of)`. Пропущенный месяц не становится нулём, отсутствующая
+  seasonal history остаётся NULL. Trees используют native NaN; Poisson — train-only
+  median + missing indicator (это model input, не наблюдение).
+
+Availability **+45d — approximate-retrospective гипотеза**, не исторический факт.
+ERA5 входит только в post-prediction gate/diagnostics, не в признаки.
+
+Ограничение истории: `seasonal_month_mean` полностью отсутствует в train folds0–2 и в
+validation folds0–1 обеих populations. В validation fold2/fold3 missing 25.30%/11.88%
+(cohort64) и 21.49%/18.28% (cohort128), в train fold3 — 84.10%/82.51%. Годовой
+профиль в этих данных почти не проверен; его отдельная бесполезность не доказана.
+
+### Причины ошибок (RCA на frozen predictions, до новых fits)
+
+`actual>=20` — post-hoc outcome slice; он описывает, где сосредоточена ошибка, но не
+доказывает operational miscalibration. Причинность не установлена.
+
+| Fold | Цели train | Validation | Level ratio V/T | Bias SN → CatBoost, dep | Новые станции: rows/IDs |
+|---|---|---|---:|---:|---:|
+| 0 | 2025-01…02 | Jun 2025 | 2.401 | −1.231 → −1.943 | 1333 / 4 |
+| 1 | 2025-01…05 | Sep 2025 | 1.806 | −0.675 → −0.561 | 2218 / 7 |
+| 2 | 2025-01…08 | Dec 2025 | 0.731 | +1.291 → +0.489 | 1652 / 5 |
+| 3 | 2025-01…11 | Mar 2026 | 0.665 | −0.141 → +0.158 | 0 / 0 |
+
+- Отложенные метки оставляют в train только прошлые сезоны: в folds0–2 ни один
+  календарный месяц validation не встречается в train. Знак bias следует за level
+  ratio; ранговая корреляция ratio и bias CatBoost по станциям −0.68…−0.95 (ассоциация).
+- `actual>=20` — 2.1–2.8% rows и 19–22% абсолютной ошибки летом/осенью, но 0.4–0.5%
+  rows и около 4% ошибки зимой/весной. Top-5 станций дают 20–35% ошибки.
+- Predefined peak-hour: 21% rows, 38–41% спроса, 31–37% абсолютной ошибки.
+- Horizon-профиль повторяет час суток (origins всегда 00:00 UTC: MAE 0.25 на h8 и
+  3.29 на h22), а не рост ошибки с горизонтом. Короткого лага в модели нет.
+- `6753.08` в fold0 имеет 0 eligible train rows: ID виден с 2025-01-16, known_at
+  2025-04-15, targets ещё недоступны на fit_as_of 2025-06-01. `6230.02`: 1060 eligible
+  rows, train mean 6.89 против validation 14.09. Summer underprediction сменяется
+  winter overprediction. Это следствие двух clocks, а не случайного sampling.
+
+### Результаты validation
+
+Macro MAE: base / A / B / A+B. Seasonal Naive и Poisson base в той же строке.
+
+| Population, target | Seasonal Naive | LightGBM | CatBoost | Poisson base / A |
+|---|---:|---|---|---|
+| cohort64 departures | 1.7544 | 1.5665 / 1.6097 / 1.5695 / 1.6006 | 1.5245 / **1.4812** / 1.5492 / 1.5054 | 1.7683 / 1.7570 |
+| cohort64 arrivals | 1.7479 | 1.5684 / 1.6035 / 1.5678 / 1.5927 | 1.4957 / **1.4529** / 1.5104 / 1.5012 | 1.7821 / 1.7615 |
+| cohort128 departures | 1.7202 | 1.5157 / 1.5997 / 1.5067 / 1.5964 | 1.4602 / **1.4433** / 1.4638 / 1.4701 | 1.9003 / 1.9231 |
+| cohort128 arrivals | 1.7211 | 1.4980 / 1.6206 / 1.5044 / 1.6220 | 1.4681 / **1.4379** / 1.4601 / 1.4476 | 1.9199 / 1.9281 |
+
+Populations не смешиваются: cohort128 — другая выборка, а не улучшение cohort64.
+
+Парные разности на идентичных rows (left − right, отрицательное лучше). Интервал —
+95% crossed station × NY day bootstrap, 500 replicates, seed42, exploratory, без
+поправки на множественность. Эффект заявляется, только если интервал не содержит
+ноль и тот же знак есть в большинстве folds.
+
+| Сравнение | Population, target | ΔMAE | 95% | ΔMAE по folds0–3 | Вердикт |
+|---|---|---:|---|---|---|
+| CatBoost A − base | 64 dep | −0.0433 | [−0.0772, −0.0168] | −0.186, +0.009, −0.057, +0.061 | inconclusive |
+| | 64 arr | −0.0428 | [−0.0725, −0.0186] | −0.175, −0.024, +0.010, +0.017 | inconclusive |
+| | 128 dep | −0.0168 | [−0.0398, +0.0044] | −0.159, +0.042, +0.024, +0.025 | inconclusive |
+| | 128 arr | −0.0302 | [−0.0534, −0.0107] | −0.167, −0.017, +0.047, +0.016 | inconclusive |
+| CatBoost B − base | 64 dep | +0.0247 | [+0.0099, +0.0409] | +0.059, −0.017, +0.055, +0.002 | **degrades** |
+| | 64 arr | +0.0147 | [+0.0011, +0.0328] | +0.036, −0.010, +0.047, −0.014 | inconclusive |
+| | 128 dep | +0.0037 | [−0.0083, +0.0184] | +0.030, +0.019, −0.037, +0.003 | inconclusive |
+| | 128 arr | −0.0080 | [−0.0192, +0.0033] | +0.018, −0.016, −0.040, +0.007 | inconclusive |
+| CatBoost A+B − A | 64 arr | +0.0484 | [+0.0279, +0.0753] | +0.035, +0.009, +0.143, +0.005 | **degrades** |
+| | 128 dep | +0.0268 | [+0.0164, +0.0403] | +0.005, −0.034, +0.135, +0.001 | **degrades** |
+| LightGBM A − base | 128 dep | +0.0840 | [+0.0554, +0.1150] | −0.192, −0.033, +0.540, +0.020 | inconclusive |
+| | 128 arr | +0.1226 | [+0.0859, +0.1613] | −0.178, −0.025, +0.688, +0.005 | inconclusive |
+| Poisson A − base | 128 dep | +0.0228 | [−0.0400, +0.0822] | −0.048, +0.380, +0.131, −0.372 | inconclusive |
+
+Все 44 сравнения групп — в `group_effects` и `paired_comparisons` JSON. Единственная
+группа, улучшившая что-либо по правилу, — A+B относительно B у CatBoost на 64 dep,
+то есть снова вклад A. Положительного вердикта для добавления группы к base нет.
+
+Gate кандидата CatBoost+A: 3/4 wins в обеих populations, ресурсы в норме, деградации
+10/5 (cohort64) и 6/5 (cohort128) для departures/arrivals. Во всех четырёх ячейках
+среди них fold0 `activity:new`, `new_known`, `station:6230.02`, `station:6753.08`;
+в departures ещё отдельные horizons и в cohort64 `3:weather:heavy_rain`. Base имел
+17/17 и 15/11, так что A уменьшает число деградаций, но не устраняет их.
+
+### Проверка гипотез
+
+| Гипотеза | Ожидание до fits | Наблюдение | Статус |
+|---|---|---|---|
+| H1 сдвиг уровня | A не экстраполирует неизвестный месяц; fold0 самый трудный | CatBoost fold0 bias −1.94 → −1.67 с A, но MAE 1.95 хуже SN 1.77; underprediction остаётся | Подтверждена частично: A смягчает, но не снимает |
+| H2 редкие станции | B помогает new/low сильнее A | `activity:new` с B −0.01…−0.06 во всех 8 ячейках trees, но A сопоставим; low почти без изменений; интервала для этого среза нет | Направление есть, эффект мал, NOT VERIFIED |
+| H3 хвост | Ни одна группа не снимает bias `actual>=20` | MAE 11.3–14.7 у всех tree-вариантов и SN | Подтверждена |
+| H4 peak-hour | A снижает predefined peak-hour MAE | CatBoost лучше во всех 4 ячейках (2.525→2.464, 2.458→2.370), LightGBM хуже во всех 4; интервала для среза нет | Опровергнута как общее правило |
+| H5 устаревший тренд | B меняет знак по folds, стабильного выигрыша нет | Знак B меняется в folds; 1 degrades, 7 inconclusive для B − base | Подтверждена |
+
+Отрицательные результаты: B не дал заявляемого выигрыша ни одной модели. A+B хуже A у
+CatBoost. A ухудшает LightGBM: в fold2 (Dec) MAE растёт на 0.36–0.69, bias почти
+удваивается; это совместимо с тем, что деревья продолжают `week_of_year` за пределы
+train, но механизм отдельно не проверялся. Poisson нестабилен (std до 0.63), хуже SN
+в cohort128 и деградирует в десятках сегментов.
+
+### Расширение cohort
+
+Cohort128: 32 low/32 middle/32 high/32 new, 4.77% known-ID events против 2.56%;
+весь cohort64 входит как подмножество. Eligible validation rows есть у 127 станций,
+в folds их 99/105/117/122. Train budget тот же (80000 rows на type), поэтому на
+станцию приходится меньше строк. Без eligible rows осталась `5348.06_old` (last event
+2025-09-29). В new tier вошёл похожий на служебный ID `1234.56` (3248 departures,
+4418 arrivals за 16 месяцев наблюдений): он есть в проверенном Gold и не исключался,
+но его природа в этой работе не проверялась.
+
+| Срез cohort128, departures (pooled MAE) | Rows | Stations | SN | CatBoost base | CatBoost A | A − SN, macro по folds, 95% |
+|---|---:|---:|---:|---:|---:|---|
+| overlap64 | 77306 | 64 | 1.7516 | 1.4894 | 1.4764 | −0.2571 [−0.3383, −0.1877] |
+| added64 | 67707 | 63 | 1.6647 | 1.3644 | 1.3519 | −0.3000 [−0.3916, −0.2134] |
+
+Arrivals: overlap64 1.7451/1.4844/1.4597, added64 1.6734/1.3866/1.3613; A − SN
+−0.2678 и −0.3012. Выигрыш trees над SN переносится на добавленные станции, но gate
+не проходит и там. Те же станции при обучении на большей cohort: CatBoost base
+−0.0094 [−0.0265, +0.0070] dep, +0.0148 [−0.0020, +0.0364] arr; CatBoost+A arrivals
+хуже на +0.0273 [+0.0074, +0.0488]. Расширение точность не улучшило, что может быть
+следствием меньшего числа train-строк на станцию.
+
+### Независимая сверка и ресурсы
+
+- Stdlib oracle пересчитал **4 891 018** строк предсказаний: 0 расхождений метрик.
+- Feature oracle из source: **26 618 336** значений A/B, 0 расхождений PIT/значений;
+  0 строк final window во входах. Двусторонний EXCEPT ALL подтвердил те же rows.
+- Frozen replay: base-варианты cohort64 воспроизвели frozen F4 validation predictions
+  **точно**, 8/8 target×model, разница 0.0 на 77306 строках каждой.
+- Детерминизм и parity: все 16 input files пересобраны полным batch и one-origin
+  запросом в обратном порядке строк, 0 различающихся колонок. Saved-model parity — в
+  каждом trial. Повторы `protocol` и `run` дали те же id без новых fits.
+- 176 success, 0 failed, 0 not_run. Max fit 38.8s, inference 0.28s, worker wall
+  43.2s, child RSS 378MB, cumulative worker 3075.5s из 5400s, warnings 0. Это
+  shared-host high-water, не OS quota и не SLA. Все 1859 protected hashes целы.
+
+Покрытие и разбивка по station/activity/horizon/season — в JSON и в immutable
+`feature_audits/3aafa4f8…`. Доля нулей validation: 40–56% по folds.
+
+Ограничения: один seed, поэтому variance — только между folds. +45d — гипотеза.
+Bootstrap без поправки на множественность. Cohort64/128 не citywide, новый independent
+period и forward/shadow evidence отсутствуют; candidate мог бы быть только validation-only.
+Promotion требует ML_SPEC gate, strict PIT и независимого forward/shadow evidence,
+которых этот шаг не создаёт.
+
+Воспроизведение (локальные Gold inputs, из корня repo):
+
+```sh
+uv run --locked --group ml python -m citibike.forecasting.feature_research protocol
+uv run --locked --group ml python -m citibike.forecasting.feature_research run --protocol data/f4/feature_protocols/a28aed18d7d2332728be83bd63d5ef88dc3729ec553b08b0065e19c05e484e07
+uv run --locked --group ml python -m citibike.forecasting.feature_research verify --result data/f4/feature_outcomes/06288a0089cf4c049253febfd2c6c045215410907a9faa7cbdd4656a8bbf24c0
+```
+
 ## Корректирующий validation-only protocol
 
 Protocol `8729cb7cc4aac8efbe3ddda02c6bc972804c69fbf365b9a9ce35093f2d1a6050`, saved 2026-10-30T04:00:01.602462+00:00 before new trials. Dataset `d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5`. Run `b6565ab502b14bcd7481dd25362ea6fabb63a39caaf99364e6f65389c1fb8618`; mode **approximate retrospective**.

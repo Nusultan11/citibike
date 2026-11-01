@@ -1,0 +1,4 @@
+# F4 research protocols hash exact source bytes; a clean checkout must match them.
+src/citibike/features/**/*.py text eol=lf
+src/citibike/forecasting/**/*.py text eol=lf
+src/citibike/forecasting/feature_research/__init__.py text eol=crlf

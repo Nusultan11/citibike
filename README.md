@@ -239,6 +239,24 @@ input timestamps, но не доказывает operational accuracy. Недо�
 не заменяет корректную публикацию. Prediction intervals не реализованы;
 MLflow Registry остаётся F7. Детали — [forecasting-contract](docs/forecasting-contract.md).
 
+Отдельное постаудитное A/B-исследование (требует тех же локальных Gold inputs):
+
+```sh
+uv run --locked --group ml python -m citibike.forecasting.feature_research protocol
+uv run --locked --group ml python -m citibike.forecasting.feature_research run --protocol <printed-protocol-directory>
+uv run --locked --group ml python -m citibike.forecasting.feature_research verify --result <printed-outcome-directory>
+```
+
+`protocol` фиксирует календарные и опубликованные исторические признаки,
+неизменные validation folds, cohort64/128, hashes, бюджеты и правило решения **до fits**.
+`run` сохраняет каждый success/failure/skipped trial в ignored `data/f4/feature_*`;
+повтор переиспользует те же immutable outcomes. `verify` независимо сверяет признаки,
+метрики и paired station/day uncertainty; компактный результат —
+[f4-feature-research.json](docs/evidence/f4-feature-research.json).
+Active pointers, serving и final test не переключаются. September 2026 уже раскрыт;
+исследование не создаёт нового independent test или operational promotion evidence.
+Итог: research candidate нет, для обоих targets остаётся Seasonal Naive.
+
 ## API и пользовательские страницы
 
 | Контур | Существующая выдача |
