@@ -51,6 +51,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm test
       - run: npm run build
   docker-smoke:
     if: github.ref == 'refs/heads/main'
@@ -76,6 +77,8 @@ jobs:
       - run: uv run --locked --group ml pytest -q tests/integration/test_risk.py
       - run: uv run --locked --group ml python -m tests.integration.forecast_smoke
       - run: uv run --locked python -m tests.integration.analytics_smoke
+      - run: uv run --locked --group ml pytest -q tests/integration/test_product.py
+      - run: uv run --locked --group ml python -m tests.integration.product_smoke --mode fixture
       - run: uv run --locked python -m tests.fixtures --output .cache/f1-fixture.zip
       - run: uv run --locked python -m citibike.pipeline --period 2026-04 --fixture .cache/f1-fixture.zip --data-dir .cache/f1
       - run: uv run --locked python tests/integration/smoke.py --expected-count 4

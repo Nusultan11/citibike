@@ -19,6 +19,8 @@ from citibike.serving.models import (
     SeriesResponse,
 )
 from citibike.serving.read import InvalidFilter, get_kpi, get_publication, get_series
+from citibike.serving.risk_api import router as risk_router
+from citibike.serving.station_api import router as station_router
 
 
 class HealthResponse(BaseModel):
@@ -43,6 +45,8 @@ def create_app() -> FastAPI:
     application = FastAPI(title="BikeFlow Intelligence API", version="0.1.0")
     application.include_router(analytics_router)
     application.include_router(forecast_router)
+    application.include_router(station_router)
+    application.include_router(risk_router)
 
     @application.get("/health", response_model=HealthResponse)
     async def health() -> HealthResponse:

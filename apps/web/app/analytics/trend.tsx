@@ -5,11 +5,13 @@ import { AriaComponent, GridComponent, TooltipComponent } from "echarts/componen
 import { init, use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 import { useEffect, useRef } from "react";
-import type { AnalyticsRow } from "../../lib/analytics";
 
 use([LineChart, AriaComponent, GridComponent, TooltipComponent, CanvasRenderer]);
 
-export default function AnalyticsTrend({ rows }: { rows: AnalyticsRow[] }) {
+// Only key/value pairs cross the server→client boundary; full rows stay on the server.
+export type TrendPoint = { key: string; value: number | null };
+
+export default function AnalyticsTrend({ rows }: { rows: TrendPoint[] }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!ref.current) return;
@@ -32,7 +34,7 @@ export default function AnalyticsTrend({ rows }: { rows: AnalyticsRow[] }) {
       series: [
         {
           type: "line",
-          data: rows.map((r) => r.metrics?.completed_published_rides ?? null),
+          data: rows.map((r) => r.value),
           connectNulls: false,
           showSymbol: true,
           symbolSize: 3,

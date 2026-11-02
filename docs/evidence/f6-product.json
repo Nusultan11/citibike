@@ -1,0 +1,621 @@
+{
+  "version": "f6-product-1",
+  "phase": "F6 Product",
+  "data_mode": "real_official + controlled_fixture (separated)",
+  "publications": {
+    "f1": "69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284",
+    "f2_snapshot": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+    "f3_analytics": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+    "f4_forecast": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+    "f5_risk": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+    "f6_station_geo": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850"
+  },
+  "station_geo": {
+    "version": "f6-station-geo-1",
+    "policy": "accepted F2 Silver events of the pinned F3 publication; per station_id, NYC local event month (start: started_at_local, end: ended_at_local) and side; modal finite WGS84 pair, ties by lat, lon; modal name; no ID merge, no GBFS or geocoder fill; missing coordinates counted, never imputed",
+    "analytics_publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+    "source_snapshot_id": "5c4f166d01265d219f7026db9195f3d4cdb362e1f65c1625713628aa55a26cea",
+    "accepted_silver_rows": 92076567,
+    "rows": 108926,
+    "stations": 2674,
+    "station_events": 183832563,
+    "coordinate_events": 183832563,
+    "groups_without_coordinates": 0,
+    "groups_with_multiple_coordinates": 35,
+    "checksums": {
+      "station_geo_monthly.parquet": "f89433dbf0a20c355badcba027e451862b343fccb948e6ab4147b3f335e6ba7d"
+    },
+    "measurements": {
+      "elapsed_seconds": 42.891,
+      "peak_rss_bytes": 230342656
+    },
+    "created_at": "2026-11-02T14:20:59.646195+00:00"
+  },
+  "station_geo_need": "Serving Gold has only 0.01 degree event-grid cells (trip-wgs84-grid-001), no station point coordinates; a station map needs per-station points.",
+  "station_geo_verify": {
+    "status": "PASS",
+    "geo_id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+    "sample_stations": 60,
+    "groups_checked": 2461,
+    "mismatches": [],
+    "method": "independent DuckDB count/rank over raw Silver files"
+  },
+  "real_e2e": {
+    "mode": "real_official",
+    "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+    "overview": {
+      "silver": 4697240,
+      "api": 4697240,
+      "html": 4697240,
+      "baseline_silver": 4975250,
+      "baseline_api": 4975250,
+      "change_independent": -0.055878599065373596,
+      "change_api": -0.055878599065373596,
+      "change_html": -0.055878599065373596,
+      "publication_html": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+    },
+    "stations": {
+      "6611.07": {
+        "silver": {
+          "departures": 3680,
+          "arrivals": 3618
+        },
+        "api_v4": {
+          "departures": 3680,
+          "arrivals": 3618
+        },
+        "api_v2": {
+          "departures": 3680,
+          "arrivals": 3618
+        },
+        "html": {
+          "departures": 3680,
+          "arrivals": 3618
+        },
+        "coordinate_silver": [
+          40.75676475086503,
+          -73.99971440439913
+        ],
+        "coordinate_api": [
+          40.75676475086503,
+          -73.99971440439913
+        ],
+        "split_partner": null,
+        "split_html": null
+      },
+      "5980.1": {
+        "silver": {
+          "departures": 0,
+          "arrivals": 9280
+        },
+        "api_v4": {
+          "departures": 0,
+          "arrivals": 9280
+        },
+        "api_v2": {
+          "departures": 0,
+          "arrivals": 9280
+        },
+        "html": {
+          "departures": 0,
+          "arrivals": 9280
+        },
+        "coordinate_silver": [
+          40.737006,
+          -73.990134
+        ],
+        "coordinate_api": [
+          40.737006,
+          -73.990134
+        ],
+        "split_partner": "5980.10",
+        "split_html": "5980.10"
+      },
+      "5980.10": {
+        "silver": {
+          "departures": 14347,
+          "arrivals": 5140
+        },
+        "api_v4": {
+          "departures": 14347,
+          "arrivals": 5140
+        },
+        "api_v2": {
+          "departures": 14347,
+          "arrivals": 5140
+        },
+        "html": {
+          "departures": 14347,
+          "arrivals": 5140
+        },
+        "coordinate_silver": [
+          40.737006,
+          -73.990134
+        ],
+        "coordinate_api": [
+          40.737006,
+          -73.990134
+        ],
+        "split_partner": "5980.1",
+        "split_html": "5980.1"
+      },
+      "3138.03": {
+        "silver": {
+          "departures": 570,
+          "arrivals": 560
+        },
+        "api_v4": {
+          "departures": 570,
+          "arrivals": 560
+        },
+        "api_v2": {
+          "departures": 570,
+          "arrivals": 560
+        },
+        "html": {
+          "departures": 570,
+          "arrivals": 560
+        },
+        "coordinate_silver": [
+          40.645705,
+          -74.020292
+        ],
+        "coordinate_api": [
+          40.645705,
+          -74.020292
+        ],
+        "split_partner": null,
+        "split_html": null
+      }
+    },
+    "dst_hours": {
+      "2025-11-02": 25,
+      "2026-03-08": 23
+    },
+    "forecast": {
+      "api_status": "stale",
+      "valid_until": "2026-10-30T12:00:00+00:00",
+      "expired_now": true,
+      "html_state": "expired",
+      "html_values_shown": false
+    },
+    "scenario": {
+      "artifact_cells": 27,
+      "served_cells": 27,
+      "objective_mismatches": 0,
+      "status": "archival_replay",
+      "html_state": "archival_replay",
+      "html_coverage": "3/64",
+      "artifact_coverage": "3/64",
+      "no_action_best_cells": 9,
+      "as_of": "2026-10-30T06:36:54.163891+00:00"
+    },
+    "filter_states": {
+      "reversed": "error",
+      "half": "error",
+      "unknown_station": "empty",
+      "invalid_vehicle": "error"
+    },
+    "api_latency": {
+      "v2_kpi_28d": {
+        "first_ms": 24.72,
+        "p50_ms": 22.44,
+        "p95_ms": 23.85,
+        "max_ms": 23.85,
+        "samples": 20
+      },
+      "v2_timeseries_28d": {
+        "first_ms": 24.01,
+        "p50_ms": 22.54,
+        "p95_ms": 24.83,
+        "max_ms": 24.83,
+        "samples": 20
+      },
+      "v2_compare_28d": {
+        "first_ms": 33.26,
+        "p50_ms": 24.16,
+        "p95_ms": 27.01,
+        "max_ms": 27.01,
+        "samples": 20
+      },
+      "v4_stations_28d_map": {
+        "first_ms": 130.83,
+        "p50_ms": 134.66,
+        "p95_ms": 175.25,
+        "max_ms": 175.25,
+        "samples": 20
+      },
+      "v4_stations_full_window": {
+        "first_ms": 561.82,
+        "p50_ms": 458.13,
+        "p95_ms": 626.37,
+        "max_ms": 626.37,
+        "samples": 20
+      },
+      "v4_station_detail": {
+        "first_ms": 28.89,
+        "p50_ms": 23.36,
+        "p95_ms": 28.05,
+        "max_ms": 28.05,
+        "samples": 20
+      },
+      "v4_risk": {
+        "first_ms": 19.67,
+        "p50_ms": 19.41,
+        "p95_ms": 22.47,
+        "max_ms": 22.47,
+        "samples": 20
+      },
+      "v3_forecasts": {
+        "first_ms": 19.96,
+        "p50_ms": 20.86,
+        "p95_ms": 21.65,
+        "max_ms": 21.65,
+        "samples": 20
+      }
+    },
+    "html_render": {
+      "overview": {
+        "first_ms": 141.69,
+        "p50_ms": 145.91,
+        "p95_ms": 173.29,
+        "max_ms": 173.29,
+        "samples": 5,
+        "bytes": 113125
+      },
+      "analytics_default": {
+        "first_ms": 704.46,
+        "p50_ms": 752.47,
+        "p95_ms": 787.23,
+        "max_ms": 787.23,
+        "samples": 5,
+        "bytes": 704286
+      },
+      "analytics_28d_station": {
+        "first_ms": 694.56,
+        "p50_ms": 713.51,
+        "p95_ms": 756.1,
+        "max_ms": 756.1,
+        "samples": 5,
+        "bytes": 158470
+      },
+      "stations": {
+        "first_ms": 200.68,
+        "p50_ms": 180.65,
+        "p95_ms": 237.52,
+        "max_ms": 237.52,
+        "samples": 5,
+        "bytes": 566188
+      },
+      "station_detail": {
+        "first_ms": 251.5,
+        "p50_ms": 189.67,
+        "p95_ms": 208.79,
+        "max_ms": 208.79,
+        "samples": 5,
+        "bytes": 592328
+      },
+      "forecasts": {
+        "first_ms": 32.73,
+        "p50_ms": 28.18,
+        "p95_ms": 29.76,
+        "max_ms": 29.76,
+        "samples": 5,
+        "bytes": 15959
+      },
+      "scenarios": {
+        "first_ms": 45.19,
+        "p50_ms": 41.87,
+        "p95_ms": 49.07,
+        "max_ms": 49.07,
+        "samples": 5,
+        "bytes": 77507
+      }
+    },
+    "checked_at": "2026-11-02T15:13:53.197147+00:00"
+  },
+  "controlled_e2e": {
+    "mode": "controlled_fixture",
+    "analytics_publication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+    "geo_id": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+    "forecast_publication": "b6d1d81dc688d91177875bd56d5feac99ecc0d91b74a9b1fbea462fea849f676",
+    "risk_publication": "075a1a2ff4059aa75c2cd61dbe8153178bf7d4d6675e02212eeb2f86c5a98c74",
+    "independent_silver": {
+      "completed_published_rides": 5,
+      "stations": {
+        "001": {
+          "departures": 2,
+          "arrivals": 3
+        },
+        "002": {
+          "departures": 2,
+          "arrivals": 2
+        }
+      },
+      "coords": {
+        "001": [
+          89.999999999,
+          179.999999999
+        ],
+        "002": [
+          40.7,
+          -74.0
+        ]
+      }
+    },
+    "checks": "fixture Silver→API→HTML for overview/stations/forecasts/scenarios",
+    "checked_at": "2026-11-02T14:58:16.514013+00:00"
+  },
+  "browser_navigation_timing": {
+    "source": "built-in browser Navigation Timing; pane hidden (background page, throttled timers); 3 runs per page; web 3001 standalone -> local API 8001 -> compose PostgreSQL; charts_ready null = canvas not observed within 5s in hidden iframe",
+    "out": {
+      "overview_1280": [
+        {
+          "ttfb": 17,
+          "dcl": 274,
+          "load": 275,
+          "charts_ready": null,
+          "html_bytes": 113171
+        },
+        {
+          "ttfb": 15,
+          "dcl": 196,
+          "load": 197,
+          "charts_ready": null,
+          "html_bytes": 113171
+        },
+        {
+          "ttfb": 22,
+          "dcl": 371,
+          "load": 372,
+          "charts_ready": null,
+          "html_bytes": 113169
+        }
+      ],
+      "stations_1280": [
+        {
+          "ttfb": 64,
+          "dcl": 842,
+          "load": 847,
+          "charts_ready": null,
+          "html_bytes": 566232
+        },
+        {
+          "ttfb": 23,
+          "dcl": 575,
+          "load": 577,
+          "charts_ready": null,
+          "html_bytes": 566232
+        },
+        {
+          "ttfb": 17,
+          "dcl": 415,
+          "load": 421,
+          "charts_ready": null,
+          "html_bytes": 566232
+        }
+      ],
+      "analytics_1280": [
+        {
+          "ttfb": 16,
+          "dcl": 1811,
+          "load": 1814,
+          "charts_ready": null,
+          "html_bytes": 1203878
+        },
+        {
+          "ttfb": 13,
+          "dcl": 1835,
+          "load": 1840,
+          "charts_ready": null,
+          "html_bytes": 1203880
+        },
+        {
+          "ttfb": 35,
+          "dcl": 3569,
+          "load": 3573,
+          "charts_ready": null,
+          "html_bytes": 1203880
+        }
+      ],
+      "scenarios_1280": [
+        {
+          "ttfb": 17,
+          "dcl": 220,
+          "load": 222,
+          "charts_ready": null,
+          "html_bytes": 77551
+        },
+        {
+          "ttfb": 22,
+          "dcl": 157,
+          "load": 159,
+          "charts_ready": null,
+          "html_bytes": 77551
+        },
+        {
+          "ttfb": 22,
+          "dcl": 130,
+          "load": 131,
+          "charts_ready": null,
+          "html_bytes": 77551
+        }
+      ],
+      "forecasts_1280": [
+        {
+          "ttfb": 12,
+          "dcl": 56,
+          "load": 57,
+          "charts_ready": 58,
+          "html_bytes": 16003
+        },
+        {
+          "ttfb": 14,
+          "dcl": 60,
+          "load": 61,
+          "charts_ready": 62,
+          "html_bytes": 16003
+        },
+        {
+          "ttfb": 14,
+          "dcl": 73,
+          "load": 74,
+          "charts_ready": 74,
+          "html_bytes": 16003
+        }
+      ],
+      "overview_390": [
+        {
+          "ttfb": 19,
+          "dcl": 262,
+          "load": 264,
+          "charts_ready": null,
+          "html_bytes": 113171
+        },
+        {
+          "ttfb": 18,
+          "dcl": 243,
+          "load": 245,
+          "charts_ready": null,
+          "html_bytes": 113169
+        },
+        {
+          "ttfb": 21,
+          "dcl": 248,
+          "load": 250,
+          "charts_ready": null,
+          "html_bytes": 113171
+        }
+      ],
+      "stations_390": [
+        {
+          "ttfb": 16,
+          "dcl": 564,
+          "load": 569,
+          "charts_ready": null,
+          "html_bytes": 566234
+        },
+        {
+          "ttfb": 15,
+          "dcl": 413,
+          "load": 416,
+          "charts_ready": null,
+          "html_bytes": 566232
+        },
+        {
+          "ttfb": 14,
+          "dcl": 390,
+          "load": 394,
+          "charts_ready": null,
+          "html_bytes": 566232
+        }
+      ],
+      "analytics_390": [
+        {
+          "ttfb": 14,
+          "dcl": 1320,
+          "load": 1326,
+          "charts_ready": null,
+          "html_bytes": 1203878
+        },
+        {
+          "ttfb": 13,
+          "dcl": 1346,
+          "load": 1350,
+          "charts_ready": null,
+          "html_bytes": 1203878
+        },
+        {
+          "ttfb": 17,
+          "dcl": 1312,
+          "load": 1317,
+          "charts_ready": null,
+          "html_bytes": 1203878
+        }
+      ],
+      "scenarios_390": [
+        {
+          "ttfb": 15,
+          "dcl": 141,
+          "load": 142,
+          "charts_ready": null,
+          "html_bytes": 77553
+        },
+        {
+          "ttfb": 16,
+          "dcl": 102,
+          "load": 104,
+          "charts_ready": null,
+          "html_bytes": 77551
+        },
+        {
+          "ttfb": 12,
+          "dcl": 86,
+          "load": 88,
+          "charts_ready": null,
+          "html_bytes": 77551
+        }
+      ],
+      "forecasts_390": [
+        {
+          "ttfb": 12,
+          "dcl": 70,
+          "load": 71,
+          "charts_ready": 71,
+          "html_bytes": 16003
+        },
+        {
+          "ttfb": 15,
+          "dcl": 68,
+          "load": 69,
+          "charts_ready": 70,
+          "html_bytes": 16005
+        },
+        {
+          "ttfb": 14,
+          "dcl": 71,
+          "load": 73,
+          "charts_ready": 73,
+          "html_bytes": 16007
+        }
+      ]
+    }
+  },
+  "outages": {
+    "api_down_fixture_web": [
+      "/ 200 data-api-status=\"unavailable\" data-data-state=\"unavailable\" data-forecast-state=\"unavailable\" data-overview-state=\"unavailable\" data-risk-queue=\"unavailable\" ",
+      "/analytics 200 data-analytics-state=\"error\" data-gbfs-state=\"unavailable\" ",
+      "/stations 200 data-stations-state=\"unavailable\" ",
+      "/stations?station_id=6611.07 200 data-stations-state=\"unavailable\" ",
+      "/forecasts 200 data-forecast-page=\"unavailable\" ",
+      "/scenarios 200 data-scenario-state=\"unavailable\" "
+    ],
+    "db_down_real_web": [
+      "C:/Program Files/Git/ 200 data-api-status=\"ok\" data-data-state=\"unavailable\" data-forecast-state=\"unavailable\" data-overview-state=\"error\" data-risk-queue=\"unavailable\" ",
+      "C:/Program Files/Git/analytics 200 data-analytics-state=\"error\" data-gbfs-state=\"unavailable\" ",
+      "C:/Program Files/Git/stations 200 data-stations-state=\"error\" ",
+      "/stations?station_id=001 200 data-stations-state=\"error\" ",
+      "C:/Program Files/Git/forecasts 200 data-forecast-page=\"unavailable\" ",
+      "C:/Program Files/Git/scenarios 200 data-scenario-state=\"unavailable\" "
+    ],
+    "recovered": [
+      "C:/Program Files/Git/ 200 data-api-status=\"ok\" data-completed-rides=\"3860371\" data-data-state=\"ok\" data-forecast-state=\"expired\" data-network-state=\"unavailable\" data-overview-rides=\"4697240\" data-overview-state=\"ok\" data-risk-queue=\"archival_replay\" ",
+      "C:/Program Files/Git/analytics 200 data-analytics-state=\"ok\" data-compare-state=\"na\" data-gbfs-state=\"unavailable\" data-geo-state=\"unavailable\" data-route-state=\"ok\" ",
+      "C:/Program Files/Git/stations 200 data-stations-state=\"ok\" data-stations-total ",
+      "/stations?station_id=001 200 data-stations-state=\"ok\" data-stations-total ",
+      "C:/Program Files/Git/forecasts 200 data-forecast-page=\"expired\" ",
+      "C:/Program Files/Git/scenarios 200 data-scenario-state=\"archival_replay\" "
+    ]
+  },
+  "regressions": {
+    "f5_risk_verify": "PASS 288 draws/864 outcomes/14526 ledger checks/0 mismatches",
+    "f1_verify_recompute": "PASS 8 stages 3860371 (before compose rebuild)",
+    "f1_verify_new_ui": "PASS 8 stages 3860371 (new compose web)",
+    "f3_analytics_verify_new_ui": "PASS exit 0",
+    "f4_verify_serving": "NOT VERIFIED: exit 1 Forecast window stale (valid_until 2026-10-30T12:00Z), gate not bypassed",
+    "station_geo_verify": "PASS 60 stations/2461 groups/0 mismatches",
+    "pytest_full": "209 passed, 1 failed (known Windows WinError5 rename flake in F2 test_historical); isolated rerun 8/8 passed",
+    "controlled_smokes_disposable_db": "analytics_smoke PASS, forecast_smoke PASS, product_smoke fixture PASS",
+    "compose_f1_smoke": "PASS 3860371/146083/error"
+  }
+}

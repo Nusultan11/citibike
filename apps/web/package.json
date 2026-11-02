@@ -11,7 +11,8 @@
     "build": "next build",
     "start": "node start.mjs",
     "lint": "biome check . --error-on-warnings",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"lib/**/*.test.ts\""
   },
   "dependencies": {
     "echarts": "6.1.0",

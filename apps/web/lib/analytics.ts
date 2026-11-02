@@ -1,3 +1,5 @@
+import { ApiError } from "./operations";
+
 export type Metrics = {
   completed_published_rides: number | null;
   average_duration_seconds: number | null;
@@ -17,6 +19,8 @@ export type AnalyticsRow = {
   n: number | null;
   known_share: number | null;
   unknown_count: number | null;
+  cell_lat?: number | null;
+  cell_lon?: number | null;
 };
 export type AnalyticsData = {
   status: "ok" | "empty" | "unavailable" | "stale";
@@ -63,14 +67,22 @@ function checkedMetrics(value: unknown): void {
 }
 export async function analytics(endpoint: string, params: URLSearchParams): Promise<AnalyticsData> {
   const base = process.env.API_BASE_URL ?? "http://127.0.0.1:8000";
-  const response = await fetch(`${base}/v2/analytics/${endpoint}?${params}`, {
-    cache: "no-store",
-    signal: AbortSignal.timeout(15000),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${base}/v2/analytics/${endpoint}?${params}`, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    });
+  } catch {
+    throw new ApiError("unavailable", "Аналитический API недоступен. Значения не заменены нулями.");
+  }
   if (!response.ok) {
     if (response.status === 422)
-      throw new Error("Фильтры не поддержаны: проверьте период, размер часового окна и станцию.");
-    throw new Error("Аналитический API недоступен. Значения не заменены нулями.");
+      throw new ApiError(
+        "error",
+        "Фильтры не поддержаны: проверьте период, размер часового окна и станцию.",
+      );
+    throw new ApiError("unavailable", "Аналитический API недоступен. Значения не заменены нулями.");
   }
   const value: unknown = await response.json();
   if (

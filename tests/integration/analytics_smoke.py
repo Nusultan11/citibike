@@ -13,19 +13,22 @@ from tests.fixtures_analytics import analytical_gold
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", type=Path, default=Path(".cache/f3-smoke"))
+    parser.add_argument("--api-url", default="http://127.0.0.1:8000")
+    parser.add_argument("--web-url", default="http://127.0.0.1:3000")
     args = parser.parse_args()
+    api, web = args.api_url.rstrip("/"), args.web_url.rstrip("/")
     version = publish(analytical_gold(args.data_dir))
     with httpx.Client(timeout=30) as client:
         params = {"publication_id": version}
-        kpi = client.get("http://127.0.0.1:8000/v2/analytics/kpi", params=params)
+        kpi = client.get(api + "/v2/analytics/kpi", params=params)
         kpi.raise_for_status()
         assert kpi.json()["metrics"]["completed_published_rides"] == 5
-        html = client.get("http://127.0.0.1:3000/analytics", params=params)
+        html = client.get(web + "/analytics", params=params)
         html.raise_for_status()
         match = re.search(r'data-analytics-completed-rides="(\d+)"', html.text)
         assert match is not None and int(match[1]) == 5 and version in html.text
         filtered = client.get(
-            "http://127.0.0.1:3000/analytics",
+            web + "/analytics",
             params={
                 **params,
                 "start_date": "2024-10-01",
@@ -37,18 +40,18 @@ def main() -> None:
             filtered.status_code == 200
             and 'data-analytics-completed-rides="1"' in filtered.text
         )
-        invalid = client.get("http://127.0.0.1:3000/analytics?vehicle=invalid")
+        invalid = client.get(web + "/analytics?vehicle=invalid")
         assert (
             invalid.status_code == 200
             and 'data-analytics-state="error"' in invalid.text
         )
-        missing = client.get("http://127.0.0.1:3000/analytics?station_id=missing")
+        missing = client.get(web + "/analytics?station_id=missing")
         assert (
             missing.status_code == 200
             and 'data-analytics-state="empty"' in missing.text
         )
         partial = client.get(
-            "http://127.0.0.1:3000/analytics",
+            web + "/analytics",
             params={**params, "start_date": "2024-10-02", "end_date": "2025-01-02"},
         )
         assert partial.status_code == 200
