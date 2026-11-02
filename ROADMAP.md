@@ -653,3 +653,31 @@ commit SHA/PR; ограничения и выводы; один следующи
 
 - Ограничения: тождество ID не подтверждено оператором; исправление Silver и маппинг ID требуют решения владельца; `analytics.py`, `verify.py`, `lineage.py` вне code hash протокола; holdout — unseen validation, H0 частично в train T3; production parity, strict historical PIT, forward/shadow — NOT VERIFIED.
 - Следующий шаг: **независимая приёмка владельцем и решение по маппингу `dddd.d` → `dddd.d0` в Silver**; F6 не начинать.
+
+### 2026-11-02 — F5 корректирующий остаток: повторная проверка recorded-as-of для приёмки, COMPLETED
+
+- Задача: независимо воспроизвести и проверить real_official F5 result `99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a`, без изменения ML, champion, схем и API. База: чистый `main`/`origin` `007221e19d4952ea5af5af38c0d6e0cc53e63eb2`, PR нет, CI41444686402 success. Код F5 с `6564645` не менялся; дефектов не найдено, код не правился. Это **архивный recorded-as-of replay**, не live readiness.
+- `uv run --locked --group ml python -m citibike.risk run --data-dir data --forecast data/f4/forecasts/1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810 --gbfs data/f5/live-inputs/gbfs/silver/f2-gbfs-2/20261030T063651137970-27bd3fb5 --as-of 2026-10-30T06:36:54.163891+00:00 --config data/f5/config.json` — exit 0, 1.73 s, тот же ID, ok, 3/64; перепроверяет существующий immutable результат. Та же команда с пустым `--data-dir` во scratchpad пересчитала сценарий с нуля: тот же ID, `inputs.json`/`events.jsonl`/`outcomes.jsonl` побайтово равны, различаются только wall time и RSS.
+- `uv run --locked --group ml python -m citibike.risk verify --result data/f5/results/99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a` — PASS: 288 paired draws, 864 outcomes, 14 526 ledger checks, 0 mismatches; source ages 39.16/37.16 s при TTL 60 s. Stdlib-пересчёт `outcomes.jsonl`: 0 расхождений objective, no-action лучший по loss+λ·cost в 9/9 ячейках, нарушений ограничений и недоставленного груза 0.
+- Негативные случаи в отдельном каталоге с копиями pointers: as-of сейчас — exit 2, forecast_expired + stale GBFS, 0/64; as-of +3 s — exit 2, 0/64; as-of раньше получения — exit 2, future snapshot; `active.json` не изменился. Сохранены 1 real ok, 12 real unavailable, 4 controlled ok.
+- Регрессии: `uv run --locked --group ml python -m citibike.verify --result data/processed/69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284 --output .cache/f5r-f1-regression.json --recompute-baseline` — 3860371; `uv run --locked --group ml python -m citibike.analytics verify --output .cache/f5r-f3-regression.json` — PASS; `uv run --locked --group ml python -m citibike.forecasting verify` и `--serving` — **exit 1, «Forecast window stale»** (valid_until 2026-10-30T12:00Z), gate не обходился, F4 regression NOT VERIFIED. 3612 protected files без изменений и добавлений.
+- Проверки: `uv sync --locked --group ml`; `uv run --locked ruff check .`; `uv run --locked ruff format --check .` (117 files); `uv run --locked mypy` (117 files); `uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration` — **205 passed** (359.35 s, 31 прежних warnings); `uv build`; `git diff --check` — exit 0. Изменены только `docs/evidence/f5-risk.json` (новый ключ `reverification_20261102`, прежнее содержимое побайтово сохранено), `docs/evidence/f5-risk.md` (раздел в конце) и этот §6.
+
+| DoD F5 | Статус | Доказательство |
+|---|---|---|
+| 1. F4 publication/lineage + GBFS adapter | PASS | Run проверяет manifest/rows/schema; raw source audit |
+| 2. As-of / TTL / mapping / missing | PASS | 39.16/37.16 s < 60; три негативных exit 2 |
+| 3. Inventory/capacity/transport | PASS | 14 526 ledger checks, 0 |
+| 4. Seed events / no false gain | PASS | Пересчёт: events/outcomes побайтово равны |
+| 5. Fractions / uncertainty / coverage | PASS | Verify PASS; 3/64 с причинами исключений |
+| 6. No-action / heuristic / MILP | PASS | 9/9 ячеек, no-action лучший по objective |
+| 7. Independent oracle | PASS | 0 mismatches; stdlib objective 0 |
+| 8. Sensitivity / resources | PASS | 3×3×32; 2.73 s, 149 008 384 B |
+| 9. Immutable CLI / failure | PASS | Тот же ID; отказ не трогает active |
+| 10. Real-input E2E | PASS (recorded-as-of) | real_official; live readiness NOT VERIFIED |
+| 11. Frozen F0–F4 | PASS с оговоркой | 3612 hashes, F1/F3; F4 verify NOT VERIFIED (истёкшее окно) |
+| 12. Checks / build / CI | PASS | 205 tests, Ruff/mypy/build; CI итогового SHA в отчёте |
+| 13. No claims / no F6 | PASS | Только сценарный scope; F6–F8 не начинались |
+
+- Ограничения: 3/64 станции одного cohort, один recorded as-of; TTL slack 0.84–2.84 s; Monte Carlo интервалы не calibration; live risk, field effect, экономия и F4 operational promotion не заявляются; свежий F4 batch не выпускался. Независимая приёмка владельцем не заменяется этим отчётом.
+- Следующий шаг: **независимая приёмка F5 владельцем в recorded-as-of scope**; F6 не начинать.

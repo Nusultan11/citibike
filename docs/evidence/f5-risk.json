@@ -15812,5 +15812,284 @@
       "final_delivery": "Final own SHA/CI/checkpoint/bundle checked after final docs push and reported in chat, without recursive self-SHA commits."
     }
   },
-  "updated_at": "2026-10-30T09:23:48.453994+00:00"
+  "updated_at": "2026-10-30T09:23:48.453994+00:00",
+  "reverification_20261102": {
+    "task": "F5 corrective reverification for owner acceptance; recorded-as-of scope",
+    "date": "2026-11-02",
+    "base_commit": "007221e19d4952ea5af5af38c0d6e0cc53e63eb2",
+    "mode": "archived recorded-as-of replay of real_official inputs; NOT fresh live readiness",
+    "readme_run": {
+      "command": "uv run --locked --group ml python -m citibike.risk run --data-dir data --forecast data/f4/forecasts/1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810 --gbfs data/f5/live-inputs/gbfs/silver/f2-gbfs-2/20261030T063651137970-27bd3fb5 --as-of 2026-10-30T06:36:54.163891+00:00 --config data/f5/config.json",
+      "exit": 0,
+      "seconds": 1.73,
+      "result_id": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+      "status": "ok",
+      "eligible": "3/64",
+      "note": "existing immutable result re-checked, not recomputed; active.json and last_attempt.json rewritten with identical bytes"
+    },
+    "fresh_recompute": {
+      "data_dir": "scratchpad (empty)",
+      "exit": 0,
+      "seconds": 2.73,
+      "result_id": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+      "identical_files": [
+        "inputs.json",
+        "events.jsonl",
+        "outcomes.jsonl"
+      ],
+      "differing_fields_only": [
+        "plans.*.elapsed_seconds",
+        "comparisons.*.resources.*.simulation_wall_seconds",
+        "comparisons.*.resources.*.peak_process_rss_bytes"
+      ],
+      "fresh_measurements": {
+        "elapsed_seconds": 1.3203083,
+        "peak_rss_bytes": 149008384
+      },
+      "fresh_verify": "PASS"
+    },
+    "verify": {
+      "command": "uv run --locked --group ml python -m citibike.risk verify --result data/f5/results/99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+      "exit": 0,
+      "status": "PASS",
+      "paired_draws": 288,
+      "outcomes": 864,
+      "inventory_ledger_checks": 14526,
+      "conservation_cost_risk_metric_mismatches": 0,
+      "verifier_sha256": "c4362cfd22cdb0551eef8461a0953e18f1d7e3b1913f804b7158bf7837cc055d",
+      "source_audit": {
+        "feeds": {
+          "station_information": {
+            "source_age_at_asof_seconds": 39.163891,
+            "ttl": 60,
+            "expiry": "2026-10-30T06:37:15+00:00",
+            "received_at": "2026-10-30T06:36:53.148508+00:00",
+            "raw_sha256": "0cfb6a6de2bcc4455dcdeb131a73149185de3b1b140e73fbb3a1a88439f4c85a"
+          },
+          "station_status": {
+            "source_age_at_asof_seconds": 37.163891,
+            "ttl": 60,
+            "expiry": "2026-10-30T06:37:17+00:00",
+            "received_at": "2026-10-30T06:36:53.019378+00:00",
+            "raw_sha256": "877fca85e45806d7e968b0c5bdf96c3e843bdffa1e9f39cee90f735586566ea7"
+          }
+        },
+        "computed_feed_rejections": [],
+        "raw_state_stations_checked": 3,
+        "forecast_published_at": "2026-10-29T11:46:51.393101+00:00"
+      }
+    },
+    "provenance": {
+      "data_mode": "real_official",
+      "data_as_of": "2026-10-30T06:36:54.163891+00:00",
+      "forecast_publication": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+      "forecast_published_at": "2026-10-29T11:46:51.393101+00:00",
+      "gbfs_collection": "20261030T063651137970-27bd3fb5",
+      "coverage": {
+        "requested": 64,
+        "eligible": 3,
+        "fraction": 0.046875
+      }
+    },
+    "policy_oracle": {
+      "source": "outcomes.jsonl, stdlib means",
+      "cells": [
+        {
+          "scale": 0.5,
+          "order": "uniform",
+          "objective_mean": {
+            "no_action": 0.78125,
+            "heuristic": 7.379325,
+            "optimizer": 7.379325
+          },
+          "unserved_mean": {
+            "no_action": 0.78125,
+            "heuristic": 0.0,
+            "optimizer": 0.0
+          }
+        },
+        {
+          "scale": 0.5,
+          "order": "departures_first",
+          "objective_mean": {
+            "no_action": 0.78125,
+            "heuristic": 7.379325,
+            "optimizer": 7.379325
+          },
+          "unserved_mean": {
+            "no_action": 0.78125,
+            "heuristic": 0.0,
+            "optimizer": 0.0
+          }
+        },
+        {
+          "scale": 0.5,
+          "order": "arrivals_first",
+          "objective_mean": {
+            "no_action": 0.78125,
+            "heuristic": 7.379325,
+            "optimizer": 7.379325
+          },
+          "unserved_mean": {
+            "no_action": 0.78125,
+            "heuristic": 0.0,
+            "optimizer": 0.0
+          }
+        },
+        {
+          "scale": 1.0,
+          "order": "uniform",
+          "objective_mean": {
+            "no_action": 1.53125,
+            "heuristic": 7.379325,
+            "optimizer": 6.781048
+          },
+          "unserved_mean": {
+            "no_action": 1.53125,
+            "heuristic": 0.0,
+            "optimizer": 0.0
+          }
+        },
+        {
+          "scale": 1.0,
+          "order": "departures_first",
+          "objective_mean": {
+            "no_action": 1.53125,
+            "heuristic": 7.379325,
+            "optimizer": 6.781048
+          },
+          "unserved_mean": {
+            "no_action": 1.53125,
+            "heuristic": 0.0,
+            "optimizer": 0.0
+          }
+        },
+        {
+          "scale": 1.0,
+          "order": "arrivals_first",
+          "objective_mean": {
+            "no_action": 1.53125,
+            "heuristic": 7.379325,
+            "optimizer": 6.781048
+          },
+          "unserved_mean": {
+            "no_action": 1.53125,
+            "heuristic": 0.0,
+            "optimizer": 0.0
+          }
+        },
+        {
+          "scale": 1.5,
+          "order": "uniform",
+          "objective_mean": {
+            "no_action": 2.25,
+            "heuristic": 7.535575,
+            "optimizer": 5.640744
+          },
+          "unserved_mean": {
+            "no_action": 2.25,
+            "heuristic": 0.15625,
+            "optimizer": 0.15625
+          }
+        },
+        {
+          "scale": 1.5,
+          "order": "departures_first",
+          "objective_mean": {
+            "no_action": 2.25,
+            "heuristic": 7.535575,
+            "optimizer": 5.640744
+          },
+          "unserved_mean": {
+            "no_action": 2.25,
+            "heuristic": 0.15625,
+            "optimizer": 0.15625
+          }
+        },
+        {
+          "scale": 1.5,
+          "order": "arrivals_first",
+          "objective_mean": {
+            "no_action": 2.25,
+            "heuristic": 7.535575,
+            "optimizer": 5.640744
+          },
+          "unserved_mean": {
+            "no_action": 2.25,
+            "heuristic": 0.15625,
+            "optimizer": 0.15625
+          }
+        }
+      ],
+      "objective_mismatches": 0,
+      "no_action_lowest_objective_cells": 9,
+      "constraint_violations": 0,
+      "undelivered": 0
+    },
+    "negative_cases": [
+      {
+        "case": "as_of now 2026-11-02T12:51:19Z",
+        "exit": 2,
+        "status": "unavailable",
+        "eligible": "0/64",
+        "reasons": [
+          "forecast_expired",
+          "forecast_horizon_insufficient",
+          "stale_gbfs_station_information",
+          "stale_gbfs_station_status",
+          "no_eligible_stations"
+        ]
+      },
+      {
+        "case": "as_of +3s 2026-10-30T06:36:57.163891Z",
+        "exit": 2,
+        "status": "unavailable",
+        "eligible": "0/64",
+        "reasons": [
+          "no_eligible_stations"
+        ]
+      },
+      {
+        "case": "as_of before receipt 2026-10-30T06:36:50Z",
+        "exit": 2,
+        "status": "unavailable",
+        "eligible": "3/64",
+        "reasons": [
+          "future_gbfs_station_information",
+          "future_gbfs_station_status"
+        ]
+      }
+    ],
+    "negative_cases_scope": "run in a scratch data dir holding copies of active.json and last_attempt.json; active.json bytes unchanged after all three, last_attempt.json recorded the rejected attempt",
+    "stored_real_results": {
+      "ok": 1,
+      "unavailable": 12,
+      "controlled_fixture_ok": 4
+    },
+    "regressions": {
+      "f1": {
+        "command": "uv run --locked --group ml python -m citibike.verify --result data/processed/69d257248df121ef5273482991f61c5379ea8eebba7273dd92c6502943640284 --output .cache/f5r-f1-regression.json --recompute-baseline",
+        "exit": 0,
+        "value": 3860371
+      },
+      "f3": {
+        "command": "uv run --locked --group ml python -m citibike.analytics verify --output .cache/f5r-f3-regression.json",
+        "exit": 0
+      },
+      "f4": {
+        "command": "uv run --locked --group ml python -m citibike.forecasting verify [--serving]",
+        "exit": 1,
+        "status": "NOT VERIFIED",
+        "reason": "Forecast window stale; previous publication retained. valid_until 2026-10-30T12:00Z passed; the freshness gate was not bypassed"
+      }
+    },
+    "protected_files": {
+      "count": 3612,
+      "scope": "data/f4, data/f5, docs/evidence, F2/F3 active pointers",
+      "changed": 0,
+      "added": 0
+    },
+    "claims": "No new operational, live-risk, field or economic claim. Simulation of published-trip forecasts over 3/64 cohort stations at one recorded as-of.",
+    "independent_acceptance": "NOT VERIFIED: owner acceptance is separate from this agent report"
+  }
 }

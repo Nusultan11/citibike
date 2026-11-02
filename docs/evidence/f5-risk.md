@@ -213,3 +213,52 @@ uv run --locked --group ml python -m citibike.risk verify --result data/f5/resul
 Следующий шаг после delivery — независимая приёмка F5 с явно указанным recorded-as-of scope; F6 не начинать.
 
 Итог: **F5 COMPLETED в согласованном сценарном recorded-as-of scope,13/13 DoD PASS**. Current live readiness/field calibration и F4 operational promotion NOT VERIFIED, независимая приёмка F5 отдельно.
+
+## Повторная проверка для приёмки — 2026-11-02
+
+Независимое воспроизведение сохранённого real_official сценария на базе `007221e`. Это
+**архивный recorded-as-of replay**, не проверка live-готовности: прогноз истёк
+2026-10-30T12:00Z, свежего GBFS для него нет. Машинные данные — ключ
+`reverification_20261102` в [f5-risk.json](f5-risk.json). Код F5 не менялся, дефектов не
+найдено.
+
+- **Точная команда README** `risk run ... --as-of 2026-10-30T06:36:54.163891+00:00`: exit 0,
+  1.73 s, тот же ID `99f703bf…`, ok, 3/64. Она перепроверяет существующий immutable
+  результат, а не пересчитывает его; `active.json` и `last_attempt.json` переписаны теми же
+  байтами.
+- **Пересчёт с нуля** в пустой каталог: exit 0, 2.73 s, тот же ID. `inputs.json`,
+  `events.jsonl`, `outcomes.jsonl` побайтово равны сохранённым; в `plans.json` и
+  `comparisons` различаются только wall time и RSS. Его `risk verify` — PASS.
+- **`risk verify`** сохранённого результата: PASS, 288 paired draws, 864 outcomes, 14 526
+  ledger checks, 0 расхождений conservation/cost/risk. Source audit по raw JSON: возраст
+  station_information 39.16 s и station_status 37.16 s при TTL 60 s, received ≤ as-of,
+  F4 опубликован 2026-10-29T11:46:51Z.
+- **Политики**, пересчёт stdlib по `outcomes.jsonl`: 0 расхождений objective; no-action
+  имеет наименьший loss+λ·cost во всех 9 ячейках (например scale 1: 1.531 против 7.379 у
+  эвристики и 6.781 у MILP), хотя эвристика и MILP снижают модельные отказы до 0–0.156;
+  нарушений ограничений 0, недоставленного груза 0.
+- **Негативные случаи** (в отдельном каталоге с копиями pointers): as-of сейчас — exit 2,
+  forecast_expired и stale GBFS, 0/64; as-of +3 s — exit 2, 0/64; as-of раньше получения
+  GBFS — exit 2, future snapshot. `active.json` не изменился. Сохранены 12 реальных
+  отклонённых результатов, все unavailable.
+- **Регрессии:** F1 3860371 и F3 verify — PASS. F4 `forecasting verify` — exit 1, «Forecast
+  window stale»: freshness gate не обходился, свежая F4 регрессия NOT VERIFIED.
+  3612 protected files (`data/f4`, `data/f5`, evidence, F2/F3 pointers) без изменений.
+
+| DoD | Статус | Доказательство 2026-11-02 |
+|---|---|---|
+| 1. F4 publication/lineage + GBFS adapter | PASS | Run с проверкой manifest/rows/schema, source audit raw JSON |
+| 2. As-of / TTL / mapping / missing gates | PASS | Ages 39.16/37.16 s < 60; три негативных случая exit 2 |
+| 3. Inventory/capacity/transport simulation | PASS | Независимый ledger 14 526 проверок, 0 нарушений |
+| 4. Seed-based events, нет ложного выигрыша | PASS | Пересчёт с нуля: events/outcomes побайтово равны, 288 общих draws |
+| 5. Fractions / uncertainty / coverage | PASS | Verify PASS по risk и MC-интервалам; 3/64, 61 исключение с причинами |
+| 6. No-action / эвристика / MILP | PASS | 3 политики во всех 9 ячейках, no-action лучше по objective 9/9 |
+| 7. Независимый oracle ограничений и стоимости | PASS | 0 расхождений; stdlib objective 0 расхождений |
+| 8. Sensitivity и ресурсы | PASS | 3 scales × 3 orders × 32; пересчёт 2.73 s, peak RSS 149 008 384 B |
+| 9. Immutable CLI / repeat / partial failure | PASS | Тот же ID дважды; отказ не трогает `active.json` |
+| 10. Real-input E2E | PASS (recorded-as-of) | real_official, 3/64; live readiness NOT VERIFIED |
+| 11. Frozen F0–F4 / контракты | PASS с оговоркой | 3612 hashes, F1/F3 PASS; F4 verify NOT VERIFIED из-за истёкшего окна |
+| 12. Проверки / build / CI | PASS | Полный suite, Ruff/mypy/build; CI итогового SHA — в ROADMAP §6 |
+| 13. Нет operational/economic claims, нет F6 | PASS | Только сценарный scope; F6–F8 не начинались |
+
+Независимая приёмка владельцем этим отчётом не заменяется.
