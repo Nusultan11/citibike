@@ -279,6 +279,12 @@ uv run --locked --group ml python -m citibike.decision_research verify --result 
 Артефакты лежат в ignored `data/decision_research/`. Решение: research candidate нет,
 Seasonal Naive остаётся. Holdout-окна — unseen validation, а не independent test.
 
+`lineage` сверяет пары ID `dddd.d`/`dddd.d0` по raw ZIP, Silver, Gold и GBFS;
+`analytics` требует `--lineage` и исключает обе формы из рейтингов станций.
+Корректирующий протокол: `freeze ... --corrects <old-outcome-directory>`. Trials без
+группы P воспроизводятся сохранёнными моделями с проверкой hash предсказаний, trials с P
+обучаются заново.
+
 ## API и пользовательские страницы
 
 | Контур | Существующая выдача |

@@ -16,6 +16,7 @@ from citibike.decision_research import (
     assert_hashes,
     checked_protocol,
     code_hash,
+    correction_of,
     models,
     protected,
     read_frame,
@@ -1211,7 +1212,10 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
     analytics = checked(analytics_path)
     gold = Path(checked(Path(plan["populations"]["cohort64"]["dataset"]))["gold_path"])
     assert_hashes(plan["protected_files"])
-    if protected(root, gold) != plan["protected_files"]:
+    expected = protected(root, gold)
+    if plan.get("corrects"):
+        expected.update(correction_of(Path(plan["corrects"]["outcome"]))["files"])
+    if expected != plan["protected_files"]:
         raise ValueError("Protected artifact set changed")
     silver = silver_oracle(gold, analytics)
     if silver["mismatches"]:

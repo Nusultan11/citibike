@@ -555,6 +555,74 @@ uv run --locked --group ml python -m citibike.decision_research verify --result 
 historical PIT и forward/shadow — NOT VERIFIED; `analytics.py` и `verify.py` вне
 code hash протокола и правились после run (D1-учёт, флаг ID-split), их hashes — в JSON.
 
+### Корректирующий остаток: D1 и station ID-split — 2026-11-02
+
+Прежние протокол `31be44f7…`, outcome `b883cb3b…` и audit `726ba3d8…` (evidence
+SHA256 `b9f45d2b0c77…`) не менялись. Новый результат записан отдельными immutable
+artifacts, JSON выше теперь описывает его и ссылается на прежний audit в `supersedes`.
+
+**D1 исправлен.** `cell_std` снова NULL без истории ячейки, наблюдаемая нулевая
+вариация остаётся 0. Схема признаков стала новой версией; модели старой схемы читаются
+только без группы P. Корректирующий протокол `ca3b2e63…` опубликован commit
+`a29beaf` до fits, CI 41422810574 success. Run `7d15e361…`: 872 success / 0 failed;
+588 trials без P воспроизведены сохранёнными моделями с тем же hash предсказаний,
+232 trials с P переобучены. Строгий verifier: 0 допущенных расхождений, `cell_std`
+NULL в 22 779 строках и истинный 0 в 597 305.
+
+**Влияние D1 на результаты: нулевое.** Все 232 переобученных trials с P дали те же
+hash предсказаний, 218 оценок macro MAE не изменились, отбор признаков и параметров,
+деградации gate и решение те же. Причина: все 22 779 строк — станции без опубликованной
+истории (`history:none`) только в holdout evaluation; в train и в evaluation tuning-окон
+NULL нет. Модели учились на тех же данных и отнесли NULL туда же, куда 0. Это
+эмпирический факт этого прогона, а не свойство признака: на других данных D1 мог бы
+влиять.
+
+**Holdout в train tuning.** В train окна T3 (fit 2026-03-01) 8 166 строк имеют target
+внутри H0 (59 станций). Модели, оценки которых на T3 использовались для отбора, частично
+обучались на метках H0, поэтому H0 не полностью независим от процедуры отбора. H1–H3
+в train tuning-окон не попадают. Новый independent test — NOT VERIFIED.
+
+**Station ID-split: причина в источнике.**
+
+- В raw ZIP строка 161 864 `202410-citibike-tripdata_2.csv`: `end_station_id` =
+  `5980.1`, «E 17 St & Broadway», 40.737006/−73.990134. В том же файле есть и
+  `5980.10` той же станции.
+- Silver читает CSV как `all_varchar`: в 0 строках raw-значение отличается от
+  нормализованного. Gold совпадает с Silver по всем 210 ID.
+- По всем 105 парам `dddd.d`/`dddd.d0`: одно название станции, координаты расходятся
+  меньше чем на 1 м, GBFS регистрирует только `dddd.d0`. Raw ZIP проверен stdlib для
+  10 крупнейших пар, 10/10 содержат короткую форму.
+- Вывод: опубликованный архив пишет один ID в двух форматах, ошибки преобразования
+  нет. Тождество подтверждено lineage, а не похожестью строк, но оператором не
+  подтверждено, поэтому Silver, схемы и API не менялись.
+
+Последствия для аналитики. Обе формы всех пар (202 ID в последних 12 месяцах)
+исключены из рейтингов дисбаланса, пиков и маршрутов; их фактические значения и
+причина — в `excluded_stations`, суммы пар — только диагностика. Исключено 5.76%
+отправлений и 5.78% прибытий окна, 5 031 254 поездки по маршрутам. Новый топ
+дисбаланса — обычные станции: `3902.06` −3 825, `5730.08` +3 659, `4611.03` −3 564
+(дефицит или профицит во всех 12 месяцах). Число наблюдаемых ID в сентябре 2026
+2501 → 2336, во всех 24 месяцах 1928 → 1843; Gini 0.613 → 0.611. Тренды, часовые
+паттерны и категории не затронуты: city-level суммы не зависят от формы ID. Spearman
+WAPE~|net share| 0.376 → 0.389 (SN). F5 и его 3 станции не затронуты.
+
+Последствия для ML. В cohort64 есть `7111.10` и `7910.10`, в cohort128 — 5 ID, в
+cohort256 — 15. Их arrivals разделены между двумя формами. Без этих станций выигрыш
+деревьев над SN на holdout сохраняется: cohort64 LightGBM −0.684/−0.693, CatBoost
+−0.673/−0.670, hurdle −0.697/−0.724, интервалы ниже −0.43. Решение не меняется:
+**Seasonal Naive для обоих targets**.
+
+```sh
+uv run --locked --group ml python -m citibike.decision_research lineage
+uv run --locked --group ml python -m citibike.decision_research freeze --readiness data/decision_research/f4/readiness/98a9b692d9a0d1187fb309d5a232f131e1faa2543e283b3a8e75d947a10609d6 --corrects data/decision_research/f4/outcomes/b883cb3b06da94567dcc659032e2a8abdae2053242de849e83cc1c2ed860214e
+uv run --locked --group ml python -m citibike.decision_research run --protocol data/decision_research/f4/protocols/ca3b2e6341fcf253591be448bbb524a3261df33796247a47d7468d6c38726755 --jobs 3
+uv run --locked --group ml python -m citibike.decision_research analytics --result data/decision_research/f4/outcomes/7d15e3615cf647a274d07136769a65495a658e845f89bf105c6faa18b67b422a --lineage data/decision_research/f4/lineage/5b58f2efcf834dd2a8eabb1461f26a23464e364fbb06040abeda27813137cded
+uv run --locked --group ml python -m citibike.decision_research verify --result data/decision_research/f4/outcomes/7d15e3615cf647a274d07136769a65495a658e845f89bf105c6faa18b67b422a --analytics data/decision_research/f4/analytics/c9f1d7387a29cc496691d710a282669db6b2ad375716073f8fa4f618a404774e
+```
+
+`checked_protocol` прежнего `31be44f7` на HEAD теперь отказывает намеренно: code hash
+изменился. Его код воспроизводится из `checkpoint/F4-20261102-4840536`.
+
 ## Корректирующий validation-only protocol
 
 Protocol `8729cb7cc4aac8efbe3ddda02c6bc972804c69fbf365b9a9ce35093f2d1a6050`, saved 2026-10-30T04:00:01.602462+00:00 before new trials. Dataset `d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5`. Run `b6565ab502b14bcd7481dd25362ea6fabb63a39caaf99364e6f65389c1fb8618`; mode **approximate retrospective**.
