@@ -12,9 +12,10 @@ from citibike import decision_research as research
 from citibike.decision_research import analytics as decision_analytics
 from citibike.decision_research import features, models
 from citibike.decision_research import verify as oracle
+from citibike.decision_research.lineage import SUPPORTED, UNRESOLVED, classify
 from citibike.decision_research.readiness import readiness
 from citibike.features.contracts import TYPES
-from citibike.forecasting.artifacts import checked
+from citibike.forecasting.artifacts import checked, create
 from citibike.forecasting.feature_research import save_frame
 from citibike.forecasting.models import load as load_model
 from citibike.forecasting.models import save as save_model
@@ -60,7 +61,9 @@ def dense_file(tmp_path: Path, rows: list[tuple[Any, ...]]) -> Path:
     return path
 
 
-def request_frame(stations: list[str], origin: datetime) -> Any:
+def request_frame(
+    stations: list[str], origin: datetime, cell: tuple[int, int] | None = None
+) -> Any:
     pd = importlib.import_module("pandas")
     target = origin + timedelta(hours=1)
     return pd.DataFrame(
@@ -71,8 +74,8 @@ def request_frame(stations: list[str], origin: datetime) -> Any:
                 "forecast_origin_utc": origin,
                 "target_hour_utc": target,
                 "horizon_h": 1,
-                "weekday": target.weekday(),
-                "local_hour": target.hour - 4,
+                "weekday": cell[0] if cell else target.weekday(),
+                "local_hour": cell[1] if cell else target.hour - 4,
                 "month": target.month,
                 "holiday": 0,
                 "feature_available_at": origin - timedelta(days=1),
@@ -127,9 +130,72 @@ def test_missing_history_never_becomes_zero(tmp_path: Path) -> None:
     assert unknown["hist_zero_share"] != unknown["hist_zero_share"]
     assert unknown["cell_n"] != unknown["cell_n"]
     assert unknown["history_depth"] == "none"
-    # Known frozen defect D1, measured by the verifier: empty cell history gives
-    # cell_std 0 instead of NULL. This test pins the defect until a new protocol.
-    assert unknown["cell_std"] == 0
+    # D1 regression: an empty cell history is NULL, not a zero variation.
+    assert unknown["cell_std"] != unknown["cell_std"]
+    assert unknown["shape_share"] != unknown["shape_share"]
+
+
+def test_true_zero_variation_stays_zero(tmp_path: Path) -> None:
+    rows = [r[:3] + (2, 2, r[5]) if r[0] == "A" else r for r in published_rows()]
+    dense = dense_file(tmp_path, rows)
+    origin = datetime(2025, 9, 15, tzinfo=UTC)
+    frame, _ = features.enrich(
+        request_frame(["A", "B"], origin, (3, 0)), dense, origin.isoformat()
+    )
+    values = frame.set_index("station_id")
+    assert values.loc["A", "cell_std"] == 0.0
+    assert values.loc["B", "cell_std"] == 0.0
+    assert values.loc["B", "hist_mean"] == 0.0
+
+
+def test_cell_history_respects_publication_time(tmp_path: Path) -> None:
+    dense = dense_file(tmp_path, published_rows())
+    origin = datetime(2025, 7, 15, tzinfo=UTC)
+    early, _ = features.enrich(
+        request_frame(["A"], origin, (3, 0)), dense, origin.isoformat()
+    )
+    assert early["cell_std"].isna().all() and early["cell_n"].isna().all()
+    later = datetime(2025, 9, 15, tzinfo=UTC)
+    late, _ = features.enrich(
+        request_frame(["A"], later, (3, 0)), dense, later.isoformat()
+    )
+    assert late["cell_n"].iloc[0] == 1 and late["cell_std"].iloc[0] == 0.0
+
+
+def test_batch_and_reordered_single_origin_features_are_equal(tmp_path: Path) -> None:
+    np = importlib.import_module("numpy")
+    pd = importlib.import_module("pandas")
+    dense = dense_file(tmp_path, published_rows())
+    origins = [datetime(2025, 8, 15, tzinfo=UTC), datetime(2025, 9, 15, tzinfo=UTC)]
+    batch = pd.concat(
+        [request_frame(["A", "B", "UNKNOWN"], o) for o in origins], ignore_index=True
+    )
+    cutoff = origins[-1].isoformat()
+    full, limits = features.enrich(batch, dense, cutoff)
+    single = batch[batch["forecast_origin_utc"] == origins[-1]].iloc[::-1]
+    served, _ = features.enrich(single.copy(), dense, cutoff, limits)
+    expected = full[full["forecast_origin_utc"] == origins[-1]].reset_index(drop=True)
+    for column in [*features.GROUPS["P"], *features.GROUPS["S"]]:
+        assert np.array_equal(
+            served[column].to_numpy(float),
+            expected[column].to_numpy(float),
+            equal_nan=True,
+        ), column
+
+
+def test_d1_schema_models_are_readable_only_without_group_p() -> None:
+    def fitted(groups: list[str], schema: str) -> dict[str, Any]:
+        config = research.config("lightgbm", groups, {})
+        return {
+            "research_schema": schema,
+            "feature_names": models.names(groups),
+            "config": config,
+        }
+
+    assert models.readable(fitted(["A", "C", "S"], features.D1_SCHEMA))
+    assert not models.readable(fitted(["A", "P"], features.D1_SCHEMA))
+    assert models.readable(fitted(["A", "P"], features.SCHEMA))
+    assert not models.readable(fitted(["A"], "other"))
 
 
 def test_future_label_is_invisible_until_published(tmp_path: Path) -> None:
@@ -457,23 +523,23 @@ def test_complete_run_repeat_oracle_and_replay(
         oracle.selection_chain(forged, plan)
 
 
-def test_feature_oracle_detects_missing_as_zero(
-    forecast_workflow: dict[str, Path], protocol_path: Path, tmp_path: Path
-) -> None:
-    plan = checked(protocol_path)["plan"]
-    path = Path(plan["populations"]["cohort64"]["inputs"])
-    split = checked(path)["splits"][1]
-    frame = research.read_frame(path / split["evaluation_file"])
-    frame["season_index"] = frame["season_index"].fillna(0.0)
-    frame["hist_cv"] = frame["hist_cv"].fillna(0.0)
-    frame.loc[frame.index[:3], "hist_mean"] = float("nan")
+def test_feature_oracle_detects_missing_as_zero(tmp_path: Path) -> None:
+    dense = dense_file(tmp_path, published_rows())
+    origin = datetime(2025, 9, 15, tzinfo=UTC)
+    frame, limits = features.enrich(
+        request_frame(["A", "UNKNOWN"], origin, (3, 0)), dense, origin.isoformat()
+    )
+    honest = tmp_path / "honest.parquet"
+    save_frame(honest, frame)
+    source = oracle.Source(dense)
+    audit = oracle.feature_oracle(honest, source, origin.isoformat(), limits)
+    assert audit["cell_std_null_rows"] == 1 and audit["cell_std_true_zero_rows"] == 1
+    # The D1 pattern itself is a strict failure now, not a tolerated mismatch.
+    frame["cell_std"] = frame["cell_std"].fillna(0.0)
     broken = tmp_path / "broken.parquet"
     save_frame(broken, frame)
-    source = oracle.Source(forecast_workflow["dataset"] / "dense.parquet")
-    with pytest.raises(ValueError, match="Missing history|mismatch"):
-        oracle.feature_oracle(
-            broken, source, split["fit_asof"], split["band_thresholds"]
-        )
+    with pytest.raises(ValueError, match="Missing history became numeric"):
+        oracle.feature_oracle(broken, source, origin.isoformat(), limits)
 
 
 def test_feature_oracle_detects_shifted_value(
@@ -644,7 +710,25 @@ def test_full_analytics_sections_on_fixture_outcome(
         },
     )
     write_json(tmp_path / "f5" / "active.json", {"path": str(scenario)})
-    path = decision_analytics.analytics(tmp_path, outcome_path)
+    lineage = create(
+        research.research_root(tmp_path),
+        "lineage",
+        "stub",
+        lambda stage: {
+            "kind": "decision_id_lineage",
+            "pairs": [
+                {
+                    "short_id": "S0.1",
+                    "twin_id": "S0.10",
+                    "status": "source_format_variant_supported",
+                    "short": {"starts": 1, "ends": 9},
+                    "twin": {"starts": 8, "ends": 2},
+                }
+            ],
+        },
+        activate=False,
+    )
+    path = decision_analytics.analytics(tmp_path, outcome_path, lineage)
     report = checked(path)
     assert set(report["sections"]) == {
         "1_trends",
@@ -663,6 +747,9 @@ def test_full_analytics_sections_on_fixture_outcome(
     for section in report["sections"].values():
         assert section["user_decision"] and section["limits"]
     assert oracle.analytics_oracle(report)["mismatches"] == 0
+    flows = report["sections"]["4_imbalance"]["result"]
+    assert flows["id_split_pairs"][0]["pair_net_diagnostic"] == 2
+    assert report["excluded_ids"] == ["S0.1", "S0.10"]
     board = decision_analytics.dashboard(report["sections"], [])
     assert board["forecast_quality"]["kind"] == "prediction"
     assert board["scenario_policies"]["kind"] == "simulation"
@@ -707,3 +794,79 @@ def test_readiness_never_summarises_holdout_actuals_and_finds_no_leak(
         assert fold["train_evaluation_target_overlap"] == 0
         assert "actual_mean" not in str(fold)
     assert "cohort64" in report["composition_bias"]
+
+
+def test_lineage_rule_needs_every_piece_of_evidence() -> None:
+    pair: dict[str, Any] = {
+        "short": {"names": {"E 17 St & Broadway"}},
+        "twin": {"names": {"E 17 St & Broadway"}},
+        "coordinate_distance_m": 0.0,
+        "transform_mismatches": 0,
+        "raw_confirmed": True,
+        "gbfs": {"short_name_present": False},
+    }
+    assert classify(pair) == SUPPORTED
+    for field, value in (
+        ("twin", {"names": {"Other St"}}),
+        ("coordinate_distance_m", 25.0),
+        ("transform_mismatches", 3),
+        ("raw_confirmed", False),
+        ("gbfs", {"short_name_present": True}),
+    ):
+        assert classify({**pair, field: value}) == UNRESOLVED, field
+
+
+@pytest.fixture(scope="module")
+def corrective(
+    forecast_workflow: dict[str, Path], outcome_path: Path
+) -> tuple[Path, Path]:
+    root = forecast_workflow["root"]
+    protocol = research.freeze(
+        root,
+        forecast_workflow["dataset"],
+        None,
+        populations={"cohort64": forecast_workflow["dataset"]},
+        corrects=outcome_path,
+    )
+    return protocol, research.run(root, protocol, isolated=False)
+
+
+def test_corrective_run_replays_p_free_trials_and_refits_p(
+    corrective: tuple[Path, Path], outcome_path: Path
+) -> None:
+    protocol, result = corrective
+    plan = checked(protocol)["plan"]
+    assert plan["corrects"]["outcome_id"] == checked(outcome_path)["id"]
+    every = [r for rows in checked(result)["stages"].values() for r in rows]
+    replayed = [r for r in every if r["replayed"]]
+    assert replayed
+    for row in {r["path"]: r for r in every if r.get("path")}.values():
+        trial_report = checked(Path(row["path"]))
+        groups = trial_report["request"]["config"]["groups"]
+        source = trial_report["request"]["replay"]
+        if source:
+            assert "P" not in groups
+            assert (
+                checked(Path(source["trial"]))["prediction_values_hash"]
+                == trial_report["prediction_values_hash"]
+            )
+        if "P" in groups:
+            assert source is None
+    plan_check = checked(protocol)["plan"]
+    report, _ = oracle.trial_check(replayed[0], plan_check, checked(protocol))
+    assert report["measurements"]["replayed_from"]
+
+
+def test_replay_with_changed_hash_fails_durably(
+    forecast_workflow: dict[str, Path], corrective: tuple[Path, Path]
+) -> None:
+    protocol, result = corrective
+    row = next(
+        r for rows in checked(result)["stages"].values() for r in rows if r["replayed"]
+    )
+    request = checked(Path(row["path"]))["request"]
+    forged = {**request, "replay": {**request["replay"], "prediction_values_hash": "x"}}
+    trial = research.trial(
+        research.research_root(forecast_workflow["root"]), forged, isolated=False
+    )
+    assert "Replay changed predictions" in checked(trial)["error"]["message"]

@@ -6,7 +6,7 @@ import time
 import warnings
 from typing import Any
 
-from citibike.decision_research.features import GROUPS, SCHEMA
+from citibike.decision_research.features import D1_SCHEMA, GROUPS, SCHEMA
 from citibike.features.contracts import CATALOG
 from citibike.forecasting import models as legacy
 from citibike.processing.resources import peak_rss_bytes
@@ -140,10 +140,17 @@ def poisson(columns: list[str], params: dict[str, Any]) -> Any:
     )
 
 
+def readable(fitted: dict[str, Any]) -> bool:
+    """D1 changed only group P, so a D1-schema model without P reads new inputs."""
+    if fitted["feature_names"] != names(fitted["config"]["groups"]):
+        return False
+    return fitted["research_schema"] == SCHEMA or (
+        fitted["research_schema"] == D1_SCHEMA and "P" not in fitted["config"]["groups"]
+    )
+
+
 def predict(fitted: dict[str, Any], frame: Any) -> tuple[list[float], float]:
-    if fitted["research_schema"] != SCHEMA or fitted["feature_names"] != names(
-        fitted["config"]["groups"]
-    ):
+    if not readable(fitted):
         raise ValueError("Decision research saved-model schema mismatch")
     before = time.monotonic()
     x = frame[fitted["feature_names"]].copy()

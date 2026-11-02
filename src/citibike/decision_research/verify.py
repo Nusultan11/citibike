@@ -64,6 +64,7 @@ def protocol_evidence(path: Path, output: Path) -> None:
         output,
         {
             "status": "protocol_frozen_no_fits",
+            "supersedes": supersedes(path.parents[2], plan),
             "protocol_id": report["id"],
             "protocol_path": path.as_posix(),
             "protocol_manifest_sha256": checksum(path / "manifest.json"),
@@ -73,6 +74,24 @@ def protocol_evidence(path: Path, output: Path) -> None:
             "protected_files_sha256": identity(plan["protected_files"]),
         },
     )
+
+
+def supersedes(work: Path, plan: dict[str, Any]) -> dict[str, Any] | None:
+    """Where the defective result lives; it is kept, never rewritten."""
+    correction = plan.get("corrects")
+    if not correction:
+        return None
+    for manifest in sorted((work / "f4/audits").glob("*/manifest.json")):
+        if read_json(manifest).get("outcome_id") == correction["outcome_id"]:
+            return {
+                "protocol_id": correction["protocol_id"],
+                "outcome_id": correction["outcome_id"],
+                "audit": manifest.parent.as_posix(),
+                "evidence_sha256": checksum(manifest.parent / "evidence.json"),
+                "git_commit": "48405360a288358dc76666ae8f0b3080aacd456d",
+                "reason": correction["defect"],
+            }
+    return {"outcome_id": correction["outcome_id"], "audit": "not found"}
 
 
 def expected_calendar(hour: Any) -> dict[str, float]:
@@ -293,15 +312,8 @@ def feature_oracle(
         "season_index": data["season_expected"],
         "adjusted_profile": shrunk * data["season_expected"],
     }
-    defect = 0
     for column, values in expect.items():
         left, right = data[column].to_numpy(float), values.to_numpy(float)
-        if column == "cell_std":
-            # Known frozen defect D1: DuckDB greatest() ignores NULL, so an empty
-            # cell history became 0. Only that exact pattern is tolerated, counted.
-            known = np.isnan(right) & (left == 0)
-            defect = int(known.sum())
-            left = np.where(known, np.nan, left)
         if not np.array_equal(np.isnan(left), np.isnan(right)):
             raise ValueError(f"Missing history became numeric or vice versa: {column}")
         if not np.allclose(left, right, rtol=1e-9, atol=1e-9, equal_nan=True):
@@ -344,8 +356,8 @@ def feature_oracle(
         "rows": len(data),
         "feature_values": checks,
         "mismatches": 0,
-        "d1_cell_std_missing_as_zero": defect,
-        "d1_rows_with_any_p_feature": int(data["hist_n"].isna().sum()),
+        "cell_std_null_rows": int(data["cell_std"].isna().sum()),
+        "cell_std_true_zero_rows": int((data["cell_std"] == 0).sum()),
     }
 
 
@@ -546,6 +558,18 @@ def trial_check(
         protocol["created_at"]
     ):
         raise ValueError("Trial preceded protocol")
+    replay = request.get("replay")
+    if replay:
+        assert_hashes(
+            {str(Path(replay["trial"]) / "manifest.json"): replay["manifest_sha256"]}
+        )
+        old = checked(Path(replay["trial"]))
+        if (
+            "P" in request["config"]["groups"]
+            or old["prediction_values_hash"] != result["prediction_values_hash"]
+            or old["request"]["config"] != request["config"]
+        ):
+            raise ValueError("Replayed trial differs from its D1-free source")
     predictions = path / result["predictions"]
     count = oracle_file(predictions, result["metrics"])
     diagnostic_oracle(predictions, result["diagnostics"])
@@ -812,7 +836,8 @@ def silver_oracle(gold: Path, report: dict[str, Any]) -> dict[str, Any]:
                 row["route_volume"],
                 found[0],
             )
-        for row in sections["4_imbalance"]["result"]["stations"][:20]:
+        imbalance = sections["4_imbalance"]["result"]
+        for row in imbalance["stations"][:20] + imbalance["excluded_stations"][:10]:
             leave = db.execute(
                 f"""SELECT count(*) FROM silver WHERE {window}
                 AND start_station_id=?""",
@@ -913,6 +938,33 @@ def f5_oracle(path: Path, section: dict[str, Any]) -> dict[str, Any]:
 def analytics_oracle(report: dict[str, Any]) -> dict[str, Any]:
     """Internal arithmetic of derived shares and changes, without SQL."""
     checks = mismatches = 0
+    excluded = set(report["excluded_ids"])
+    result = report["sections"]["4_imbalance"]["result"]
+    for row in result["stations"] + result["persistent_peaks"]:
+        checks += 1
+        mismatches += row["station_id"] in excluded
+    for row in result["routes"]:
+        checks += 1
+        mismatches += row["from_station"] in excluded or row["to_station"] in excluded
+    for row in result["excluded_stations"]:
+        checks += 1
+        mismatches += row["station_id"] not in excluded or not row["reason"]
+    for row in result["id_split_pairs"]:
+        checks += 1
+        total = sum(
+            row[k]
+            for k in (
+                "short_departures",
+                "short_arrivals",
+                "twin_departures",
+                "twin_arrivals",
+            )
+        )
+        net = row["short_arrivals"] + row["twin_arrivals"]
+        net -= row["short_departures"] + row["twin_departures"]
+        mismatches += net != row["pair_net_diagnostic"] or not math.isclose(
+            net / total, row["pair_net_share_diagnostic"]
+        )
     for row in report["sections"]["1_trends"]["result"]["year_over_year"]:
         checks += 1
         value = row["rides"] / row["baseline_rides"] - 1
@@ -1016,11 +1068,9 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
         "feature_values": 0,
         "files": 0,
         "mismatches": 0,
-        "d1_cell_std_missing_as_zero": 0,
-        "d1_by_file": [],
-        "d1": "Frozen defect found by this verifier: cell_std is 0 instead of NULL "
-        "when a station has no published labels in that weekday x hour cell. Only "
-        "groups containing P are affected; not fixed in protocol 31be44f7",
+        "cell_std_null_rows": 0,
+        "cell_std_true_zero_rows": 0,
+        "tolerated_mismatches": 0,
     }
     for population in {p["inputs"]: p for p in plan["populations"].values()}.values():
         path = Path(population["inputs"])
@@ -1035,16 +1085,8 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
                 )
                 feature_audit["rows"] += checked_file["rows"]
                 feature_audit["feature_values"] += checked_file["feature_values"]
-                feature_audit["d1_cell_std_missing_as_zero"] += checked_file[
-                    "d1_cell_std_missing_as_zero"
-                ]
-                feature_audit["d1_by_file"].append(
-                    {
-                        "file": str(path / split[field]),
-                        "rows": checked_file["rows"],
-                        "d1_rows": checked_file["d1_cell_std_missing_as_zero"],
-                    }
-                )
+                for key in ("cell_std_null_rows", "cell_std_true_zero_rows"):
+                    feature_audit[key] += checked_file[key]
                 feature_audit["files"] += 1
     replay = frozen_replay(root, outcome["stages"]["S1_features"])
     chain = selection_chain(outcome, plan)
@@ -1181,6 +1223,19 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
     correlation = correlation_oracle(outcome, analytics)
     if policy["mismatches"] or arithmetic["mismatches"] or correlation["mismatches"]:
         raise ValueError("Independent analytics arithmetic mismatch")
+    lineage = checked(Path(analytics["lineage"]))
+    corrective = {
+        "corrects": plan.get("corrects"),
+        "replay": replay_audit(every, seen),
+        "d1_impact": d1_impact(work, plan, scores, decisions, gates),
+        "holdout_labels_in_tuning_train": holdout_in_tuning(plan),
+        "id_split_ml": id_split_ml(frames, lineage, uncertainty),
+        "lineage": {
+            "id": lineage["id"],
+            "summary": lineage["summary"],
+            "rule": lineage["rule"],
+        },
+    }
     robustness = [
         {
             "population": r["population"],
@@ -1295,6 +1350,8 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
             "sections": analytics["sections"],
         },
         "dashboard": dashboard_part(analytics, scores),
+        "corrective": corrective,
+        "supersedes": supersedes(work, plan),
         "independent_new_test_period": "NOT VERIFIED: none exists; September 2026 "
         "was consumed and is not reused",
         "created_at": datetime.now(UTC).isoformat(),
@@ -1425,3 +1482,173 @@ def ablations(
             }
         )
     return result
+
+
+def replay_audit(
+    every: list[dict[str, Any]], seen: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    unique = {r["path"]: r for r in every if r.get("path")}
+    replayed = [p for p in unique if seen[p]["request"].get("replay")]
+    return {
+        "unique_trials": len(unique),
+        "replayed_with_equal_prediction_hash": len(replayed),
+        "fitted": len(unique) - len(replayed),
+        "fitted_with_group_p": sum(
+            "P" in seen[p]["request"]["config"]["groups"] for p in unique
+        ),
+    }
+
+
+def old_evidence(work: Path, outcome_id: str) -> dict[str, Any] | None:
+    for manifest in sorted((work / "f4/audits").glob("*/manifest.json")):
+        report = read_json(manifest)
+        if report.get("outcome_id") == outcome_id:
+            checked(manifest.parent)
+            result: dict[str, Any] = read_json(manifest.parent / "evidence.json")
+            return result
+    return None
+
+
+def d1_impact(
+    work: Path,
+    plan: dict[str, Any],
+    scores: list[dict[str, Any]],
+    decisions: dict[str, Any],
+    gates: dict[tuple[str, str, str], dict[str, Any]],
+) -> dict[str, Any]:
+    """Old (defective) against corrected scores for every variant that used P."""
+    correction = plan.get("corrects")
+    if not correction:
+        return {"status": "not a corrective protocol"}
+    old = old_evidence(work, correction["outcome_id"])
+    if old is None:
+        return {"status": "BLOCKED", "reason": "old audit evidence not found"}
+    before = {
+        (s["stage"], s["population"], s["target"], s["variant"]): s
+        for s in old["scores"]
+    }
+    rows = []
+    for s in scores:
+        key = (s["stage"], s["population"], s["target"], s["variant"])
+        previous = before.get(key)
+        if previous is None or previous["macro_mae"] == s["macro_mae"]:
+            continue
+        rows.append(
+            {
+                "stage": s["stage"],
+                "population": s["population"],
+                "target": s["target"],
+                "variant": s["variant"],
+                "macro_mae_d1": previous["macro_mae"],
+                "macro_mae_corrected": s["macro_mae"],
+                "difference": round(s["macro_mae"] - previous["macro_mae"], 6),
+            }
+        )
+    unchanged = sum(
+        1
+        for s in scores
+        if (key := (s["stage"], s["population"], s["target"], s["variant"])) in before
+        and before[key]["macro_mae"] == s["macro_mae"]
+    )
+    gate_before = {
+        (g["population"], g["target"], g["variant"]): len(g["degraded_segments"])
+        for g in old["gates"]
+    }
+    return {
+        "old_outcome": correction["outcome_id"],
+        "changed_scores": rows,
+        "unchanged_scores": unchanged,
+        "decisions_d1": {
+            k: v["research_candidate"] for k, v in old["decisions"].items()
+        },
+        "decisions_corrected": {
+            k: v["research_candidate"] for k, v in decisions.items()
+        },
+        "degraded_segments_changed": [
+            {
+                "population": p,
+                "target": k,
+                "variant": n,
+                "d1": gate_before.get((p, k, n)),
+                "corrected": len(g["degraded_segments"]),
+            }
+            for (p, k, n), g in sorted(gates.items())
+            if gate_before.get((p, k, n)) != len(g["degraded_segments"])
+        ],
+        "feature_selection_d1": old["feature_selection"],
+        "parameter_selection_d1": {
+            k: v["name"] for k, v in old["parameter_selection"].items()
+        },
+    }
+
+
+def holdout_in_tuning(plan: dict[str, Any]) -> list[dict[str, Any]]:
+    """Holdout target hours that appear as labels in tuning-fold training rows."""
+    path = Path(plan["populations"]["cohort64"]["inputs"])
+    splits = checked(path)["splits"]
+    result = []
+    with duckdb.connect() as db:
+        db.execute("SET TimeZone='UTC'")
+        for split in splits:
+            if not split["fold"].startswith("T"):
+                continue
+            for fold in plan["holdout_folds"]:
+                row = db.execute(
+                    """SELECT count(*),count(DISTINCT station_id) FROM read_parquet(?)
+                    WHERE target_hour_utc>=?::TIMESTAMPTZ
+                    AND target_hour_utc<?::TIMESTAMPTZ+INTERVAL '1 day'""",
+                    [
+                        str(path / split["train_file"]),
+                        fold["start"] + "T00:00:00+00:00",
+                        fold["end"] + "T00:00:00+00:00",
+                    ],
+                ).fetchone()
+                assert row is not None
+                result.append(
+                    {
+                        "tuning_fold": split["fold"],
+                        "holdout_fold": fold["id"],
+                        "train_rows_with_holdout_targets": row[0],
+                        "stations": row[1],
+                    }
+                )
+    return result
+
+
+def id_split_ml(
+    frames: dict[tuple[str, str, str], Any],
+    lineage: dict[str, Any],
+    uncertainty: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Paired holdout gaps with and without stations whose ID is split."""
+    ids = {p[k] for p in lineage["pairs"] for k in ("short_id", "twin_id")}
+    rows = []
+    for (population, kind, name), frame in sorted(frames.items()):
+        if name == "seasonal_naive" or name not in (
+            "lightgbm_selected",
+            "catboost_selected",
+            "hurdle_selected",
+        ):
+            continue
+        base = frames[(population, kind, "seasonal_naive")]
+        affected = sorted(set(frame["station_id"]) & ids)
+        if not affected:
+            rows.append(
+                {"population": population, "target": kind, "variant": name, "ids": []}
+            )
+            continue
+        keep = ~frame["station_id"].isin(ids)
+        entry: dict[str, Any] = {
+            "population": population,
+            "target": kind,
+            "variant": name,
+            "ids": affected,
+            "rows_removed": int((~keep).sum()),
+            "without_id_split": bootstrap(
+                frame[keep],
+                base[~base["station_id"].isin(ids)],
+                replicates=uncertainty["replicates_secondary"],
+            ),
+        }
+        rows.append(entry)
+    return rows

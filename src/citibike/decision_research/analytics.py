@@ -1,5 +1,6 @@
 """Decision analytics from accepted Gold and validation predictions; read-only."""
 
+import itertools
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -54,6 +55,7 @@ def connect(gold: Path) -> duckdb.DuckDBPyConnection:
         timezone('America/New_York',hour_utc) lt FROM trip_hourly
         WHERE timezone('America/New_York',hour_utc)>={FIRST}
         AND timezone('America/New_York',hour_utc)<{LAST}""")
+    db.execute("CREATE TABLE excluded_ids(id VARCHAR)")
     db.execute(f"""CREATE TABLE station_month AS SELECT station_id,local_month m,
         sum(departures)::BIGINT departures,sum(arrivals)::BIGINT arrivals
         FROM station_category_monthly
@@ -206,12 +208,21 @@ def patterns(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
 
 
 def concentration(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
-    monthly = """WITH s AS (SELECT m,departures+arrivals e,
+    result = concentration_part(db, "true")
+    clean = concentration_part(db, "station_id NOT IN (SELECT id FROM excluded_ids)")
+    result["result"]["monthly_without_id_split"] = clean["result"]["monthly"]
+    result["result"]["continuity_without_id_split"] = clean["result"]["continuity"]
+    result["sql"]["without_id_split"] = clean["sql"]["monthly"]
+    return result
+
+
+def concentration_part(db: duckdb.DuckDBPyConnection, where: str) -> dict[str, Any]:
+    monthly = f"""WITH s AS (SELECT m,departures+arrivals e,
             row_number() OVER(PARTITION BY m
                 ORDER BY departures+arrivals,station_id) r,
             count(*) OVER(PARTITION BY m) n,
             sum(departures+arrivals) OVER(PARTITION BY m) t
-            FROM station_month WHERE departures+arrivals>0)
+            FROM station_month WHERE departures+arrivals>0 AND {where})
         SELECT strftime(m,'%Y-%m') AS "month",any_value(n) observed_ids,
         sum(e) FILTER(WHERE r>n-ceil(n*0.01))/any_value(t) top1pct_share,
         sum(e) FILTER(WHERE r>n-ceil(n*0.1))/any_value(t) top10pct_share,
@@ -225,8 +236,8 @@ def concentration(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
         (SELECT count(*) FROM f WHERE first_m=g) entered,
         (SELECT count(*) FROM f WHERE last_m=g) last_seen
         FROM (SELECT DISTINCT m g FROM station_month) ORDER BY g"""
-    continuity = """WITH f AS (SELECT station_id,count(DISTINCT m) month_count
-            FROM station_month WHERE departures+arrivals>0 GROUP BY 1)
+    continuity = f"""WITH f AS (SELECT station_id,count(DISTINCT m) month_count
+            FROM station_month WHERE departures+arrivals>0 AND {where} GROUP BY 1)
         SELECT count(*) observed_ids,
         count(*) FILTER(WHERE month_count=24) all_24_months,
         count(*) FILTER(WHERE month_count<12) under_12_months FROM f"""
@@ -248,20 +259,34 @@ def concentration(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
     )
 
 
-def imbalance(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
-    station = f"""WITH s AS (SELECT station_id,sum(departures) d,sum(arrivals) a,
+def imbalance(
+    db: duckdb.DuckDBPyConnection, pairs_report: list[dict[str, Any]]
+) -> dict[str, Any]:
+    base = f"""WITH s AS (SELECT station_id,sum(departures) d,sum(arrivals) a,
             count(*) month_count,
             count(*) FILTER(WHERE arrivals>departures) months_surplus,
             count(*) FILTER(WHERE arrivals<departures) months_deficit
             FROM station_month WHERE m>={Y2[0]} GROUP BY 1)
         SELECT station_id,d::BIGINT departures,a::BIGINT arrivals,
         (a-d)::BIGINT net_trip_flow,(a-d)/nullif(a+d,0) net_share,month_count,
-        months_surplus,months_deficit FROM s WHERE month_count>=6
+        months_surplus,months_deficit FROM s WHERE month_count>=6"""
+    station = f"""{base} AND station_id NOT IN (SELECT id FROM excluded_ids)
         ORDER BY abs(a-d) DESC,station_id LIMIT 40"""
+    held = f"""{base} AND station_id IN (SELECT id FROM excluded_ids)
+        ORDER BY abs(a-d) DESC,station_id"""
+    share = f"""SELECT sum(departures) FILTER(WHERE station_id IN
+            (SELECT id FROM excluded_ids))/sum(departures) departures_excluded_share,
+        sum(arrivals) FILTER(WHERE station_id IN (SELECT id FROM excluded_ids))
+            /sum(arrivals) arrivals_excluded_share,
+        count(DISTINCT station_id) FILTER(WHERE station_id IN
+            (SELECT id FROM excluded_ids)) excluded_ids,
+        count(DISTINCT station_id) ranked_universe
+        FROM station_month WHERE m>={Y2[0]}"""
     peak = """WITH h AS (SELECT station_id,timezone('America/New_York',hour_utc) lt,
             departures,arrivals FROM fact_station_hourly
             WHERE hour_utc>=TIMESTAMPTZ '2025-10-01 04:00:00+00'
-            AND hour_utc<TIMESTAMPTZ '2026-10-01 04:00:00+00'),
+            AND hour_utc<TIMESTAMPTZ '2026-10-01 04:00:00+00'
+            AND station_id NOT IN (SELECT id FROM excluded_ids)),
         w AS (SELECT station_id,
             sum(arrivals-departures) FILTER(WHERE hour(lt) IN (7,8,9)) am,
             sum(arrivals-departures) FILTER(WHERE hour(lt) IN (16,17,18,19)) pm,
@@ -280,7 +305,8 @@ def imbalance(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
             hour(timezone('America/New_York',hour_utc)) lh,
             sum(departures+arrivals) e FROM fact_station_hourly
             WHERE hour_utc>=TIMESTAMPTZ '2025-10-01 04:00:00+00'
-            AND hour_utc<TIMESTAMPTZ '2026-10-01 04:00:00+00' GROUP BY 1,2,3,4),
+            AND hour_utc<TIMESTAMPTZ '2026-10-01 04:00:00+00'
+            AND station_id NOT IN (SELECT id FROM excluded_ids) GROUP BY 1,2,3,4),
         top AS (SELECT * FROM h QUALIFY row_number() OVER(
             PARTITION BY station_id,m ORDER BY e DESC,w,lh)=1),
         modal AS (SELECT station_id,w,lh,count(*) month_count,sum(e)::BIGINT events
@@ -295,13 +321,13 @@ def imbalance(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
         coalesce(y.n,0)::BIGINT reverse_volume,
         (x.n-coalesce(y.n,0))/(x.n+coalesce(y.n,0)) direction_asymmetry
         FROM r x LEFT JOIN r y ON x.a=y.b AND x.b=y.a WHERE x.a<>x.b
+            AND x.a NOT IN (SELECT id FROM excluded_ids)
+            AND x.b NOT IN (SELECT id FROM excluded_ids)
         ORDER BY x.n DESC,x.a,x.b LIMIT 40"""
-    split = """WITH s AS (SELECT station_id,sum(departures) d,sum(arrivals) a
-            FROM station_month GROUP BY 1)
-        SELECT x.station_id short_id,t.station_id twin_id,x.d::BIGINT short_departures,
-        x.a::BIGINT short_arrivals,t.d::BIGINT twin_departures,
-        t.a::BIGINT twin_arrivals FROM s x JOIN s t ON t.station_id=x.station_id||'0'
-        WHERE regexp_full_match(x.station_id,'\\d{4}\\.\\d') ORDER BY x.a DESC"""
+    route_held = f"""SELECT count(*) pairs,sum(n)::BIGINT trips FROM route_monthly
+        WHERE local_month>={Y2[0]} AND local_month<{LAST}
+        AND (from_station IN (SELECT id FROM excluded_ids)
+            OR to_station IN (SELECT id FROM excluded_ids))"""
     coverage = f"""SELECT sum(route_n)::BIGINT known_pairs,sum(n)::BIGINT rides,
         sum(route_n)/sum(n) route_coverage FROM trip_monthly
         WHERE local_month>={Y2[0]} AND local_month<{LAST}"""
@@ -316,44 +342,61 @@ def imbalance(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
             "persistent_peaks": persistent,
             "routes": pairs,
             "route_coverage": coverage,
-            "id_split": split,
+            "excluded_stations": held,
+            "excluded_share": share,
+            "excluded_routes": route_held,
         },
         {
-            "stations": flag_split(rows(db, station), rows(db, split)),
-            "id_split_suspects": summarize_split(rows(db, split)),
+            "stations": rows(db, station),
+            "excluded_stations": [{**r, "reason": REASON} for r in rows(db, held)],
+            "exclusion_coverage": rows(db, share)[0],
+            "excluded_routes": rows(db, route_held)[0],
+            "id_split_pairs": pair_diagnostic(pairs_report),
             "peak_patterns": rows(db, peak),
             "persistent_peaks": rows(db, persistent),
             "routes": rows(db, pairs),
             "route_coverage": rows(db, coverage)[0],
         },
         "Net trip flow is not an inventory change: rebalancing and repairs are "
-        "unobserved. Short IDs dddd.d with a dddd.d0 twin are mostly arrivals: "
-        "probably one station split by a lost trailing zero in the source, so their "
-        "net flow is an ID artifact, flagged, not corrected in accepted Silver. "
+        "unobserved. Both IDs of every dddd.d / dddd.d0 pair are excluded from "
+        "station, peak and route rankings: the raw source writes one station in "
+        "two formats, so each ID alone carries a split flow. Their factual values "
+        "stay in excluded_stations; accepted Silver is unchanged. "
         "Hour-of-week peaks are unweighted by weekday counts. Route "
         "rows need both station IDs, so coverage is shown",
         coverage="See route_coverage",
     )
 
 
-def flag_split(
-    stations: list[dict[str, Any]], split: list[dict[str, Any]]
-) -> list[dict[str, Any]]:
-    suspects = {r["short_id"] for r in split} | {r["twin_id"] for r in split}
-    return [{**r, "suspected_id_split": r["station_id"] in suspects} for r in stations]
+REASON = (
+    "id_split: one of two raw source formats of a station ID (dddd.d / dddd.d0); "
+    "lineage-supported, identity not confirmed by the operator; excluded from "
+    "ranking, values unchanged"
+)
 
 
-def summarize_split(split: list[dict[str, Any]]) -> dict[str, Any]:
-    return {
-        "pairs": len(split),
-        "short_departures": sum(r["short_departures"] for r in split),
-        "short_arrivals": sum(r["short_arrivals"] for r in split),
-        "arrival_dominated_pairs": sum(
-            r["short_departures"] * 10 < r["short_arrivals"] for r in split
-        ),
-        "top": split[:10],
-        "status": "suspected source ID artifact; raw CSV check NOT VERIFIED",
-    }
+def pair_diagnostic(pairs_report: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Diagnostic only: the pair sum is shown next to both factual IDs."""
+    output = []
+    for pair in pairs_report:
+        departures = pair["short"]["starts"] + pair["twin"]["starts"]
+        arrivals = pair["short"]["ends"] + pair["twin"]["ends"]
+        output.append(
+            {
+                "short_id": pair["short_id"],
+                "twin_id": pair["twin_id"],
+                "status": pair["status"],
+                "short_departures": pair["short"]["starts"],
+                "short_arrivals": pair["short"]["ends"],
+                "twin_departures": pair["twin"]["starts"],
+                "twin_arrivals": pair["twin"]["ends"],
+                "pair_net_diagnostic": arrivals - departures,
+                "pair_net_share_diagnostic": (arrivals - departures)
+                / (arrivals + departures),
+                "window": "all 24 months; diagnostic, not a fact about one station",
+            }
+        )
+    return sorted(output, key=lambda r: -abs(r["pair_net_diagnostic"]))
 
 
 def categories(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
@@ -500,20 +543,28 @@ def errors_vs_flows(
         FROM f JOIN n USING(station_id)"""
     db.execute(join)
     correlation = {}
-    for model in ("seasonal_naive", "catboost_selected"):
+    for model, where in itertools.product(
+        ("seasonal_naive", "catboost_selected"), ("", "_without_id_split")
+    ):
+        clean = " AND station_id NOT IN (SELECT id FROM excluded_ids)" if where else ""
         db.execute(
-            f"CREATE OR REPLACE VIEW m AS SELECT * FROM joined WHERE model='{model}'"
+            "CREATE OR REPLACE VIEW m AS SELECT * FROM joined "
+            f"WHERE model='{model}'{clean}"
         )
         for left, right in (
             ("wape", "abs_net_share"),
             ("abs(bias)", "abs_net_share"),
             ("mae", "events"),
         ):
-            correlation[f"{model}:{left}~{right}"] = rows(
+            correlation[f"{model}{where}:{left}~{right}"] = rows(
                 db, spearman_sql("m", left, right)
             )[0]
     scenario = read_json(active_f5(root) / "manifest.json")
-    stations = rows(db, "SELECT * FROM joined ORDER BY model,station_id")
+    stations = rows(
+        db,
+        """SELECT *,station_id IN (SELECT id FROM excluded_ids) suspected_id_split
+        FROM joined ORDER BY model,station_id""",
+    )
     excluded = scenario["gate"].get("coverage", {}).get("exclusions", {})
     eligible = sorted({r["station_id"] for r in stations} - set(excluded))
     return item(
@@ -613,23 +664,28 @@ def dashboard(sections: dict[str, dict[str, Any]], scores: list[Any]) -> dict[st
     }
 
 
-def analytics(root: Path, result: Path) -> Path:
+def analytics(root: Path, result: Path, lineage: Path) -> Path:
     before = time.monotonic()
     outcome = checked(result)
     protocol = checked_protocol(Path(outcome["protocol"]), full=False)
     population = protocol["plan"]["populations"]["cohort64"]
     gold = Path(checked(Path(population["dataset"]))["gold_path"])
-    identifier = identity([VERSION, "analytics", outcome["id"], script_hash()])
+    pairs_report = checked(lineage)["pairs"]
+    excluded = sorted({p[k] for p in pairs_report for k in ("short_id", "twin_id")})
+    identifier = identity(
+        [VERSION, "analytics", outcome["id"], checked(lineage)["id"], script_hash()]
+    )
 
     def build(stage: Path) -> dict[str, Any]:
         db = connect(gold)
+        db.executemany("INSERT INTO excluded_ids VALUES (?)", [(i,) for i in excluded])
         try:
             gaps = coverage_gaps(db)
             builders: dict[str, Callable[[], dict[str, Any]]] = {
                 "1_trends": lambda: trends(db),
                 "2_patterns": lambda: patterns(db),
                 "3_concentration": lambda: concentration(db),
-                "4_imbalance": lambda: imbalance(db),
+                "4_imbalance": lambda: imbalance(db, pairs_report),
                 "5_categories": lambda: categories(db),
                 "6_coverage_quality": lambda: forecast_quality(db, outcome, gaps),
                 "7_errors_vs_flows": lambda: errors_vs_flows(db, outcome, root),
@@ -645,6 +701,9 @@ def analytics(root: Path, result: Path) -> Path:
             "gold_manifest_sha256": checksum(gold / "manifest.json"),
             "gold_publication_id": read_json(gold / "manifest.json")["publication_id"],
             "f5_result": str(active_f5(root)),
+            "lineage": str(lineage),
+            "lineage_id": checked(lineage)["id"],
+            "excluded_ids": excluded,
             "sections": sections,
             "measurements": {
                 "elapsed_seconds": time.monotonic() - before,

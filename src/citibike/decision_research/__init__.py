@@ -292,7 +292,7 @@ def recipe() -> dict[str, str]:
         base / "forecasting/metrics.py",
         base / "forecasting/models.py",
     ]
-    skipped = ("verify.py", "analytics.py", "readiness.py")
+    skipped = ("verify.py", "analytics.py", "readiness.py", "lineage.py")
     return {
         p.relative_to(base).as_posix(): code_hash(p)
         for p in files
@@ -627,11 +627,15 @@ def freeze(
     readiness: Path | None,
     *,
     populations: dict[str, Path] | None = None,
+    corrects: Path | None = None,
 ) -> Path:
     work = research_root(root)
     base = checked(dataset)
     smoke = base["config"]["smoke"]
     before = protected(root, Path(base["gold_path"]))
+    correction = correction_of(corrects) if corrects else None
+    if correction:
+        before.update(correction.pop("files"))
     cohorts = populations or populations_of(root, dataset, smoke=smoke)
     population: dict[str, Any] = {}
     for name, path in cohorts.items():
@@ -666,6 +670,7 @@ def freeze(
         "preprocessing_rules": RULES,
         "feature_sets": FEATURE_SETS,
         "populations": population,
+        "corrects": correction,
         "tuning_folds": folds(base, tuning=True)[: len(base["config"]["validation"])],
         "holdout_folds": folds(base, tuning=False),
         "final_window_not_used": final,
@@ -730,6 +735,69 @@ def freeze(
         identity([VERSION, plan]),
         lambda stage: {"kind": "decision_protocol", "plan": plan},
         activate=False,
+    )
+
+
+def correction_of(outcome_path: Path) -> dict[str, Any]:
+    """The defective run stays immutable; only its D1-free trials may be replayed."""
+    outcome = checked(outcome_path)
+    protocol_path = Path(outcome["protocol"])
+    files = {
+        str(protocol_path / "manifest.json"): checksum(protocol_path / "manifest.json"),
+        str(outcome_path / "manifest.json"): checksum(outcome_path / "manifest.json"),
+    }
+    for rows in outcome["stages"].values():
+        for row in rows:
+            if row.get("path"):
+                files[str(Path(row["path"]) / "manifest.json")] = row["sha256"]
+    return {
+        "defect": "D1: cell_std was 0 instead of NULL without cell history; only "
+        "feature group P is affected",
+        "protocol": str(protocol_path),
+        "protocol_id": outcome["protocol_id"],
+        "outcome": str(outcome_path),
+        "outcome_id": outcome["id"],
+        "replay_rule": "A successful old trial whose features exclude P is replayed: "
+        "its saved model predicts the corrected evaluation rows and the prediction "
+        "hash must equal the old one. Every trial with P, and every request without "
+        "an old match, is fitted again",
+        "files": files,
+    }
+
+
+def replay_index(plan: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Old successful trials without group P, keyed like Runner.many."""
+    index: dict[str, dict[str, Any]] = {}
+    if not plan.get("corrects"):
+        return index
+    outcome = checked(Path(plan["corrects"]["outcome"]))
+    for rows in outcome["stages"].values():
+        for row in rows:
+            if row["status"] != "success":
+                continue
+            path = Path(row["path"])
+            old = checked(path)
+            request = old["request"]
+            if "P" in request["config"]["groups"]:
+                continue
+            index[trial_key(request)] = {
+                "trial": str(path),
+                "manifest_sha256": row["sha256"],
+                "prediction_values_hash": old["prediction_values_hash"],
+                "evaluation_rows_hash": old["evaluation_rows_hash"],
+            }
+    return index
+
+
+def trial_key(item: dict[str, Any]) -> str:
+    return identity(
+        [
+            item["population"],
+            item["fold"],
+            item["prediction_type"],
+            item["config"],
+            item.get("robustness", False),
+        ]
     )
 
 
@@ -817,6 +885,7 @@ def request_for(
             "evaluation_rows_hash"
         ],
         "robustness": item.get("robustness", False),
+        "replay": item.get("replay"),
         **{f: str(inputs_path / split[f]) for f in ("train_file", "evaluation_file")},
         **{
             f + "_sha256": split[f + "_sha256"]
@@ -951,9 +1020,16 @@ def worker(request: dict[str, Any], stage: Path) -> dict[str, Any]:
             raise ValueError("Same-row comparison failed")
         variant = request["config"]
         kept = train_filter(train, preprocess=variant["preprocess"])
-        fitted, measure = models.fit(kept, variant)
+        if request.get("replay"):
+            fitted, measure = replayed(request)
+        else:
+            fitted, measure = models.fit(kept, variant)
         measure["train_rows_excluded"] = len(train) - len(kept)
         values, inference = models.predict(fitted, scoring)
+        if request.get("replay") and (
+            identity(values) != request["replay"]["prediction_values_hash"]
+        ):
+            raise ValueError("Replay changed predictions; the trial must be refitted")
         save_model(stage / "model.joblib", fitted)
         restored = load_model(stage / "model.joblib")
         if models.predict(restored, scoring)[0] != values:
@@ -1009,6 +1085,29 @@ def worker(request: dict[str, Any], stage: Path) -> dict[str, Any]:
                 "peak_rss_bytes": peak_rss_bytes(),
             },
         }
+
+
+def replayed(request: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Load the old model instead of fitting; its resource record is kept."""
+    replay = request["replay"]
+    path = Path(replay["trial"])
+    assert_hashes({str(path / "manifest.json"): replay["manifest_sha256"]})
+    old = checked(path)
+    if (
+        trial_key(old["request"]) != trial_key(request)
+        or old["evaluation_rows_hash"] != request["evaluation_rows_hash"]
+        or "P" in request["config"]["groups"]
+    ):
+        raise ValueError("Replay source does not match this trial")
+    fitted = load_model(path / old["model_file"])
+    if not models.readable(fitted):
+        raise ValueError("Replay model is not readable on corrected inputs")
+    measure = {
+        **{k: v for k, v in old["measurements"].items() if k != "worker_wall_seconds"},
+        "replayed_from": str(path),
+        "replayed_fit_seconds": old["measurements"]["fit_seconds"],
+    }
+    return fitted, measure
 
 
 def trial(work: Path, request: dict[str, Any], *, isolated: bool = True) -> Path:
@@ -1073,11 +1172,14 @@ class Runner:
         self.jobs, self.isolated = jobs, isolated
         self.spent = 0.0
         self.counted: set[Path] = set()
+        self.replays = replay_index(report["plan"])
 
     def one(self, item: dict[str, Any]) -> dict[str, Any]:
+        item = {**item, "replay": self.replays.get(trial_key(item))}
         request = request_for(item, self.report, self.path)
-        row = {k: v for k, v in item.items() if k != "config"}
+        row = {k: v for k, v in item.items() if k not in ("config", "replay")}
         row["provenance"] = provenance(item)
+        row["replayed"] = item["replay"] is not None
         budget = request["budgets"]["cumulative_worker_seconds"]
         if self.spent >= budget:
             return {**row, "status": "not_run", "reason": "Cumulative budget exhausted"}
@@ -1109,18 +1211,7 @@ class Runner:
 
     def many(self, items: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Same request twice in a list runs once, so parallel writers cannot race."""
-        keys = [
-            identity(
-                [
-                    i["population"],
-                    i["fold"],
-                    i["prediction_type"],
-                    i["config"],
-                    i.get("robustness", False),
-                ]
-            )
-            for i in items
-        ]
+        keys = [trial_key(i) for i in items]
         unique = dict(zip(keys, items, strict=True))
         with ThreadPoolExecutor(self.jobs) as pool:
             done = dict(zip(unique, pool.map(self.one, unique.values()), strict=True))
@@ -1244,7 +1335,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "command",
-        choices=["readiness", "freeze", "run", "analytics", "verify", "worker"],
+        choices=[
+            "readiness",
+            "lineage",
+            "freeze",
+            "run",
+            "analytics",
+            "verify",
+            "worker",
+        ],
     )
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     parser.add_argument("--dataset", type=Path)
@@ -1252,6 +1351,8 @@ def main() -> None:
     parser.add_argument("--protocol", type=Path)
     parser.add_argument("--result", type=Path)
     parser.add_argument("--analytics", type=Path)
+    parser.add_argument("--lineage", type=Path)
+    parser.add_argument("--corrects", type=Path)
     parser.add_argument("--request", type=Path)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--output", type=Path, default=EVIDENCE)
@@ -1263,6 +1364,10 @@ def main() -> None:
             args.request.parent / "outcome.json",
             worker(read_json(args.request), args.request.parent),
         )
+    elif args.command == "lineage":
+        from citibike.decision_research.lineage import lineage
+
+        print(lineage(args.data_dir, dataset_of(args)))
     elif args.command == "readiness":
         from citibike.decision_research.readiness import readiness
 
@@ -1272,7 +1377,9 @@ def main() -> None:
             parser.error("--readiness required: audit precedes the protocol")
         from citibike.decision_research.verify import protocol_evidence
 
-        path = freeze(args.data_dir, dataset_of(args), args.readiness)
+        path = freeze(
+            args.data_dir, dataset_of(args), args.readiness, corrects=args.corrects
+        )
         protocol_evidence(path, args.output)
         print(path)
     elif args.command == "run":
@@ -1289,11 +1396,11 @@ def main() -> None:
         if checked(result)["status"] != "completed":
             raise SystemExit(2)
     elif args.command == "analytics":
-        if args.result is None:
-            parser.error("--result required")
+        if args.result is None or args.lineage is None:
+            parser.error("--result and --lineage required")
         from citibike.decision_research.analytics import analytics
 
-        print(analytics(args.data_dir, args.result))
+        print(analytics(args.data_dir, args.result, args.lineage))
     else:
         from citibike.decision_research.verify import verify
 

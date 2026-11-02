@@ -13,7 +13,10 @@ from citibike.features.contracts import NY, holiday, utc
 from citibike.features.research import A, calendar
 from citibike.storage import identity
 
-VERSION = "f4-decision-research-1"
+VERSION = "f4-decision-research-2"
+# Schema of protocol 31be44f7: its cell_std was 0 instead of NULL on empty history
+# (defect D1). Models trained without group P are unaffected and stay readable.
+D1_SCHEMA = "11c8ec6a17cd18cc393f94da148a18476e3a47c227ebd3f2b267ab872fe21fa8"
 SHRINK_LABELS = 8
 HOLIDAY_WINDOW = 7
 CLOSURE_MIN_HOURS = 24
@@ -35,7 +38,8 @@ P = {
     "hist_zero_share": "zero labels/n over published station/type labels",
     "hist_cv": "population std/mean over published station/type labels; NULL if mean=0",
     "hist_n": "n observed published station/type labels",
-    "cell_std": "population std over published station/type/weekday/hour labels",
+    "cell_std": "population std over published station/type/weekday/hour labels; "
+    "NULL without cell history (DuckDB greatest() ignores NULL, so it is guarded)",
     "cell_zero_share": "zero labels/n over published station/type/weekday/hour",
     "cell_n": "n observed published station/type/weekday/hour labels",
     "shape_share": "cell mean/hist_mean; scale-free hour-of-week demand shape",
@@ -207,7 +211,8 @@ JOINED = f"""SELECT f.* EXCLUDE(target_month_key),
             CASE WHEN s.c_total>0 THEN sqrt(greatest(s.c_squares/s.c_n
                 -pow(s.c_total/s.c_n,2),0))/(s.c_total/s.c_n) END hist_cv,
             s.c_n hist_n,
-            sqrt(greatest(c.c_squares/c.c_n-pow(c.c_total/c.c_n,2),0)) cell_std,
+            CASE WHEN c.c_n IS NOT NULL THEN sqrt(greatest(
+                c.c_squares/c.c_n-pow(c.c_total/c.c_n,2),0)) END cell_std,
             c.c_zeros/c.c_n cell_zero_share,c.c_n cell_n,
             CASE WHEN s.c_total>0 THEN (c.c_total/c.c_n)/(s.c_total/s.c_n)
                 END shape_share,
