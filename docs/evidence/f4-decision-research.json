@@ -1,0 +1,1359 @@
+{
+  "status": "protocol_frozen_no_fits",
+  "protocol_id": "31be44f7cf38d6cdbbc81305e4b52c93c839e42078908c2cc91af64e77ae7e04",
+  "protocol_path": "data/decision_research/f4/protocols/31be44f7cf38d6cdbbc81305e4b52c93c839e42078908c2cc91af64e77ae7e04",
+  "protocol_manifest_sha256": "e3d4e460bcfdce8089483eb643fc216b5aec07b4752f8b6bf370ba36459d1ca4",
+  "created_at": "2026-11-02T05:33:37.884381+00:00",
+  "plan": {
+    "version": "f4-decision-research-1",
+    "data_mode": "real_official",
+    "smoke": false,
+    "code": {
+      "decision_research/__init__.py": "641a15292dd48b23b1651bb477e8222095bfb1642d953e60cb7b65cff1b1c28f",
+      "decision_research/__main__.py": "e84b4dfc3a13118a0804c64bb22fb5dc19034a657b2cc532c0431a0674a891f8",
+      "decision_research/features.py": "689ae6149cbf93d0d36675cdb9777e8c1dba9c1ccaf9bb1ad388557941f45ab6",
+      "decision_research/models.py": "0179f909b4e9d463cf113a673f5f13238105e7e24a36262003d1ed1166f5121b",
+      "features/contracts.py": "222a1e9a3c13b55ee0f8804d2d7bc5f22e68c313d1c9b82f1998bfcc4753b316",
+      "features/dataset.py": "914a3de0fb90d0130b97d1925fdb815afd795376908389c426beea10f405844b",
+      "features/research/__init__.py": "98eb4a244fb330463ae27ab72970f7cdfc06fc3ebe3297b78e5f769d714cb4f3",
+      "forecasting/artifacts.py": "d0929cdcd7b3ec6abdf2395a131a97818a794fd2305ae01608a0ca65fdacfbf8",
+      "forecasting/evaluation_weather.py": "7acb62a150082c72e1a10aae10de5f9652ecb724e32c22b5987fa1f576ddf9a7",
+      "forecasting/experiment.py": "0555945421853d47ea3117e6a57f82ea1f227997034a22b6d532e790e07d050d",
+      "forecasting/metrics.py": "0b5b7e0a2e9a9e3919c13f1e26d01ef059cf54a700c04f0e44a7685e555e2d21",
+      "forecasting/models.py": "6f4e81d987ba580efebf7e4aca5e725d148c2098ca08f89561be509bf0142280"
+    },
+    "schema": "11c8ec6a17cd18cc393f94da148a18476e3a47c227ebd3f2b267ab872fe21fa8",
+    "catalog": {
+      "local_hour_sin": {
+        "group": "A",
+        "formula": "sin(2*pi*local_hour/24)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "local_hour_cos": {
+        "group": "A",
+        "formula": "cos(2*pi*local_hour/24)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "weekday_sin": {
+        "group": "A",
+        "formula": "sin(2*pi*weekday/7)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "weekday_cos": {
+        "group": "A",
+        "formula": "cos(2*pi*weekday/7)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "month_index_sin": {
+        "group": "A",
+        "formula": "sin(2*pi*month_index/12)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "month_index_cos": {
+        "group": "A",
+        "formula": "cos(2*pi*month_index/12)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "week_of_year": {
+        "group": "A",
+        "formula": "ISO week of NY target date (1..53)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "weekday_am_peak": {
+        "group": "A",
+        "formula": "weekday<5 and local_hour in [7,8,9]",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "weekday_pm_peak": {
+        "group": "A",
+        "formula": "weekday<5 and local_hour in [16,17,18,19]",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "holiday_peak": {
+        "group": "A",
+        "formula": "holiday * (weekday_am_peak + weekday_pm_peak)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "doy_sin1": {
+        "group": "C",
+        "formula": "sin(2*pi*1*NY day_of_year/365.25)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "doy_cos1": {
+        "group": "C",
+        "formula": "cos(2*pi*1*NY day_of_year/365.25)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "doy_sin2": {
+        "group": "C",
+        "formula": "sin(2*pi*2*NY day_of_year/365.25)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "doy_cos2": {
+        "group": "C",
+        "formula": "cos(2*pi*2*NY day_of_year/365.25)",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "days_to_holiday": {
+        "group": "C",
+        "formula": "days to next federal holiday, capped at 7",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "days_from_holiday": {
+        "group": "C",
+        "formula": "days since last federal holiday, capped at 7",
+        "dtype": "float64",
+        "lineage": "target calendar / us-federal-observed-1",
+        "availability": "known at origin",
+        "max_availability_lag": "0; known calendar",
+        "null_semantics": "not applicable",
+        "pit_check": "independent calendar recomputation"
+      },
+      "hist_mean": {
+        "group": "P",
+        "formula": "sum(actual)/n over published station/type labels",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "hist_zero_share": {
+        "group": "P",
+        "formula": "zero labels/n over published station/type labels",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "hist_cv": {
+        "group": "P",
+        "formula": "population std/mean over published station/type labels; NULL if mean=0",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "hist_n": {
+        "group": "P",
+        "formula": "n observed published station/type labels",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "cell_std": {
+        "group": "P",
+        "formula": "population std over published station/type/weekday/hour labels",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "cell_zero_share": {
+        "group": "P",
+        "formula": "zero labels/n over published station/type/weekday/hour",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "cell_n": {
+        "group": "P",
+        "formula": "n observed published station/type/weekday/hour labels",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "shape_share": {
+        "group": "P",
+        "formula": "cell mean/hist_mean; scale-free hour-of-week demand shape",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "hist_band": {
+        "group": "P",
+        "formula": "train-only quartile band of hist_mean, per type; thresholds at fit",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "pool_cell_mean": {
+        "group": "S",
+        "formula": "cohort sum(actual)/n for type/weekday/hour, published labels",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "shrunk_cell_mean": {
+        "group": "S",
+        "formula": "(cell_n*cell_mean+8*scaled_pool)/(cell_n+8); scaled_pool=pool_cell_mean*hist_mean/pool_hist_mean",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "season_index": {
+        "group": "S",
+        "formula": "cohort mean of target NY month one year earlier / cohort mean of latest published month; NULL if that month is not yet published",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      },
+      "adjusted_profile": {
+        "group": "S",
+        "formula": "shrunk_cell_mean*season_index; NULL if season_index is NULL",
+        "dtype": "nullable float64",
+        "lineage": "dataset dense.parquet observed labels of this fold population",
+        "availability": "label_available_at <= min(origin, fold fit_as_of)",
+        "max_availability_lag": "UNKNOWN historically; hypothesis +45d after NY month end",
+        "null_semantics": "NULL means no published history; never zero; trees native NaN; Poisson train median plus missing indicator",
+        "pit_check": "independent per-cutoff summation in verify; gate at build and worker"
+      }
+    },
+    "preprocessing_rules": {
+      "anomalous_id": {
+        "problem": "Non-canonical IDs (`Shop Morgan`, `5308.04_`, `5348.06_old`, `1234.56`) may be service or transitional stations, not public docks",
+        "rule": "ID outside ^dddd.d{1,2}$ and ^[A-Z]{2}ddd$, or equal to 1234.56, is excluded from training under preprocess=true; always retained in evaluation and flagged. `6242.1` (lost trailing zero) and `JC032` stay canonical",
+        "test": "test_preprocessing_flags_and_train_only_filter"
+      },
+      "suspect_closure": {
+        "problem": "A 7-day label bracket can label a closed station as true zeros",
+        "rule": "Observed zero run of >=24h with same-month station rate*hours>=13.8155 (Poisson P<=1e-6) is excluded from training under preprocess=true; retained in evaluation and flagged",
+        "test": "test_preprocessing_flags_and_train_only_filter"
+      },
+      "peaks_retained": {
+        "problem": "Extreme counts dominate squared loss and tail MAE",
+        "rule": "No clipping or winsorising: DATA_CONTRACTS forbids removing peaks",
+        "test": "test_preprocessing_retains_extreme_values"
+      },
+      "missing_retained": {
+        "problem": "Missing history can masquerade as zero demand",
+        "rule": "NULL stays NULL in features; imputation only inside Poisson pipeline",
+        "test": "test_missing_history_never_becomes_zero"
+      }
+    },
+    "feature_sets": [
+      [],
+      [
+        "A"
+      ],
+      [
+        "C"
+      ],
+      [
+        "P"
+      ],
+      [
+        "S"
+      ],
+      [
+        "A",
+        "C",
+        "P"
+      ],
+      [
+        "A",
+        "C",
+        "S"
+      ],
+      [
+        "A",
+        "P",
+        "S"
+      ],
+      [
+        "C",
+        "P",
+        "S"
+      ],
+      [
+        "A",
+        "C",
+        "P",
+        "S"
+      ]
+    ],
+    "populations": {
+      "cohort64": {
+        "dataset": "data\\f4\\datasets\\d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+        "dataset_manifest_sha256": "16f65997b6d3c8655b8fe581b13fcd852061cd0857c2f47fcb5c9da334c3bd70",
+        "dataset_id": "d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5",
+        "inputs": "data\\decision_research\\f4\\inputs\\f9601dc6b6ae07416c3f4065e607bb12c7f6d9e7f8bc34bb0b4325f46c5488ab",
+        "inputs_manifest_sha256": "20c4400d05d0a85ce5749a0c78613d7e9aabbd8128b6a38397f4b63a39cd3036",
+        "coverage": {
+          "stations": 64,
+          "city_starts": 92076054,
+          "city_ends": 92076567,
+          "unknown_start_ids": 48712,
+          "unknown_end_ids": 271858,
+          "cohort_departures": 2356614,
+          "cohort_arrivals": 2352323,
+          "departure_city_coverage": 0.025607759050565646,
+          "arrival_city_coverage": 0.02562311918008476
+        },
+        "eligibility": {
+          "eligible": 1726199,
+          "missing_target": 51001,
+          "station_not_known": 182736
+        }
+      },
+      "cohort128": {
+        "dataset": "data\\f4\\feature_expansion\\f4\\datasets\\db9a8e136658310bd9565c3a967c5303938ac5448cff9b48339861cc957a0d01",
+        "dataset_manifest_sha256": "2b817657bc7edeb1189b637e2d9b72c8536665697a35227841fa445fd5b2f34d",
+        "dataset_id": "db9a8e136658310bd9565c3a967c5303938ac5448cff9b48339861cc957a0d01",
+        "inputs": "data\\decision_research\\f4\\inputs\\539706447e8a574e310f2514c5f00784e5f2368052deb787121871ed0832a3e4",
+        "inputs_manifest_sha256": "20fe647532e42371943e9990d00b7b2ccd21a4166cbf0f7ac49b1b366091dfb8",
+        "coverage": {
+          "stations": 128,
+          "city_starts": 92076054,
+          "city_ends": 92076567,
+          "unknown_start_ids": 48712,
+          "unknown_end_ids": 271858,
+          "cohort_departures": 4390614,
+          "cohort_arrivals": 4383851,
+          "departure_city_coverage": 0.04770988604669252,
+          "arrival_city_coverage": 0.04775191869515103
+        },
+        "eligibility": {
+          "eligible": 3278058,
+          "missing_target": 170502,
+          "station_not_known": 471312
+        }
+      },
+      "cohort256": {
+        "dataset": "data\\decision_research\\f4\\datasets\\e4c551fd74253a206cbbba985e631396312fb8e659b438aed7214512973a0176",
+        "dataset_manifest_sha256": "d5f62f54ca87881b96b59e6a54cf5827d166db81ea89a2992028321666853a68",
+        "dataset_id": "e4c551fd74253a206cbbba985e631396312fb8e659b438aed7214512973a0176",
+        "inputs": "data\\decision_research\\f4\\inputs\\dd11ebdea9db4291df15227c37a15cd6a3a4a337ee4964f68c4a97367ef111d6",
+        "inputs_manifest_sha256": "84968762e8567911f055895db953338a8997a4a1f1eeb7981f1cbbc5285307e7",
+        "coverage": {
+          "stations": 256,
+          "city_starts": 92076054,
+          "city_ends": 92076567,
+          "unknown_start_ids": 48712,
+          "unknown_end_ids": 271858,
+          "cohort_departures": 8424688,
+          "cohort_arrivals": 8421481,
+          "departure_city_coverage": 0.09154548873094694,
+          "arrival_city_coverage": 0.09173256025461614
+        },
+        "eligibility": {
+          "eligible": 6333825,
+          "missing_target": 359335,
+          "station_not_known": 1146432,
+          "missing_available_profile": 152
+        }
+      },
+      "cohort256x4": {
+        "dataset": "data\\decision_research\\f4\\datasets\\e4c551fd74253a206cbbba985e631396312fb8e659b438aed7214512973a0176",
+        "dataset_manifest_sha256": "d5f62f54ca87881b96b59e6a54cf5827d166db81ea89a2992028321666853a68",
+        "dataset_id": "e4c551fd74253a206cbbba985e631396312fb8e659b438aed7214512973a0176",
+        "inputs": "data\\decision_research\\f4\\inputs\\25f47811f4fdcc8e1fb93dfac4e9dcde379620702331c726e674671c38f4c50a",
+        "inputs_manifest_sha256": "e1329cbcc53881bc2157e3a5eaf863b63708ea5786964ea9abcf74feaa32716c",
+        "coverage": {
+          "stations": 256,
+          "city_starts": 92076054,
+          "city_ends": 92076567,
+          "unknown_start_ids": 48712,
+          "unknown_end_ids": 271858,
+          "cohort_departures": 8424688,
+          "cohort_arrivals": 8421481,
+          "departure_city_coverage": 0.09154548873094694,
+          "arrival_city_coverage": 0.09173256025461614
+        },
+        "eligibility": {
+          "eligible": 6333825,
+          "missing_target": 359335,
+          "station_not_known": 1146432,
+          "missing_available_profile": 152
+        }
+      }
+    },
+    "tuning_folds": [
+      {
+        "id": "T0",
+        "start": "2025-06-01",
+        "end": "2025-06-15"
+      },
+      {
+        "id": "T1",
+        "start": "2025-09-01",
+        "end": "2025-09-15"
+      },
+      {
+        "id": "T2",
+        "start": "2025-12-01",
+        "end": "2025-12-15"
+      },
+      {
+        "id": "T3",
+        "start": "2026-03-01",
+        "end": "2026-03-15"
+      }
+    ],
+    "holdout_folds": [
+      {
+        "id": "H0",
+        "start": "2025-10-20",
+        "end": "2025-11-03"
+      },
+      {
+        "id": "H1",
+        "start": "2026-01-15",
+        "end": "2026-01-29"
+      },
+      {
+        "id": "H2",
+        "start": "2026-04-15",
+        "end": "2026-04-29"
+      },
+      {
+        "id": "H3",
+        "start": "2026-07-15",
+        "end": "2026-07-29"
+      }
+    ],
+    "final_window_not_used": [
+      "2026-09-01",
+      "2026-10-01"
+    ],
+    "seed": 42,
+    "extra_seeds": [
+      43,
+      44
+    ],
+    "threads_per_worker": 2,
+    "feature_variants": {
+      "seasonal_naive": {
+        "algorithm": "seasonal_naive",
+        "groups": [],
+        "params": {},
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__base": {
+        "algorithm": "lightgbm",
+        "groups": [],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__A": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "A"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__C": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "C"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__P": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "P"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__S": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__ACP": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "A",
+          "C",
+          "P"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__ACS": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "A",
+          "C",
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__APS": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "A",
+          "P",
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__CPS": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__ACPS": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "A",
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "lightgbm__ACPS__pre": {
+        "algorithm": "lightgbm",
+        "groups": [
+          "A",
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": true,
+        "seed": 42
+      },
+      "catboost__base": {
+        "algorithm": "catboost",
+        "groups": [],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__A": {
+        "algorithm": "catboost",
+        "groups": [
+          "A"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__C": {
+        "algorithm": "catboost",
+        "groups": [
+          "C"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__P": {
+        "algorithm": "catboost",
+        "groups": [
+          "P"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__S": {
+        "algorithm": "catboost",
+        "groups": [
+          "S"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__ACP": {
+        "algorithm": "catboost",
+        "groups": [
+          "A",
+          "C",
+          "P"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__ACS": {
+        "algorithm": "catboost",
+        "groups": [
+          "A",
+          "C",
+          "S"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__APS": {
+        "algorithm": "catboost",
+        "groups": [
+          "A",
+          "P",
+          "S"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__CPS": {
+        "algorithm": "catboost",
+        "groups": [
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__ACPS": {
+        "algorithm": "catboost",
+        "groups": [
+          "A",
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "catboost__ACPS__pre": {
+        "algorithm": "catboost",
+        "groups": [
+          "A",
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "iterations": 500,
+          "depth": 4
+        },
+        "preprocess": true,
+        "seed": 42
+      },
+      "poisson__base": {
+        "algorithm": "poisson",
+        "groups": [],
+        "params": {
+          "alpha": 0.1,
+          "max_iter": 200
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "poisson__ACPS": {
+        "algorithm": "poisson",
+        "groups": [
+          "A",
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "alpha": 0.1,
+          "max_iter": 200
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "hurdle__base": {
+        "algorithm": "hurdle",
+        "groups": [],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      },
+      "hurdle__ACPS": {
+        "algorithm": "hurdle",
+        "groups": [
+          "A",
+          "C",
+          "P",
+          "S"
+        ],
+        "params": {
+          "n_estimators": 200,
+          "num_leaves": 15,
+          "learning_rate": 0.05
+        },
+        "preprocess": false,
+        "seed": 42
+      }
+    },
+    "search_space": {
+      "lightgbm": {
+        "n_estimators": [
+          100,
+          200,
+          400,
+          800
+        ],
+        "learning_rate": [
+          0.02,
+          0.05,
+          0.1
+        ],
+        "num_leaves": [
+          7,
+          15,
+          31,
+          63
+        ],
+        "min_child_samples": [
+          20,
+          50,
+          100,
+          200
+        ],
+        "subsample": [
+          0.7,
+          1.0
+        ],
+        "colsample_bytree": [
+          0.7,
+          1.0
+        ],
+        "reg_lambda": [
+          0.0,
+          1.0,
+          10.0
+        ]
+      },
+      "catboost": {
+        "iterations": [
+          300,
+          500,
+          1000
+        ],
+        "depth": [
+          4,
+          6,
+          7
+        ],
+        "learning_rate": [
+          0.03,
+          0.06,
+          0.1
+        ],
+        "l2_leaf_reg": [
+          1.0,
+          3.0,
+          10.0
+        ]
+      }
+    },
+    "search_trials": {
+      "lightgbm": [
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.02,
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 10.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 200,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.02,
+          "num_leaves": 7,
+          "min_child_samples": 50,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 1.0
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.02,
+          "num_leaves": 15,
+          "min_child_samples": 200,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.05,
+          "num_leaves": 7,
+          "min_child_samples": 20,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 1.0
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.1,
+          "num_leaves": 31,
+          "min_child_samples": 20,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 1.0
+        },
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.1,
+          "num_leaves": 31,
+          "min_child_samples": 100,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.05,
+          "num_leaves": 7,
+          "min_child_samples": 50,
+          "subsample": 0.7,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 1.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 800,
+          "learning_rate": 0.1,
+          "num_leaves": 31,
+          "min_child_samples": 50,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 50,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 1.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 800,
+          "learning_rate": 0.05,
+          "num_leaves": 15,
+          "min_child_samples": 100,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.05,
+          "num_leaves": 31,
+          "min_child_samples": 20,
+          "subsample": 0.7,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 800,
+          "learning_rate": 0.05,
+          "num_leaves": 63,
+          "min_child_samples": 50,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.1,
+          "num_leaves": 63,
+          "min_child_samples": 200,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 800,
+          "learning_rate": 0.02,
+          "num_leaves": 7,
+          "min_child_samples": 20,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 10.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 800,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 200,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 10.0
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 20,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.05,
+          "num_leaves": 15,
+          "min_child_samples": 200,
+          "subsample": 0.7,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 10.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 100,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 1.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 100,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0
+        }
+      ],
+      "catboost": [
+        {
+          "iterations": 500,
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 1.0
+        },
+        {
+          "iterations": 300,
+          "depth": 7,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 1.0
+        },
+        {
+          "iterations": 1000,
+          "depth": 6,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 10.0
+        },
+        {
+          "iterations": 300,
+          "depth": 4,
+          "learning_rate": 0.1,
+          "l2_leaf_reg": 3.0
+        },
+        {
+          "iterations": 1000,
+          "depth": 4,
+          "learning_rate": 0.06,
+          "l2_leaf_reg": 10.0
+        },
+        {
+          "iterations": 1000,
+          "depth": 7,
+          "learning_rate": 0.03,
+          "l2_leaf_reg": 10.0
+        }
+      ],
+      "hurdle": [
+        {
+          "n_estimators": 400,
+          "learning_rate": 0.05,
+          "num_leaves": 31,
+          "min_child_samples": 200,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.02,
+          "num_leaves": 31,
+          "min_child_samples": 20,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 0.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 50,
+          "subsample": 0.7,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 1.0,
+          "subsample_freq": 1
+        },
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.1,
+          "num_leaves": 15,
+          "min_child_samples": 100,
+          "subsample": 1.0,
+          "colsample_bytree": 0.7,
+          "reg_lambda": 10.0
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.1,
+          "num_leaves": 63,
+          "min_child_samples": 50,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.02,
+          "num_leaves": 63,
+          "min_child_samples": 100,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 1.0
+        },
+        {
+          "n_estimators": 100,
+          "learning_rate": 0.1,
+          "num_leaves": 7,
+          "min_child_samples": 20,
+          "subsample": 1.0,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0
+        },
+        {
+          "n_estimators": 200,
+          "learning_rate": 0.02,
+          "num_leaves": 15,
+          "min_child_samples": 200,
+          "subsample": 0.7,
+          "colsample_bytree": 1.0,
+          "reg_lambda": 0.0,
+          "subsample_freq": 1
+        }
+      ]
+    },
+    "poisson_alpha": [
+      0.01,
+      0.03,
+      0.1,
+      0.3,
+      1.0
+    ],
+    "budgets": {
+      "fit_seconds": 300,
+      "inference_seconds": 300,
+      "worker_wall_seconds": 420,
+      "peak_rss_bytes": 2147483648,
+      "cumulative_worker_seconds": 32400
+    },
+    "trial_upper_bound": 912,
+    "stopping": "Fixed trial list; no adaptive extension. Exhausted cumulative budget records remaining trials as not_run and yields partial. Each fit, inference, wall and RSS budget failure is retained as a failed trial",
+    "selection_rule": "Stage selections use macro MAE on tuning folds only. Feature set per algorithm: mean of both targets; within 0.25% of the best the fewest columns wins, then lexical. Preprocess: adopted only if it improves by >0.25%. Parameters per target: lowest macro MAE; the bounded configuration is kept unless beaten by >0.25%. Any failed fold excludes the variant. No second search round",
+    "tie_tolerance": 0.0025,
+    "decision_rule": "Per target, on the four holdout folds only: a variant is a research candidate if in cohort64 AND cohort128 it wins the majority of folds against Seasonal Naive, has no >20% key-segment degradation (n>=100, including peak_hour and stations 6753.08, 6230.02), valid resources and no warnings, and its family-wise paired macro MAE interval against Seasonal Naive is below zero; lowest cohort64 macro MAE among those, lexical tie; otherwise seasonal_naive. cohort256 is a sensitivity report and cannot create a candidate",
+    "critical_extra": [
+      "peak_hour",
+      "station:6753.08",
+      "station:6230.02"
+    ],
+    "primary_metric": "macro MAE over the same folds per target and population",
+    "hypotheses": {
+      "H1_cyclic": {
+        "claim": "Bounded annual harmonics C cannot run off the training range",
+        "expect": "LightGBM+C is not worse than LightGBM+A on the Dec fold; C gives no material gain over base on holdout",
+        "check": "S1 fold T2 delta, S4 holdout ablation"
+      },
+      "H2_profile": {
+        "claim": "Variability and shape P describe low/high demand stations",
+        "expect": "P lowers MAE on history:thin and band:0, not necessarily overall",
+        "check": "paired P vs base inside the segments, S4 ablation"
+      },
+      "H3_shrinkage": {
+        "claim": "Pooling S protects stations with few cell labels",
+        "expect": "S lowers activity:new and history:thin MAE against base",
+        "check": "S4 ablation and segment deltas"
+      },
+      "H4_season_level": {
+        "claim": "Year-ago seasonality carries the level that delayed labels lose",
+        "expect": "Once season_index exists (holdout folds), bias magnitude falls",
+        "check": "holdout fold bias, season_index missing share"
+      },
+      "H5_hurdle": {
+        "claim": "Separate occurrence and intensity suit zero-heavy hours",
+        "expect": "Hurdle beats single-stage LightGBM on activity:low and actual:zero, not on overall macro MAE",
+        "check": "S3 paired hurdle vs lightgbm_selected"
+      },
+      "H6_preprocess": {
+        "claim": "Training exclusions of suspect rows barely change fits",
+        "expect": "Below 0.25% macro MAE change",
+        "check": "S1 __pre variants on identical evaluation rows"
+      },
+      "H7_tuning": {
+        "claim": "Bounded search is not the main lever",
+        "expect": "Below 2% holdout macro MAE gain against the bounded configuration",
+        "check": "S3 selected vs bounded configuration with the same features"
+      },
+      "H8_year_over_year": {
+        "claim": "With the same calendar month in train, segment degradations shrink",
+        "expect": "H2/H3 folds (Apr, Jul 2026) have fewer gate degradations than H0/H1",
+        "check": "degraded segments per holdout fold"
+      }
+    },
+    "readiness": "data\\decision_research\\f4\\readiness\\98a9b692d9a0d1187fb309d5a232f131e1faa2543e283b3a8e75d947a10609d6",
+    "readiness_manifest_sha256": "dd9b5988cb1d744d4060517b8b342fb8f138683a96ff02e084303f9f2b5537d1",
+    "evaluation_weather": {
+      "daily_file": "data\\f4\\evaluation_weather\\73a8dbfb807f47073f260ed1f29c93ca40dd4aab0fd49b93598a5799d7bc9c63\\daily.json",
+      "sha256": "acce0e56776e40ffc236a6600b1fa4bf5b54c41ee84e05e114805e3774df51a5",
+      "policy": "era5-evaluation-labels-2",
+      "use": "Key-segment gate and diagnostics AFTER prediction; not a feature"
+    },
+    "uncertainty": {
+      "method": "crossed station x NY target-day pigeonhole bootstrap, paired weights, macro-fold estimand",
+      "seed": 42,
+      "replicates_primary": 4000,
+      "replicates_secondary": 1000,
+      "familywise": "Bonferroni over candidate x target x cohort64/128 against Seasonal Naive, plus Holm on bootstrap sign p-values",
+      "fold_level": "exact sign-flip test on fold differences; 4 folds cannot reach p<0.125, reported only"
+    },
+    "provenance": "Tuning folds T0-T3 were scored by F4 and both later studies; their trials are not new evidence. Holdout folds H0-H3 were never scored by any model in this repository, but they lie inside the F2 EDA period and inside the training data of the frozen final models, and the hypotheses were written after reading prior results. They are unseen validation windows, not an independent test.",
+    "test_policy": "September 2026 already consumed, unused here. No new independent period exists; no promotion, no operational claim",
+    "final_test_accessed": false,
+    "environment": {
+      "numpy": "2.5.4",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.9.1",
+      "lightgbm": "4.7.0",
+      "catboost": "1.2.10",
+      "duckdb": "1.5.6"
+    }
+  },
+  "protected_files": 3970,
+  "protected_files_sha256": "cbe13e14050cb2641690ef7c669625af18767b18a2496e5fad41def1b2583e51"
+}
