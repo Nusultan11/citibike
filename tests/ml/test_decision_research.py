@@ -127,6 +127,9 @@ def test_missing_history_never_becomes_zero(tmp_path: Path) -> None:
     assert unknown["hist_zero_share"] != unknown["hist_zero_share"]
     assert unknown["cell_n"] != unknown["cell_n"]
     assert unknown["history_depth"] == "none"
+    # Known frozen defect D1, measured by the verifier: empty cell history gives
+    # cell_std 0 instead of NULL. This test pins the defect until a new protocol.
+    assert unknown["cell_std"] == 0
 
 
 def test_future_label_is_invisible_until_published(tmp_path: Path) -> None:

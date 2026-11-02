@@ -296,6 +296,12 @@ def imbalance(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
         (x.n-coalesce(y.n,0))/(x.n+coalesce(y.n,0)) direction_asymmetry
         FROM r x LEFT JOIN r y ON x.a=y.b AND x.b=y.a WHERE x.a<>x.b
         ORDER BY x.n DESC,x.a,x.b LIMIT 40"""
+    split = """WITH s AS (SELECT station_id,sum(departures) d,sum(arrivals) a
+            FROM station_month GROUP BY 1)
+        SELECT x.station_id short_id,t.station_id twin_id,x.d::BIGINT short_departures,
+        x.a::BIGINT short_arrivals,t.d::BIGINT twin_departures,
+        t.a::BIGINT twin_arrivals FROM s x JOIN s t ON t.station_id=x.station_id||'0'
+        WHERE regexp_full_match(x.station_id,'\\d{4}\\.\\d') ORDER BY x.a DESC"""
     coverage = f"""SELECT sum(route_n)::BIGINT known_pairs,sum(n)::BIGINT rides,
         sum(route_n)/sum(n) route_coverage FROM trip_monthly
         WHERE local_month>={Y2[0]} AND local_month<{LAST}"""
@@ -310,19 +316,44 @@ def imbalance(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:
             "persistent_peaks": persistent,
             "routes": pairs,
             "route_coverage": coverage,
+            "id_split": split,
         },
         {
-            "stations": rows(db, station),
+            "stations": flag_split(rows(db, station), rows(db, split)),
+            "id_split_suspects": summarize_split(rows(db, split)),
             "peak_patterns": rows(db, peak),
             "persistent_peaks": rows(db, persistent),
             "routes": rows(db, pairs),
             "route_coverage": rows(db, coverage)[0],
         },
         "Net trip flow is not an inventory change: rebalancing and repairs are "
-        "unobserved. Hour-of-week peaks are unweighted by weekday counts. Route "
+        "unobserved. Short IDs dddd.d with a dddd.d0 twin are mostly arrivals: "
+        "probably one station split by a lost trailing zero in the source, so their "
+        "net flow is an ID artifact, flagged, not corrected in accepted Silver. "
+        "Hour-of-week peaks are unweighted by weekday counts. Route "
         "rows need both station IDs, so coverage is shown",
         coverage="See route_coverage",
     )
+
+
+def flag_split(
+    stations: list[dict[str, Any]], split: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    suspects = {r["short_id"] for r in split} | {r["twin_id"] for r in split}
+    return [{**r, "suspected_id_split": r["station_id"] in suspects} for r in stations]
+
+
+def summarize_split(split: list[dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "pairs": len(split),
+        "short_departures": sum(r["short_departures"] for r in split),
+        "short_arrivals": sum(r["short_arrivals"] for r in split),
+        "arrival_dominated_pairs": sum(
+            r["short_departures"] * 10 < r["short_arrivals"] for r in split
+        ),
+        "top": split[:10],
+        "status": "suspected source ID artifact; raw CSV check NOT VERIFIED",
+    }
 
 
 def categories(db: duckdb.DuckDBPyConnection) -> dict[str, Any]:

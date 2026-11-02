@@ -263,6 +263,22 @@ Active pointers, serving и final test не переключаются. Septembe
 parity и strict historical PIT не подтверждены. Детали —
 [f4-forecasting.md](docs/evidence/f4-forecasting.md).
 
+ML Research & Decision Analytics (validation-only; локальные Gold inputs, cohort128
+из прежнего исследования):
+
+```sh
+uv run --locked --group ml python -m citibike.decision_research readiness
+uv run --locked --group ml python -m citibike.decision_research freeze --readiness <printed-readiness-directory>
+uv run --locked --group ml python -m citibike.decision_research run --protocol <printed-protocol-directory> --jobs 3
+uv run --locked --group ml python -m citibike.decision_research analytics --result <printed-outcome-directory>
+uv run --locked --group ml python -m citibike.decision_research verify --result <printed-outcome-directory> --analytics <printed-analytics-directory>
+```
+
+`freeze` пишет протокол в `docs/evidence/f4-decision-research.json`. `run` работает
+только после commit и push этого протокола: `HEAD` должен совпадать с `origin/main`.
+Артефакты лежат в ignored `data/decision_research/`. Решение: research candidate нет,
+Seasonal Naive остаётся. Holdout-окна — unseen validation, а не independent test.
+
 ## API и пользовательские страницы
 
 | Контур | Существующая выдача |

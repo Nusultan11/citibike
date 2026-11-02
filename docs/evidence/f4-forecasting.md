@@ -393,6 +393,168 @@ uv run --locked --group ml python -m citibike.forecasting.feature_research run -
 uv run --locked --group ml python -m citibike.forecasting.feature_research verify --result data/f4/feature_outcomes/06288a0089cf4c049253febfd2c6c045215410907a9faa7cbdd4656a8bbf24c0
 ```
 
+## ML Research & Decision Analytics — 2026-11-02
+
+Отдельная validation-only работа F4. Опубликованный прогноз, champion, selection,
+F5 и сентябрьский final не менялись и не использовались. Машинные результаты —
+[f4-decision-research.json](f4-decision-research.json); полные trials, predictions,
+модели и inputs лежат в ignored `data/decision_research/`.
+
+**Решение: research candidate нет, Seasonal Naive остаётся для обоих targets.**
+Все древесные варианты выиграли 4/4 holdout-окна с family-wise интервалом ниже нуля,
+но у каждого есть >20% деградация ключевых сегментов. Правило записано и опубликовано
+до fits, поэтому этот исход — его прямое применение, а не выбор по результату.
+
+### Протокол и происхождение
+
+- Протокол `31be44f7cf38d6cdbbc81305e4b52c93c839e42078908c2cc91af64e77ae7e04`
+  создан 2026-11-02T05:33:37Z и опубликован в commit `6bd5d52` (CI 41394759177
+  success) **до первого fit**. Run принимает протокол только при `HEAD = origin/main`
+  и id в закоммиченном evidence; outcome хранит этот proof.
+- В отличие от `a28aed18`, внешняя отметка (push + CI) предшествует результатам.
+  Это всё ещё не слепая предрегистрация: гипотезы написаны после прежних F4 работ, а
+  T0–T3 уже трижды оценивались.
+- Folds: T0–T3 — прежние окна, только для отбора признаков и параметров. H0–H3 —
+  `2025-10-20…11-03`, `2026-01-15…29`, `2026-04-15…29`, `2026-07-15…29`: ни одна
+  модель их раньше не оценивала, но они входят в период F2 EDA и в train прежних final
+  моделей. Это **unseen validation, не independent test**. Новый независимый период —
+  NOT VERIFIED: его нет.
+- 872 trials: 312 новых fits на holdout, 400 на reused-окнах, 152 повтора прежних
+  исследований на тех же окнах, 8 повторов baseline. Failed 0, not_run 0. Worker
+  20 909 s из 32 400, max fit 162.7 s, child RSS ≤ 1.32 GB, 3 workers × 2 threads.
+
+### Readiness и preprocessing
+
+| Cohort | Known-ID events | TV к decile города | Missing dep/arr labels | Suspect closure runs |
+|---|---:|---:|---:|---:|
+| 64 | 2.56% | 0.188 | 100006 / 98725 | 208 (41 станция) |
+| 128 | 4.77% | 0.150 | 293139 / 290647 | 346 (85) |
+| 256 | 9.16% | 0.125 | 702762 / 697827 | 615 (180) |
+
+Cohorts вложены (64 ⊂ 128 ⊂ 256), утечек будущих признаков и дублей grain 0. Сборка
+cohort256 — 314 s, 2.27 GB RSS. Расширение улучшает состав, но не делает cohort
+репрезентативным: доля станций 2-го дециля 19% против 10%.
+
+Правила preprocessing действуют только на train и сравнивались на тех же evaluation
+rows: аномальные ID и statistically suspect closures (нулевой run ≥24 h с ожидаемыми
+≥13.8 событиями). Ни одно не принято: изменение MAE в пределах 0.25% у LightGBM, хуже
+у CatBoost. Пики не обрезаются, NULL не превращается в ноль.
+
+Два дефекта найдены по ходу работы:
+
+1. До заморозки audit показал, что моё первое правило ID относит `6242.1` и `JC032`
+   к аномальным. Правило сужено. Позже аналитика показала, что многие `dddd.d` —
+   вероятно, отрезанный хвостовой ноль: 105 из 108 коротких ID имеют пару `dddd.d0`,
+   на них 1 338 355 прибытий против 265 582 отправлений. Это подозрение на артефакт
+   источника, raw-сверка NOT VERIFIED; принятый Silver не менялся.
+2. **D1 (после run, независимым verifier):** `cell_std` = 0 вместо NULL при пустой
+   истории ячейки, потому что `greatest()` в DuckDB пропускает NULL. Затронуто
+   22 779 из 6 904 577 строк, только группа P. P не вошла в выбранные LightGBM и CatBoost;
+   hurdle (ACPS) затронут. Исправление меняет хеш кода и требует нового протокола.
+
+### Модели и признаки
+
+Отбор по T0–T3: LightGBM — A+C+S, CatBoost — A, hurdle — A+C+P+S, Poisson — base.
+Search (20 LightGBM, 6 CatBoost, 8 hurdle, 5 Poisson α) улучшил LightGBM и Poisson;
+CatBoost departures остался bounded.
+
+Holdout H0–H3, macro MAE, Seasonal Naive и лучшие варианты:
+
+| Cohort | Target | Seasonal Naive | LightGBM sel | CatBoost sel | Hurdle | Poisson sel |
+|---|---|---:|---:|---:|---:|---:|
+| 64 | dep | 1.9990 | 1.3282 | 1.3398 | 1.3157 | 1.5606 |
+| 64 | arr | 2.0030 | 1.3317 | 1.3507 | 1.3011 | 1.5426 |
+| 128 | dep | 1.9339 | 1.3287 | 1.3313 | 1.3138 | 1.6102 |
+| 128 | arr | 1.9412 | 1.2934 | 1.3379 | 1.2961 | 1.6150 |
+| 256 | dep | 1.8745 | 1.3084 | 1.2714 | 1.2817 | 1.7499 |
+| 256 | arr | 1.8853 | 1.2629 | 1.2894 | 1.2684 | 1.7590 |
+
+Парные ΔMAE против Seasonal Naive, 28 первичных сравнений, Bonferroni α=0.00179,
+4000 crossed station×day replicates. Hurdle cohort64 dep −0.683, arr −0.702;
+LightGBM −0.671/−0.671; CatBoost+A −0.659/−0.680, family-wise интервалы ниже −0.34.
+Poisson: интервалы содержат ноль. Fold sign-flip p = 0.125 — минимум для 4 folds.
+Holm-скорректированные bootstrap p деревьев против baseline ≤ 0.006 (ни одного
+replicate с другим знаком). Выигрыш над baseline устойчив; разница между деревьями —
+нет: hurdle − LightGBM −0.013/−0.031, selected − reference −0.125…+0.007, большинство
+интервалов содержат ноль.
+
+Блокеры gate почти всегда одни и те же: H2 (апрель 2026) horizons 5–9, это 01–05 ч
+ночи с MAE около 0.3, где +20% — сотые поездки; `weather:heavy_rain` в H2;
+`activity:low` в departures. По folds деградаций H2 79, H0 27, H3 21, H1 0 (cohort64).
+Правило n≥100 не взвешивает абсолютную величину: это свойство прежнего gate, оно
+не ослаблялось.
+
+Ablation на holdout, LightGBM selected: без S +0.021 [+0.008, +0.037] / +0.021
+[+0.010, +0.039]; без A +0.052/+0.075 (интервалы >0); без C и с P — inconclusive.
+CatBoost: изменения групп inconclusive. Seeds 43/44: размах ≤0.020 у LightGBM,
+≤0.007 у CatBoost; hurdle без subsample детерминирован, seed не меняет fit. Если
+обнулить P/S для пятой части станций, MAE на них вырастает в 1.1–2.0 раза:
+модели зависят от этих колонок, деградация при пропусках сильная.
+
+| Гипотеза | Наблюдение | Статус |
+|---|---|---|
+| H1 cyclic | T2: LightGBM+A 1.765, +C 1.134 dep; на holdout удаление C inconclusive | Частично |
+| H2 profile P | P не выбран; ACPS − ACS −0.013/−0.005, интервалы с нулём; D1 | NOT VERIFIED |
+| H3 shrinkage S | Удаление S ухудшает LightGBM на holdout в обоих targets | Согласуется |
+| H4 season level | Bias SN −0.23, деревья −0.18…+0.16; season_index NULL в большей части train | Inconclusive |
+| H5 hurdle | Хуже LightGBM на `activity:low` и `actual:zero`, лучше на new/peaks | Не согласуется |
+| H6 preprocess | LightGBM ≤0.14%, CatBoost dep +0.78% хуже | Частично |
+| H7 tuning | LightGBM selected vs reference −2.0%/−1.4%, интервалы с нулём | Согласуется |
+| H8 year-over-year | Больше всего деградаций в H2 | Не согласуется |
+
+Cohort256 с 4× train budget: LightGBM 1.247/1.268 против 1.308/1.263 при обычном
+бюджете — данных на станцию больше, выигрыш только у departures.
+
+### Decision analytics (fact / prediction / simulation)
+
+Все расчёты из Gold `38f4a4bf…`, независимо сверены с Silver (408 проверок, 0
+расхождений) и stdlib. Новых официальных KPI нет.
+
+- Опубликованные поездки: 46 697 958 (2024-10…2025-09) → 45 378 096 (2025-10…2026-09).
+  YoY по месяцам −40% (февраль 2026) … +13% (июнь); январь и февраль несопоставимы
+  по наблюдённым source-hours, поэтому показан и rate на час.
+- Пик будней — 17:00 во всех сезонах; выходные 13–15 ч. Зима ниже лета в 2.4 раза.
+- Концентрация: топ-10% ID дают 40–41% событий, Gini 0.60–0.61. 1928 из 2674 ID
+  есть во всех 24 месяцах.
+- Будние пики: 1350 станций с утренним оттоком и вечерним притоком, 688 наоборот.
+  **Все 40 станций топа |net trip flow| за последние 12 месяцев — пары
+  `dddd.d`/`dddd.d0`**, и их net почти взаимно гасится (`5980.1` +44 522,
+  `5980.10` −43 673). Сырой станционный дисбаланс без склейки таких ID нельзя
+  использовать для решений; строки помечены `suspected_id_split`. Маршрутное
+  покрытие 99.66%.
+- Electric bike 69.6% → 72.3%, member 82.1% → 82.7%; unknown 0. Средняя длительность
+  казуальных поездок в 1.5–2.2 раза выше member.
+- Ошибки против потоков, Spearman: WAPE~|net share| ρ=0.38 (SN), 0.43 (CatBoost),
+  n=64; MAE~events ρ=0.99 — масштаб. Ассоциация, не причинность.
+- F5 `99f703b…` (3/64 станции, recorded as-of): средние rejected событий пересчитаны
+  из 864 outcomes, 27 проверок без расхождений. Только simulation scope.
+
+### Независимая сверка
+
+Stdlib oracle 21 544 412 строк предсказаний; признаки пересчитаны отдельным pandas
+путём на 124 282 386 значений (0 расхождений, кроме измеренного D1); EXCEPT ALL rows,
+train availability/embargo, final window 0, saved-model parity в каждом trial;
+selection chain пересчитан по правилам; frozen F4 replay 24/24 точно; 3970 protected
+hashes целы. Регрессии: F1 3860371, F3 verify, F5 verify — PASS.
+
+Воспроизведение:
+
+```sh
+uv run --locked --group ml python -m citibike.decision_research readiness
+uv run --locked --group ml python -m citibike.decision_research freeze --readiness data/decision_research/f4/readiness/98a9b692d9a0d1187fb309d5a232f131e1faa2543e283b3a8e75d947a10609d6
+uv run --locked --group ml python -m citibike.decision_research run --protocol data/decision_research/f4/protocols/31be44f7cf38d6cdbbc81305e4b52c93c839e42078908c2cc91af64e77ae7e04 --jobs 3
+uv run --locked --group ml python -m citibike.decision_research analytics --result data/decision_research/f4/outcomes/b883cb3b06da94567dcc659032e2a8abdae2053242de849e83cc1c2ed860214e
+uv run --locked --group ml python -m citibike.decision_research verify --result data/decision_research/f4/outcomes/b883cb3b06da94567dcc659032e2a8abdae2053242de849e83cc1c2ed860214e --analytics data/decision_research/f4/analytics/4082a2fa4cf4545f25a8096f14ae4e910981ba5bb94be80aff3c9ef5e2347c10
+```
+
+`run` откажет, если протокол не на `origin/main` или дерево изменено. Повтор
+переиспользует immutable trials.
+
+Ограничения: holdout не independent test; fold-level p ≥ 0.125; один cohort-набор
+внутри одного города; D1 и ID-split не исправлены; production parity, strict
+historical PIT и forward/shadow — NOT VERIFIED; `analytics.py` и `verify.py` вне
+code hash протокола и правились после run (D1-учёт, флаг ID-split), их hashes — в JSON.
+
 ## Корректирующий validation-only protocol
 
 Protocol `8729cb7cc4aac8efbe3ddda02c6bc972804c69fbf365b9a9ce35093f2d1a6050`, saved 2026-10-30T04:00:01.602462+00:00 before new trials. Dataset `d9b87571006b8367d0d286fd77ec9b2e7cac0900a773eae599fc7c3813bc12e5`. Run `b6565ab502b14bcd7481dd25362ea6fabb63a39caaf99364e6f65389c1fb8618`; mode **approximate retrospective**.

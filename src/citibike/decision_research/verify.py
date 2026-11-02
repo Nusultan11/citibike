@@ -293,8 +293,15 @@ def feature_oracle(
         "season_index": data["season_expected"],
         "adjusted_profile": shrunk * data["season_expected"],
     }
+    defect = 0
     for column, values in expect.items():
         left, right = data[column].to_numpy(float), values.to_numpy(float)
+        if column == "cell_std":
+            # Known frozen defect D1: DuckDB greatest() ignores NULL, so an empty
+            # cell history became 0. Only that exact pattern is tolerated, counted.
+            known = np.isnan(right) & (left == 0)
+            defect = int(known.sum())
+            left = np.where(known, np.nan, left)
         if not np.array_equal(np.isnan(left), np.isnan(right)):
             raise ValueError(f"Missing history became numeric or vice versa: {column}")
         if not np.allclose(left, right, rtol=1e-9, atol=1e-9, equal_nan=True):
@@ -333,7 +340,13 @@ def feature_oracle(
         ).any()
     ):
         raise ValueError("Independent feature availability violation")
-    return {"rows": len(data), "feature_values": checks, "mismatches": 0}
+    return {
+        "rows": len(data),
+        "feature_values": checks,
+        "mismatches": 0,
+        "d1_cell_std_missing_as_zero": defect,
+        "d1_rows_with_any_p_feature": int(data["hist_n"].isna().sum()),
+    }
 
 
 def _calendar_columns(hours: Any) -> dict[str, list[float]]:
@@ -998,11 +1011,16 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
             report, count = trial_check(row, plan, protocol)
             seen[row["path"]] = report
             oracle_rows += count
-    feature_audit: dict[str, int] = {
+    feature_audit: dict[str, Any] = {
         "rows": 0,
         "feature_values": 0,
         "files": 0,
         "mismatches": 0,
+        "d1_cell_std_missing_as_zero": 0,
+        "d1_by_file": [],
+        "d1": "Frozen defect found by this verifier: cell_std is 0 instead of NULL "
+        "when a station has no published labels in that weekday x hour cell. Only "
+        "groups containing P are affected; not fixed in protocol 31be44f7",
     }
     for population in {p["inputs"]: p for p in plan["populations"].values()}.values():
         path = Path(population["inputs"])
@@ -1017,6 +1035,16 @@ def verify(result: Path, analytics_path: Path, output: Path) -> Path:
                 )
                 feature_audit["rows"] += checked_file["rows"]
                 feature_audit["feature_values"] += checked_file["feature_values"]
+                feature_audit["d1_cell_std_missing_as_zero"] += checked_file[
+                    "d1_cell_std_missing_as_zero"
+                ]
+                feature_audit["d1_by_file"].append(
+                    {
+                        "file": str(path / split[field]),
+                        "rows": checked_file["rows"],
+                        "d1_rows": checked_file["d1_cell_std_missing_as_zero"],
+                    }
+                )
                 feature_audit["files"] += 1
     replay = frozen_replay(root, outcome["stages"]["S1_features"])
     chain = selection_chain(outcome, plan)
