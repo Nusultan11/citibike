@@ -248,14 +248,20 @@ uv run --locked --group ml python -m citibike.forecasting.feature_research verif
 ```
 
 `protocol` фиксирует календарные и опубликованные исторические признаки,
-неизменные validation folds, cohort64/128, hashes, бюджеты и правило решения **до fits**.
-`run` сохраняет каждый success/failure/skipped trial в ignored `data/f4/feature_*`;
+неизменные validation folds, cohort64/128, hashes, бюджеты и правило решения до запуска
+своих trials. `run` сохраняет каждый success/failure/skipped trial в ignored `data/f4/feature_*`;
 повтор переиспользует те же immutable outcomes. `verify` независимо сверяет признаки,
 метрики и paired station/day uncertainty; компактный результат —
 [f4-feature-research.json](docs/evidence/f4-feature-research.json).
 Active pointers, serving и final test не переключаются. September 2026 уже раскрыт;
 исследование не создаёт нового independent test или operational promotion evidence.
-Итог: research candidate нет, для обоих targets остаётся Seasonal Naive.
+
+Итог: research candidate нет, для обоих targets остаётся Seasonal Naive. Владелец принял
+работу как exploratory validation-only результат с ограничениями, а не как полное выполнение
+исходного DoD. Протокол `a28aed18…` **не является слепой предрегистрацией**: 168 из 176 его
+результатов уже существовали, новыми стали только 8 Poisson base в cohort128. Production
+parity и strict historical PIT не подтверждены. Детали —
+[f4-forecasting.md](docs/evidence/f4-forecasting.md).
 
 ## API и пользовательские страницы
 
