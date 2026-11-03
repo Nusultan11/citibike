@@ -25,6 +25,20 @@ def attribute(html: str, name: str) -> str | None:
     return found[1] if found else None
 
 
+def check_action_verdict(
+    html: str, cells: dict[tuple[float, str], dict[str, float]]
+) -> str:
+    """Independent same-cell comparison: a table winner is not an action approval."""
+    no_action_best = bool(cells) and all(
+        values["no_action"] <= min(values.values()) + 1e-9 for values in cells.values()
+    )
+    expected = "no_action" if no_action_best else "compare_only"
+    assert attribute(html, "data-scenario-action") == expected
+    if no_action_best:
+        assert "Перевозки не рекомендуются" in html
+    return expected
+
+
 def get(client: httpx.Client, url: str, **params: Any) -> dict[str, Any]:
     response = client.get(url, params=params)
     response.raise_for_status()
@@ -150,6 +164,12 @@ def fixture(api: str, web: str, data_dir: Path) -> dict[str, Any]:
         with httpx.Client(timeout=60) as client:
             risk_html = page(client, web + "/scenarios")
             risk = get(client, api + "/v4/risk")
+            action_cells: dict[tuple[float, str], dict[str, float]] = {}
+            for outcome in risk["outcomes"]:
+                action_cells.setdefault((outcome["scale"], outcome["event_order"]), {})[
+                    outcome["policy"]
+                ] = outcome["totals"]["scenario_objective"]["mean"]
+            check_action_verdict(risk_html, action_cells)
             assert attribute(risk_html, "data-scenario-state") == "current_scenario"
             assert attribute(risk_html, "data-scenario-id") == risk_id
             coverage = risk["publication"]["coverage"]
@@ -339,6 +359,10 @@ def real(api: str, web: str, samples: int) -> dict[str, Any]:
             for o in risk["outcomes"]
         }
         scenario_html = page(client, web + "/scenarios")
+        action_cells: dict[tuple[float, str], dict[str, float]] = {}
+        for (scale, order, policy), objective in expected.items():
+            action_cells.setdefault((scale, order), {})[policy] = objective
+        action_verdict = check_action_verdict(scenario_html, action_cells)
         no_action_best = sum(
             1
             for scale, order, policy in expected
@@ -359,6 +383,7 @@ def real(api: str, web: str, samples: int) -> dict[str, Any]:
             f"{artifact['gate']['coverage']['requested']}",
             "no_action_best_cells": no_action_best,
             "as_of": artifact["data_as_of"],
+            "action_verdict": action_verdict,
         }
         s = checks["scenario"]
         assert s["artifact_cells"] == s["served_cells"] == 27

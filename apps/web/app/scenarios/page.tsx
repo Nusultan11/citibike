@@ -44,6 +44,8 @@ export default async function ScenariosPage({
   const config = (pub?.config ?? {}) as Record<string, number | number[] | string[]>;
   const coverage = (pub?.coverage ?? {}) as Record<string, number>;
   const best = data ? bestPolicies(data.outcomes) : new Map<string, string[]>();
+  const noActionBest =
+    best.size > 0 && [...best.values()].every((policies) => policies.includes("no_action"));
   const cells = [...new Set(data?.outcomes.map((o) => `${o.scale}|${o.event_order}`) ?? [])];
   const excluded = data?.stations.filter((s) => !s.eligible) ?? [];
   const reasons = new Map<string, number>();
@@ -159,6 +161,11 @@ export default async function ScenariosPage({
             <p>
               Все 9 ячеек масштаб × порядок; меньший objective лучше. Отметка «лучший» — по
               objective внутри ячейки, ничьи показываются все.
+            </p>
+            <p data-scenario-action={noActionBest ? "no_action" : "compare_only"}>
+              {noActionBest
+                ? "Перевозки не рекомендуются: no-action не хуже по loss + λ·cost во всех показанных ячейках. Перемещения эвристики и MILP ниже — только сценарные альтернативы."
+                : "Перемещения ниже — сценарные альтернативы. Победа по objective в отдельных ячейках сама по себе не подтверждает устойчивую пользу и не разрешает перевозки."}
             </p>
             <Chart
               label="Scenario objective по политикам для каждой ячейки"
