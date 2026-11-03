@@ -19,9 +19,9 @@
 | Trip ingest | Проверка новых/изменённых архивов по расписанию | После checksum/schema |
 | GBFS collection | Регулярный polling с учётом `ttl`, времени ответа | Новые валидные snapshots |
 | Preprocessing/Gold | Новые или изменённые входные разделы | После reconciliation |
-| Batch ML | Ежесуточно, если доступны признаки | После shape + freshness gate |
+| Batch ML | Ежесуточно, если доступны подтверждённые as-of признаки | После shape + freshness + train/serve parity gate; при провале не переключать active |
 | Risk refresh | После нового GBFS / forecast | Только при валидных входах |
-| Retraining | Появились достаточные новые actual; degradation review | Только после offline validation + approval |
+| Retraining | Появились достаточные опубликованные actual; degradation review | Только после frozen offline validation, нового forward/shadow + approval |
 
 Prefect управляет зависимостями, retries и статусами. Повторные задачи — идемпотентны. На ошибки внешнего API — timeout, экспоненциальный backoff и ограничение попыток; нет бесконечных loops.
 
@@ -30,7 +30,7 @@ Prefect управляет зависимостями, retries и статуса
 - **Unit:** типы, границы времени, DST, null vs zero, idempotency, формулы.
 - **Data contract/quality:** schema drift, пропуски, uniqueness, outliers, joins, reconciliation, задержка публикации; воспроизводимость EDA и покрытие ML labels.
 - **Integration:** ZIP → Bronze → Silver → Gold, registry → inference → DB, DB → API; тестовая PostgreSQL в контейнере.
-- **ML:** leakage, time split, baseline, ablation, train/serve parity, метрики и error slices, доступность признаков на origin, фиксация test и воспроизводимость.
+- **ML:** leakage/source `available_at` на origin, исходный vs физический station ID, zero/missing/inactive, недублируемый station-hour target, time split без перекрытия, frozen baseline/ablation, train/serve parity, MAE/WAPE/bias, peak/cold-start/season slices, paired uncertainty, ресурсы, независимый forward/shadow-test, воспроизводимость. Для anomaly detection — injections, экспертные top-K, false alerts/delay; для probabilistic — coverage/pinball/calibration. Не считать старый holdout новым тестом.
 - **Optimization:** ограничения capacity, nonnegative transfer, no-action baseline, симуляционный сценарий.
 - **API/Frontend:** контракт JSON, фильтры, актуальность, корректный период, исключения, карта и mobile.
 - **E2E:** контрольный набор с известным истинным ответом проходит source → UI.
@@ -57,7 +57,7 @@ release: approval + versioned deploy + smoke + rollback route
 |---|---|---|
 | Ingestion | Источник, delay, bytes, checksum, failures | Retry, alert; никакой фиктивной свежести |
 | Data | Null rate, duplicates, schema change, row-count drift | Quarantine/block publish |
-| ML | Feature drift, forecast validity, позднее MAE/bias | Candidate review; fallback при необходимости |
+| ML | Freshness, input coverage/as-of, train/serve parity, forecast validity, позднее MAE/WAPE/bias и сегментные ошибки | Сначала quarantine/отказ в публикации; затем candidate review; fallback Seasonal Naive только при валидных входах, иначе `unavailable` |
 | API | p50/p95/p99 latency, error-rate, DB pool, throughput | Rate limit/degrade gracefully |
 | DB/storage | disk, connections, backup age, object counts | Alert; restore test |
 
