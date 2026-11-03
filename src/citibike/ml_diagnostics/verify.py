@@ -50,6 +50,16 @@ def label_oracle(
     data = checked(Path(plan["dataset"]))
     paths = [s["silver"] for s in plan["sources"]]
     end = boundary(data["config"]["final"][0])
+    # Dense eligibility is bracketed within a NY calendar month, whereas the
+    # audit cutoff is UTC. Read the remainder of that NY month for anchors only;
+    # do not score or include those hours in coverage/history/forecast metrics.
+    local_last = (end - timedelta(microseconds=1)).astimezone(NY)
+    anchor_end = datetime(
+        local_last.year + (local_last.month == 12),
+        local_last.month % 12 + 1,
+        1,
+        tzinfo=NY,
+    ).astimezone(UTC)
     first = db.execute("SELECT min(hour_utc) FROM dense").fetchone()
     assert first
     cities: dict[str, set[datetime]] = {}
@@ -71,7 +81,7 @@ def label_oracle(
             f"""SELECT {field},date_trunc('hour',{stamp}),count(*)
             FROM read_parquet(?) WHERE {field} IN(SELECT station_id FROM stations)
                 AND {stamp}>=? AND {stamp}<? GROUP BY 1,2""",
-            [paths, first[0], end],
+            [paths, first[0], anchor_end],
         ).fetchall()
         for station, hour, n in events:
             counts[(station, kind, hour)] = n
@@ -731,5 +741,9 @@ def verify(result: Path) -> dict[str, Any]:
             "Observed trips are not hidden demand or station operating status",
             "F8 remains PARTIAL; champion/active publications unchanged",
         ],
-        "final_test_accessed": False,
+        "final_test_scored": False,
+        "final_prediction_artifacts_accessed": False,
+        "source_anchor_audit": "Read-only Silver anchors through the end of the "
+        "last audited NY month (possibly after the UTC cutoff). Those anchor "
+        "hours are not included in coverage, history, detector or forecast scores.",
     }

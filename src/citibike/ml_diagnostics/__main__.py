@@ -122,7 +122,8 @@ def audit(root: Path, protocol: Path) -> Path:
             "protocol": str(protocol),
             "protocol_id": checked(protocol)["id"],
             "rows": len(frame),
-            "final_test_accessed": False,
+            "final_test_scored": False,
+            "final_prediction_artifacts_accessed": False,
             "status": "computed; verification pending",
         }
 
@@ -157,6 +158,7 @@ def main() -> None:
     scan.add_argument("--data-dir", type=Path, default=Path("data"))
     scan.add_argument("--protocol", type=Path)
     scan.add_argument("--freeze-only", action="store_true")
+    scan.add_argument("--corrects", type=Path)
     scan.add_argument(
         "--evidence", type=Path, default=Path("docs/evidence/f4-decision-research.json")
     )
@@ -187,7 +189,9 @@ def main() -> None:
             / "decision_research/f4/lineage"
             / evidence["corrective"]["lineage"]["id"]
         )
-        result = freeze(args.data_dir, dataset, outcome, lineage)
+        result = freeze(
+            args.data_dir, dataset, outcome, lineage, corrects=args.corrects
+        )
         print(f"FROZEN {result}")
     else:
         if not args.protocol:

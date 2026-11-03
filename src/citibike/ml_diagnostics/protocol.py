@@ -49,7 +49,14 @@ def check_files(files: dict[str, str]) -> None:
             raise ValueError(f"Protected checksum mismatch: {name}")
 
 
-def freeze(root: Path, dataset: Path, outcome: Path, lineage: Path) -> Path:
+def freeze(
+    root: Path,
+    dataset: Path,
+    outcome: Path,
+    lineage: Path,
+    *,
+    corrects: Path | None = None,
+) -> Path:
     data, old, ids = checked(dataset), checked(outcome), checked(lineage)
     gold = Path(data["gold_path"])
     report = read_json(gold / "manifest.json")
@@ -153,7 +160,17 @@ def freeze(root: Path, dataset: Path, outcome: Path, lineage: Path) -> Path:
         files[p.as_posix()] = checksum(p)
     tracked = subprocess.check_output(["git", "ls-files", "-z"], text=True).split("\0")
     for name in tracked:
-        if name and name not in ("README.md", "ROADMAP.md", str(EVIDENCE)):
+        if (
+            name
+            and name
+            not in (
+                "README.md",
+                "ROADMAP.md",
+                EVIDENCE.as_posix(),
+                "tests/ml/test_ml_diagnostics.py",
+            )
+            and not name.startswith("src/citibike/ml_diagnostics/")
+        ):
             p = Path(name)
             files[p.as_posix()] = checksum(p)
     now = datetime.now(UTC)
@@ -207,7 +224,11 @@ def freeze(root: Path, dataset: Path, outcome: Path, lineage: Path) -> Path:
             "rss_gate_bytes": 3 * 1024**3,
             "output_bytes": 256 * 1024**2,
         },
-        "final_test_accessed": False,
+        "final_test_scored": False,
+        "final_prediction_artifacts_accessed": False,
+        "source_anchor_audit": "Independent label audit may read Silver events "
+        "after the UTC cutoff within the same NY month only as bracketing "
+        "anchors. No final forecast artifacts/metrics or selection are read.",
         "protected_files": files,
         "environment": {
             p: importlib.metadata.version(p) for p in ("duckdb", "numpy", "pandas")
@@ -215,6 +236,38 @@ def freeze(root: Path, dataset: Path, outcome: Path, lineage: Path) -> Path:
         "provenance": "Thresholds precede this evaluation, informed by prior F4 "
         "findings. Reused validation windows, not blind/new independent evidence.",
     }
+    if corrects is not None:
+        prior = checked(corrects)
+        previous = prior["plan"]
+        for field in (
+            "rules",
+            "windows",
+            "dataset",
+            "dataset_id",
+            "trials",
+            "excluded_ids",
+            "hypotheses",
+            "history",
+            "budget",
+        ):
+            if plan[field] != previous[field]:
+                raise ValueError(
+                    "Verifier correction must retain the scientific protocol"
+                )
+        if any(
+            plan["code"][name] != previous["code"][name]
+            for name in ("baseline.py", "events.py")
+        ):
+            raise ValueError("Verifier correction cannot change baseline/detectors")
+        plan["corrects_verifier"] = {
+            "protocol": str(corrects),
+            "protocol_id": prior["id"],
+            "manifest_sha256": checksum(corrects / "manifest.json"),
+            "reason": "Oracle truncated next-event anchors at UTC audit cutoff; "
+            "fixed NY-month boundary only. Original thresholds/hypotheses "
+            "precede the first evaluation; this correction is after that result "
+            "existed, not a new blind pre-registration.",
+        }
     return create(
         root / "decision_research",
         "diagnostics",

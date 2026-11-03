@@ -13,7 +13,7 @@ from citibike.ingestion.archive import checksum
 from citibike.ml_diagnostics.__main__ import audit
 from citibike.ml_diagnostics.events import controls, detect
 from citibike.ml_diagnostics.protocol import RULES, VERSION, freeze, load_plan
-from citibike.ml_diagnostics.verify import event_oracle, verify
+from citibike.ml_diagnostics.verify import event_oracle, label_oracle, verify
 from citibike.storage import identity, read_json, write_json
 from tests.fixtures_forecasting import gold_fixture
 
@@ -320,3 +320,105 @@ def test_failed_attempt_is_retained_without_replacing_success(
     ]
     assert failures and failures[-1]["status"] == "failed"
     assert checksum(result / "manifest.json") == original
+
+
+def test_label_oracle_keeps_ny_month_anchor_after_utc_cutoff(tmp_path: Path) -> None:
+    """The anchor at July 1 01UTC is still June 30 in NY; it is not scored."""
+    gold = tmp_path / "gold"
+    gold.mkdir()
+    write_json(
+        gold / "manifest.json",
+        {"months": [{"month": "2025-06", "silver": [{"source_period": "2025-06"}]}]},
+    )
+    silver = tmp_path / "silver.parquet"
+    cutoff = datetime(2025, 7, 1, tzinfo=UTC)
+    available = datetime(2025, 7, 1, 4, tzinfo=UTC) + timedelta(days=45)
+    with duckdb.connect() as db:
+        db.execute("SET TimeZone='UTC'")
+        db.execute("""CREATE TABLE silver(start_station_id VARCHAR,
+            end_station_id VARCHAR,
+            started_at_utc TIMESTAMPTZ,ended_at_utc TIMESTAMPTZ)""")
+        db.executemany(
+            "INSERT INTO silver VALUES(?,?,?,?)",
+            [
+                (
+                    station,
+                    station,
+                    cutoff + timedelta(hours=h, minutes=10),
+                    cutoff + timedelta(hours=h, minutes=20),
+                )
+                for station, h in (("A", -3), ("B", -2), ("B", -1), ("A", 1))
+            ],
+        )
+        db.execute("COPY silver TO ? (FORMAT PARQUET)", [str(silver)])
+        db.execute("CREATE TABLE stations AS SELECT 'A' station_id")
+        db.execute(
+            """CREATE TABLE dense AS SELECT 'A' station_id,h hour_utc,
+            '2025-06' month_key,
+            (h=?::TIMESTAMPTZ-INTERVAL '3 hours')::BIGINT departures,
+            (h=?::TIMESTAMPTZ-INTERVAL '3 hours')::BIGINT arrivals,
+            ?::TIMESTAMPTZ label_available_at FROM generate_series(
+            ?::TIMESTAMPTZ-INTERVAL '3 hours',?::TIMESTAMPTZ-INTERVAL '1 hour',
+            INTERVAL '1 hour') t(h)""",
+            [cutoff, cutoff, available, cutoff, cutoff],
+        )
+
+        def dataset_builder(stage: Path) -> dict[str, Any]:
+            db.execute(
+                "COPY dense TO ? (FORMAT PARQUET)", [str(stage / "dense.parquet")]
+            )
+            return {"gold_path": str(gold), "config": {"final": ["2025-07-01"]}}
+
+        dataset = create(
+            tmp_path, "datasets", "boundary", dataset_builder, activate=False
+        )
+        plan = {
+            "dataset": str(dataset),
+            "sources": [{"silver": str(silver)}],
+            "excluded_ids": [],
+        }
+        count = {
+            "station_hours": 3,
+            "observed": 3,
+            "missing": 0,
+            "observed_zero": 2,
+            "published_events": 1,
+            "excluded_hours": 0,
+            "excluded_observed": 0,
+            "excluded_events": 0,
+        }
+        coverage: dict[str, Any] = {
+            "summary": [],
+            "by_month": [],
+            "by_station": [],
+            "city_source_gaps": [],
+        }
+        for kind in ("departures", "arrivals"):
+            coverage["summary"].append(
+                {
+                    **count,
+                    "prediction_type": kind,
+                    "segment": "all",
+                    "excluded_observed_share": 0.0,
+                    "excluded_event_share": 0.0,
+                }
+            )
+            coverage["by_month"].append(
+                {**count, "prediction_type": kind, "month_key": "2025-06"}
+            )
+            coverage["by_station"].append(
+                {**count, "prediction_type": kind, "station_id": "A"}
+            )
+            coverage["city_source_gaps"].append(
+                {"prediction_type": kind, "city_gap_hours": 0}
+            )
+        assert label_oracle(db, plan, coverage) == 6
+        missing_anchor = tmp_path / "without-anchor.parquet"
+        db.execute(
+            "CREATE TABLE truncated AS SELECT * FROM silver WHERE started_at_utc<?",
+            [cutoff],
+        )
+        db.execute("COPY truncated TO ? (FORMAT PARQUET)", [str(missing_anchor)])
+        plan["sources"] = [{"silver": str(missing_anchor)}]
+        with pytest.raises(ValueError, match="Silver label mismatch"):
+            label_oracle(db, plan, coverage)
