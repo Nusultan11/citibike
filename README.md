@@ -289,6 +289,12 @@ Seasonal Naive остаётся. Holdout-окна — unseen validation, а не
 группы P воспроизводятся сохранёнными моделями с проверкой hash предсказаний, trials с P
 обучаются заново.
 
+```powershell
+uv run --locked --group ml python -m citibike.ml_diagnostics audit --freeze-only
+uv run --locked --group ml python -m citibike.ml_diagnostics audit --protocol <printed-protocol-directory>
+uv run --locked --group ml python -m citibike.ml_diagnostics verify --result <printed-result-directory> --output docs/evidence/f4-ml-diagnostics.json
+```
+
 ## API и пользовательские страницы
 
 | Контур | Существующая выдача |
