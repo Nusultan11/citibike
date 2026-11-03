@@ -1518,4 +1518,2684 @@
       "retesting_scope": "Existing real Silver/API/HTML suite already passed before this label-only change; final direct immutable F5 artifact/current HTML checks and complete fixture smoke repeated. Production Python calculations unchanged; final CI exercises updated smoke."
     }
   }
+,
+
+  "visual_acceptance_20261103": {
+    "scope": "F6 Product corrective visible E2E acceptance; no F7",
+    "base_head": "47089fe212c246b9722b84cf6c67557ff64f6f5b",
+    "status": "COMPLETED",
+    "independent_acceptance": "NOT VERIFIED - owner acceptance remains separate",
+    "assessment_rule": "Functional F6 DoD completed after the two reproduced fixes. Browser timings are conditional on tool support; absent performance API is NOT VERIFIED, not a measured <=3s SLA or a functional PASS.",
+    "checked_at": "2026-11-03T06:41:13.970382+00:00",
+    "environment": {
+      "browser": "ChatGPT in-app browser (iab, browser ID 2, visible tab 2); native Chrome was not used in this run",
+      "engine_version": "NOT VERIFIED - not exposed by the permitted interface",
+      "viewports_css_px": [
+        {
+          "width": 1280,
+          "height": 900
+        },
+        {
+          "width": 390,
+          "height": 900
+        }
+      ],
+      "device": "Responsive browser viewport, not a physical mobile-device test",
+      "cache": "Normal browser cache retained across navigations; no forced cold-cache run; cache hit/miss not exposed",
+      "launch": "README production Docker API8000/web3000; production host web3001 restored after build for fix regressions; controlled web54479/API54478 used a disposable database",
+      "versions": {
+        "next": "16.4.3",
+        "react": "19.3.1",
+        "echarts": "6.1.0"
+      },
+      "conditions": "Local Windows host and Docker PostgreSQL; existing F3-F5 publications; no real preprocessing, tuning, model fit or backtesting; known tiny controlled fixture only",
+      "cleanup": "Temporary fixture services stopped, disposable database removed, original host web3001 restored; updated Docker web healthy; viewport override reset"
+    },
+    "browser_cases": [
+      {
+        "id": "desktop_analytics_station_filter",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&to_station=&vehicle=&membership=&grain=day&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:12:42.620Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "14 539",
+          "600,5 с",
+          "14 539 / 14 565"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "action": "Filled April2026 bounds and station6140.05, clicked Apply",
+        "expected": "14539 rides,14565 arrivals, category/route tables"
+      },
+      {
+        "id": "desktop_analytics_route_drilldown",
+        "url": "http://localhost:3000/analytics?start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&grain=day&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&to_station=6266.06",
+        "observed_at": "2026-11-03T06:13:11.544Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "14 539",
+          "600,5 с",
+          "14 539 / 14 565"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "action": "Clicked real route6140.05/6266.06",
+        "expected": "one route482 trips; other station KPIs retain origin semantics"
+      },
+      {
+        "id": "desktop_analytics_category_filter",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&to_station=6266.06&vehicle=electric_bike&membership=&grain=day&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:15:06.045Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "9 724",
+          "583,7 с",
+          "9 724 / 9 749"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "action": "Selected electric_bike and Apply",
+        "observed": {
+          "categories": "Факт · история поездок\nКатегории?\n\nДоли пересчитаны по известным значениям выбранной категории; unknown показан отдельно.\n\nvehicle:electric_bike: 9 724 · доля известных 100% · unknown 0\nmembership:casual: 1 071 · доля известных 11% · unknown 0\nmembership:member: 8 653 · доля известных 89% · unknown 0",
+          "route": "Факт · история поездок\nМаршруты?\n\nОбе станции известны. Покрытие до фильтра назначения: 99,8%. Показано 1 из 1 пар.\n\nМаршрут\tПоездки\tОтправления?\tПрибытия?\n6140.05/6266.06\t229\t—\t—"
+        }
+      },
+      {
+        "id": "desktop_analytics_dst_fall",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2025-11-02&end_date=2025-11-03&station_id=&to_station=&vehicle=&membership=&grain=hour&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:21:39.228Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "142 635",
+          "861,1 с",
+          "142 547 / 142 638"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": [
+          {
+            "first": "2025-11-02 04:00:00+00:003 1893 1863 854",
+            "last": "2025-11-03 04:00:00+00:001 7901 7881 930",
+            "naRows": 2,
+            "rows": 25
+          }
+        ]
+      },
+      {
+        "id": "desktop_analytics_dst_spring",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-03-08&end_date=2026-03-09&station_id=&to_station=&vehicle=&membership=&grain=hour&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:21:47.248Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "104 189",
+          "924,2 с",
+          "104 103 / 103 838"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": [
+          {
+            "rows": 23
+          }
+        ]
+      },
+      {
+        "id": "desktop_station_detail_real",
+        "url": "http://localhost:3000/stations?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&vehicle=&membership=&q=&station_id=6140.05",
+        "observed_at": "2026-11-03T06:22:24.104Z",
+        "canvases": [
+          {
+            "cssH": 560,
+            "cssW": 1022,
+            "h": 560,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "6140.05 · W 21 St & 6 Ave",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "6140.05"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "detail": "Факт · история поездок\n6140.05 · W 21 St & 6 Ave\nОтправления?\n14 539\nПрибытия?\n14 565\nNet trip flow?\n26\nКоординаты\n40.74173969, -73.99415556 (NY-месяц 2026-04; изменений в периоде: 0)\nПериод\n2026-04-01 → 2026-05-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nNo valid captured GBFS interval mapped to this trip station_id; not shown as zero bikes or docks\n\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nСтанция вне когорты опубликованного сценария F5. Сценарии ↗\n\nПрогноз: недоступен для станции. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · история поездок\nМаршруты отсюда?\n\nПокрытие 99,8%; показано 10 из 686 пар.\n\n6266.06 — 482\n6306.06 — 409\n6072.06 — 209\n6030.06 — 195\n6224.05 — 195\n6459.04 — 192\n6224.03 — 182\n6306.01 — 169\n6364.07 — 167\n6331.01 — 166\nФакт · история поездок\nМаршруты сюда?\n\nПокрытие 0,4%; показано 10 из 711 пар.\n\n5989.02 — 248\n6306.06 — 245\n5980.10 — 209\n6233.04 — 202\n6266.06 — 198\n6072.11 — 182\n5763.03 — 180\n5914.03 — 165\n5880.02 — 150\n6013.12 — 150\nИстория координат и названий\nNY-месяц\tСторона\tlat, lon\tНазвание\tСобытий / с координатами / модальных\n2026-04\tокончания\t40.74173969, -73.99415556\tW 21 St & 6 Ave\t14 565 / 14 565 / 14 565\n2026-04\tначала\t40.74173969, -73.99415556\tW 21 St & 6 Ave\t14 539 / 14 539 / 14 539"
+        }
+      },
+      {
+        "id": "desktop_station_map_mouse_click",
+        "url": "http://localhost:3000/stations?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&station_id=6642.08",
+        "observed_at": "2026-11-03T06:22:43.802Z",
+        "canvases": [
+          {
+            "cssH": 560,
+            "cssW": 1022,
+            "h": 560,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "6642.08 · 34 Ave & 113 St",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "6642.08"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "action": "Click visible blue scatter point at viewport (780,249) after PageDown",
+        "observed": {
+          "detail": "Факт · история поездок\n6642.08 · 34 Ave & 113 St\nОтправления?\n97\nПрибытия?\n91\nNet trip flow?\n-6\nКоординаты\n40.75696, -73.85612 (NY-месяц 2026-04; изменений в периоде: 0)\nПериод\n2026-04-01 → 2026-05-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nУстаревшее наблюдение — не текущая доступность.\n\nВелосипеды / доки\n12 / 10\nSource updated\n28 окт. 2026 г., 08:19 NY\nВозраст\n138 ч\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nСтанция вне когорты опубликованного сценария F5. Сценарии ↗\n\nПрогноз: недоступен для станции. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · история поездок\nМаршруты отсюда?\n\nПокрытие 100%; показано 10 из 50 пар.\n\n6448.07 — 20\n6515.01 — 9\n6524.09 — 5\n7082.08 — 4\n6609.03 — 3\n6642.08 — 3\n6660.05 — 3\n",
+          "station": "6642.08"
+        }
+      },
+      {
+        "id": "desktop_station_search_and_empty_observations",
+        "url": "http://localhost:3000/stations?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&vehicle=&membership=&q=5980.1&station_id=5980.1",
+        "observed_at": "2026-11-03T06:23:27.075Z",
+        "canvases": [
+          {
+            "cssH": 560,
+            "cssW": 1022,
+            "h": 560,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "Станция 5980.1"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "empty"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "detail": "No station observations for these filters; not zero demand",
+          "tables": [
+            "Найдено 2 станций по «5980.1» — таблица\nСтанция\tНазвание\tОтправления\tПрибытия\tNet flow\tКоординаты\n5980.10\tE 17 St & Broadway\t11 505\t11 582\t77\t40.73701, -73.99013 (2026-04)\n5980.11\tBroadway & E 19 St\t7 919\t7 921\t2\t40.73829, -73.99006 (2026-04)"
+          ]
+        }
+      },
+      {
+        "id": "desktop_forecast_real_expired",
+        "url": "http://localhost:3000/forecasts",
+        "observed_at": "2026-11-03T06:23:34.911Z",
+        "canvases": [],
+        "headings": [
+          "Прогноз, только если он действителен.",
+          "Прогноз недоступен: окно истекло"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-forecast-page": "expired"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "forecastValues": 0,
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nПРОГНОЗ F4 · ОПУБЛИКОВАННЫЕ НАБЛЮДАЕМЫЕ ПОЕЗДКИ\n\nПрогноз, только если он действителен.\n\nПоказывается лишь активная опубликованная версия до её valid_until. Истёкший или устаревший прогноз — unavailable, а не свежая оценка.\n\nСтанция (cohort F4)\nПоказать\nВсе\nПрогноз · ML\nПрогноз недоступен: окно истекло\n\nvalid_until 30 окт. 2026 г., 08:00 NY уже прошёл. Значения скрыты; новая публикация требует отдельного batch F4/F7, а не запуска модели из UI.\n\nPublication\n1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810\nForecast origin\n29 окт. 2026 г., 07:46 NY\nГоризонт\n1–24 ч после origin (UTC-часы)\nvalid_until\n30 окт. 2026 г., 08:00 NY\nМодель / baseline\nbundle 7b2c9a85bf11…; F4 frozen selection: delayed Seasonal Naive baseline для departures и arrivals; operational promotion NOT VERIFIED. Семейство модели не публикуется в serving-контракте F4.\nCoverage\n3 024 valid / 48 unavailable строк\nQuality\nwarning · accuracy evidence: approximate retrospective · strict\nДанные as-of\n1 окт. 2026 г., 00:00 NY (source event window end); возраст источника 28,3 из 62 дней\nLineage\ndataset d9b87571006b… · F2 5c4f166d0126… · F3 38f4a4bfaf9d…\nОграничения\nPublished observed trip counts; no weather/GBFS; station operating status unknown; no prediction intervals; retrospective accuracy not operational uplift"
+        }
+      },
+      {
+        "id": "desktop_forecast_controlled_valid",
+        "url": "http://127.0.0.1:54479/forecasts",
+        "observed_at": "2026-11-03T06:23:51.255Z",
+        "canvases": [
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Прогноз, только если он действителен.",
+          "Действительный прогноз",
+          "Станция 000?ML-оценка опубликованных поездок по станции и часу с origin, горизонтом и версией; не факт."
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-forecast-page": "valid"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "data_mode": "controlled_fixture",
+        "observed": {
+          "rows": 24,
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nПРОГНОЗ F4 · ОПУБЛИКОВАННЫЕ НАБЛЮДАЕМЫЕ ПОЕЗДКИ\n\nПрогноз, только если он действителен.\n\nПоказывается лишь активная опубликованная версия до её valid_until. Истёкший или устаревший прогноз — unavailable, а не свежая оценка.\n\nСтанция (cohort F4)\nПоказать\nВсе\nПрогноз · ML\nДействительный прогноз\n\nЗначения — оценки опубликованных поездок, не факт и не скрытый спрос.\n\nPublication\n880d152665b4e5ba66ee7926db5ee6e75c0e054e9c6670c306689cfe6c5ee393\nForecast origin\n3 нояб. 2026 г., 01:15 NY\nГоризонт\n1–24 ч после origin (UTC-часы)\nvalid_until\n4 нояб. 2026 г., 02:00 NY\nМодель / baseline\nbundle fd8247d57a57…; F4 frozen selection: delayed Seasonal Naive baseline для departures и arrivals; operational promotion NOT VERIFIED. Семейство модели не публикуется в serving-контракте F4.\nCoverage\n192 valid / 0 unavailable строк\nQuality\nwarning · accuracy evidence: approximate retrospective · strict\nДанные as-of\n1 нояб. 2026 г., 00:00 NY (source event window end); возраст источника 2,1 из 62 дней\nLineage\ndataset 7e023cce81d5… · F2 1a8c87005124… · F3 e2d2cbcbe3c2…\nОграничения\nPublished observed trip counts; no weather/GBFS; station operating status unknown; no prediction intervals; retrospective accuracy not operational uplift\nСтанция 000?\nГоризонт\tЦелевой час (NY)\tОтправления\tПрибытия\n+1\t3 нояб. 2026 г., 02:00 NY\t1\t0\n+2\t3 нояб. 2026 г., 03:00 NY\t1\t1\n+3\t3 нояб. 2026 г., 04:00 NY\t1\t1\n+4\t3 нояб. 2026 г., 05:00 NY\t1\t1\n+5\t3 нояб. 2026 г., 06:00 NY\t0\t1\n+6\t3 нояб. 2026 г., 07:00 NY\t1\t0\n+7\t3 нояб. 2026 г., 08:00 NY\t1\t1\n+8\t3 нояб. 2026 г., 09:00 NY\t1\t1\n+9\t3 нояб. 2026 г., 10:00 NY\t1\t1\n+10\t3 нояб. 2026 г., 11:00 NY\t0\t1\n+11\t3 нояб. 2026 г., 12:00 NY\t1\t0\n+12\t3 нояб. 2026 г., 13:00 NY\t1\t1\n+13\t3 нояб. 2026 г., 14:00 NY\t1\t1\n+14\t3 нояб. 2026 г., 15:00 NY\t1\t1\n+15\t3 нояб. 2026 г., 16:00 NY\t0\t1\n+16\t3 нояб. 2026 г., 17:00 NY\t1\t0\n+17\t3 нояб. 2026 г., 18:00 NY\t1\t1\n+18\t3 нояб. 2026 г., 19:00 NY\t1\t1\n+19\t3 нояб. 2026 г., 20:00 NY\t0\t1\n+20\t3 нояб. 2026 г., 21:00 NY\t1\t0\n+21\t3 нояб. 2026 г., 22:00 NY\t1\t1\n+22\t3 нояб. 2026 г., 23:00 NY\t1\t1\n+23\t4 нояб. 2026 г., 00:00 NY\t1\t1\n+24\t4 нояб. 2026 г., 01:00 NY\t0\t1"
+        }
+      },
+      {
+        "id": "desktop_station_missing_coordinates_controlled",
+        "url": "http://127.0.0.1:54479/stations?start_date=2024-10-01&end_date=2025-04-01&station_id=003",
+        "observed_at": "2026-11-03T06:24:06.754Z",
+        "canvases": [
+          {
+            "cssH": 560,
+            "cssW": 1022,
+            "h": 560,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2024-10-01 → 2025-04-01",
+          "003 · название N/A",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-geo-id": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+            "data-stations-state": "ok",
+            "data-stations-total": "5"
+          },
+          {
+            "data-station-detail": "003"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "data_mode": "controlled_fixture",
+        "observed": {
+          "detail": "Факт · история поездок\n003 · название N/A\nОтправления?\nN/A\nПрибытия?\nN/A\nNet trip flow?\nN/A\nКоординаты\nотсутствуют — точка не показана на карте\nПериод\n2024-10-01 → 2025-04-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nNo valid captured GBFS interval mapped to this trip station_id; not shown as zero bikes or docks\n\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nВ сценарии (архивный replay): capacity 10, bikes 1, docks 9 на as-of. Сценарии ↗\n\nПрогноз: действителен. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · история поездок\nМаршруты отсюда?\n\nПокрытие N/A; показано 0 из 0 пар.\n\nФакт · история поездок\nМаршруты сюда?\n\nПокрытие 0%; показано 0 из 0 пар.\n\nИстория координат и названий\nNY-месяц\tСторона\tlat, lon\tНазвание\tСобытий / с координатами / модальных\n2024-10\tначала\tотсутствуют\tN/A\t1 / 0 / 0",
+          "summary": "Факт · история поездок\nКарта · net trip flow? за 2024-10-01 → 2025-04-01\n\n4 станций с координатами, 1 без координат (не на карте), 2 с пометкой ID-split (ромб). Цвет: синий — прибытий больше, красный — отправлений больше. Нажмите на точку для карточки станции. Базовая карта улиц не подключена: нет утверждённого провайдера тайлов.\n\nНайдено 5 станций — таблица\n\nИсточник координат: f6-station-geo-1 · accepted F2 Silver events of the pinned F3 publication; per station_id, NYC local event month (start: started_at_local, end: ended_at_local) and side; modal finite WGS84 pair, ties by lat, lon; modal name; no ID merge, no GBFS or geocoder fill; missing coordinates counted, never imputed"
+        }
+      },
+      {
+        "id": "desktop_station_id_split_controlled",
+        "url": "http://127.0.0.1:54479/stations?publication_id=c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1&start_date=2024-10-01&end_date=2025-04-01&vehicle=&membership=&q=5980.1&station_id=5980.1",
+        "observed_at": "2026-11-03T06:24:18.353Z",
+        "canvases": [
+          {
+            "cssH": 560,
+            "cssW": 1022,
+            "h": 560,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2024-10-01 → 2025-04-01",
+          "5980.1 · название N/A",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-geo-id": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+            "data-stations-state": "ok",
+            "data-stations-total": "5"
+          },
+          {
+            "data-station-detail": "5980.1"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "data_mode": "controlled_fixture",
+        "observed": {
+          "detail": "Факт · история поездок\n5980.1 · название N/A\n\nВозможный ID-split: та же точка и название вероятны у 5980.10 (формат raw-источника). Показано без объединения; тождество оператором не подтверждено. Открыть пару ↗\n\nОтправления?\nN/A\nПрибытия?\nN/A\nNet trip flow?\nN/A\nКоординаты\n40.73, -74 (NY-месяц 2024-10; изменений в периоде: 0)\nПериод\n2024-10-01 → 2025-04-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nNo valid captured GBFS interval mapped to this trip station_id; not shown as zero bikes or docks\n\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nСтанция вне когорты опубликованного сценария F5. Сценарии ↗\n\nПрогноз: недоступен для станции. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · история поездок\nМаршруты отсюда?\n\nПокрытие N/A; показано 0 из 0 пар.\n\nФакт · история поездок\nМаршруты сюда?\n\nПокрытие 0%; показано 0 из 0 пар.\n\nИстория координат и названий\nNY-месяц\tСторона\tlat, lon\tНазвание\tСобытий / с координатами / модальных\n2024-10\tначала\t40.73, -74\tN/A\t1 / 1 / 1",
+          "tables": [
+            "Найдено 2 станций по «5980.1» — таблица\nСтанция\tНазвание\tОтправления\tПрибытия\tNet flow\tКоординаты\n5980.1ID-split? пара 5980.10\tN/A\tN/A\tN/A\tN/A\t40.73000, -74.00000 (2024-10)\n5980.10ID-split? пара 5980.1\tN/A\tN/A\tN/A\tN/A\t40.73000, -74.00000 (2024-10)"
+          ]
+        }
+      },
+      {
+        "id": "desktop_scenarios_real_archive",
+        "url": "http://localhost:3000/scenarios",
+        "observed_at": "2026-11-03T06:24:31.923Z",
+        "canvases": [
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Сценарии, а не распоряжения.",
+          "Архивный recorded-as-of replay — не текущая рекомендация",
+          "Политики: simulated unserved?Ожидаемые неисполненные попытки аренды/возврата только по допущениям симулятора., loss + λ·cost?loss + λ·cost: simulated unserved + cost_weight × относительная стоимость перемещений.",
+          "Перемещения при масштабе 1",
+          "Риск станций?Сценарная доля розыгрышей, где станция хотя бы раз пуста/полна за горизонт; Monte Carlo интервал — не калибровка. (1 · uniform)",
+          "Исключённые станции (61)",
+          "Допущения симулятора"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-scenario-id": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+            "data-scenario-state": "archival_replay"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "cells": "9",
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nF5 · СЦЕНАРНЫЕ РИСКИ И РЕКОМЕНДАЦИИ (СИМУЛЯЦИЯ)\n\nСценарии, а не распоряжения.\n\nRead-only результат проверенной F5 симуляции: no-action, пороговая эвристика и ограниченная MILP-оптимизация на одном потоке случайностей. Не оперативные распоряжения Citi Bike и не доказанная экономия.\n\nСимуляция · сценарий\nАрхивный recorded-as-of replay — не текущая рекомендация\n\nAs-of GBFS state is older than TTL or the horizon ended: archival scenario replay, not a current recommendation\n\nAs-of (GBFS начального состояния)\n30 окт. 2026 г., 02:36 NY\nГоризонт\n30 окт. 2026 г., 03:00 NY → 30 окт. 2026 г., 07:00 NY\nРезультат создан\n30 окт. 2026 г., 02:46 NY · режим recorded_as_of_replay · real_official\nВозраст as-of / TTL\n95,8 ч / 60 с\nCoverage\n3/64 станций F4 cohort (4,7%); остальные исключены с причиной, риск = N/A\nПараметры сценария\nλ (cost_weight) 0.1; парк 2 × 10 велосипедов; 15 км/ч + 10 мин; пороги эвристики 0.25/0.75; 32 повторов, seed 42\nLineage\nF5 99f703bf3372… · F4 1e204ac4a944… · GBFS 20261030T063651137970-27bd3fb5 · verify PASS (288 draws)\nOperational promotion\nNOT VERIFIED\nМасштаб спроса\n0.5\n1\n1.5\nПорядок событий\nuniform\ndepartures_first\narrivals_first\nПоказать\nПолитики: simulated unserved?, loss + λ·cost?\n\nПоказано ячеек масштаб × порядок: 9; меньший objective лучше. Отметка «лучший» — по objective внутри ячейки, ничьи показываются все.\n\nПеревозки не рекомендуются: no-action не хуже по loss + λ·cost во всех показанных ячейках. Перемещения эвристики и MILP ниже — только сценарные альтернативы.\n\nМасштаб · порядок\tПолитика\tUnserved, среднее (p05–p95)\tПеремещено / машин\tMovement cost\tObjective\tНарушения\n0.5 · arrivals_first\tНичего не делать\t0,781 (0–2)\t0 / 0\t0\t0,781лучший\t0\n0.5 · arrivals_first\tЭвристика\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n0.5 · arrivals_first\tMILP\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n0.5 · departures_first\tНичего не делать\t0,781 (0–2)\t0 / 0\t0\t0,781лучший\t0\n0.5 · departures_first\tЭвристика\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n0.5 · departures_first\tMILP\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n0.5 · uniform\tНичего не делать\t0,781 (0–2)\t0 / 0\t0\t0,781лучший\t0\n0.5 · uniform\tЭвристика\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n0.5 · uniform\tMILP\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n1 · arrivals_first\tНичего не делать\t1,531 (0–3)\t0 / 0\t0\t1,531лучший\t0\n1 · arrivals_first\tЭвристика\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n1 · arrivals_first\tMILP\t0 (0–0)\t11 / 2\t67,81\t6,781\t0\n1 · departures_first\tНичего не делать\t1,531 (0–3)\t0 / 0\t0\t1,531лучший\t0\n1 · departures_first\tЭвристика\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n1 · departures_first\tMILP\t0 (0–0)\t11 / 2\t67,81\t6,781\t0\n1 · uniform\tНичего не делать\t1,531 (0–3)\t0 / 0\t0\t1,531лучший\t0\n1 · uniform\tЭвристика\t0 (0–0)\t12 / 2\t73,793\t7,379\t0\n1 · uniform\tMILP\t0 (0–0)\t11 / 2\t67,81\t6,781\t0\n1.5 · arrivals_first\tНичего не делать\t2,25 (0–4)\t0 / 0\t0\t2,25лучший\t0\n1.5 · arrivals_first\tЭвристика\t0,156 (0–0)\t12 / 2\t73,793\t7,536\t0\n1.5 · arrivals_first\tMILP\t0,156 (0–0)\t9 / 1\t54,845\t5,641\t0\n1.5 · departures_first\tНичего не делать\t2,25 (0–4)\t0 / 0\t0\t2,25лучший\t0\n1.5 · departures_first\tЭвристика\t0,156 (0–0)\t12 / 2\t73,793\t7,536\t0\n1.5 · departures_first\tMILP\t0,156 (0–0)\t9 / 1\t54,845\t5,641\t0\n1.5 · uniform\tНичего не делать\t2,25 (0–4)\t0 / 0\t0\t2,25лучший\t0\n1.5 · uniform\tЭвристика\t0,156 (0–0)\t12 / 2\t73,793\t7,536\t0\n1.5 · uniform\tMILP\t0,156 (0–0)\t9 / 1\t54,845\t5,641\t0\nСимуляция · сценарий\nПеремещения при масштабе 1\nЭвристика: 7504.18 → 6611.07, 12 вел., 2 машин, 5,98 км (Haversine proxy), 33,9 мин\nMILP: 7504.18 → 6611.07, 11 вел., 2 машин, 5,98 км (Haversine proxy), 33,9 мин\n\nРасстояния и время — сценарные допущения, не измеренные маршруты улиц.\n\nСимуляция · сценарий\nРиск станций? (1 · uniform)\nСтанция\tПолитика\tПустая (Wilson 95%)\tПолная (Wilson 95%)\n7504.18\tЭвристика\t0% (0%–11%)\t100% (89%–100%)\n7504.18\tНичего не делать\t0% (0%–11%)\t100% (89%–100%)\n7504.18\tMILP\t0% (0%–11%)\t100% (89%–100%)\n3138.03\tЭвристика\t0% (0%–11%)\t0% (0%–11%)\n3138.03\tНичего не делать\t0% (0%–11%)\t0% (0%–11%)\n3138.03\tMILP\t0% (0%–11%)\t0% (0%–11%)\n6611.07\tЭвристика\t0% (0%–11%)\t0% (0%–11%)\n6611.07\tНичего не делать\t0% (0%–11%)\t0% (0%–11%)\n6611.07\tMILP\t0% (0%–11%)\t0% (0%–11%)\n\nМонте-Карло интервалы отражают точность симуляции, не калибровку риска.\n\nИсключённые станции (61)\nmissing_station_mapping: 4\ngbfs_quality:stale_status: 57\nstale_gbfs_station: 57\nfor"
+        }
+      },
+      {
+        "id": "desktop_scenario_filter",
+        "url": "http://localhost:3000/scenarios?scale=1.5&event_order=arrivals_first",
+        "observed_at": "2026-11-03T06:25:02.215Z",
+        "canvases": [
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Сценарии, а не распоряжения.",
+          "Архивный recorded-as-of replay — не текущая рекомендация",
+          "Политики: simulated unserved?Ожидаемые неисполненные попытки аренды/возврата только по допущениям симулятора., loss + λ·cost?loss + λ·cost: simulated unserved + cost_weight × относительная стоимость перемещений.",
+          "Перемещения при масштабе 1.5",
+          "Риск станций?Сценарная доля розыгрышей, где станция хотя бы раз пуста/полна за горизонт; Monte Carlo интервал — не калибровка. (1.5 · arrivals_first)",
+          "Исключённые станции (61)",
+          "Допущения симулятора"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-scenario-id": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+            "data-scenario-state": "archival_replay"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "headings": [
+            "Архивный recorded-as-of replay — не текущая рекомендация",
+            "Политики: simulated unserved?, loss + λ·cost?",
+            "Перемещения при масштабе 1.5",
+            "Риск станций? (1.5 · arrivals_first)",
+            "Исключённые станции (61)",
+            "Допущения симулятора"
+          ],
+          "movement": [
+            "Симуляция · сценарий\nПеремещения при масштабе 1.5\nЭвристика: 7504.18 → 6611.07, 12 вел., 2 машин, 5,98 км (Haversine proxy), 33,9 мин\nMILP: 7504.18 → 6611.07, 9 вел., 1 машин, 5,98 км (Haversine proxy), 33,9 мин\n\nРасстояния и время — сценарные допущения, не измеренные маршруты улиц.\n\nСимуляция · сценарий\nРиск станций? (1.5 · arrivals_first)\nСтанция\tПолитика\tПустая (Wilson 95%)\tПолная (Wilson 95%)\n7504.18\tЭвристика\t0% (0%–11%)\t100% (89%–100%)\n7504.18\tНичего не делать\t0% (0%–11%)\t100% (89%–100%)\n7504.18\tMILP\t0% (0%–11%)\t100% (89%–100%)\n3138.03\tЭвристика\t0% (0%–11%)\t19% (9%–35%)\n3138.03\tНичего не делать\t0% (0%–11%)\t19% (9%–35%)\n3138.03\tMILP\t0% (0%–11%)\t19% (9%–35%)\n6611.07\tЭвристика\t0% (0%–11%)\t0% (0%–11%)\n6611.07\tНичего не делать\t0% (0%–11%)\t0% (0%–11%)\n6611.07\tMILP\t0% (0%–11%)\t0% (0%–11%)\n\nМонте-Карло интервалы отражают точность симуляции, не калибровку риска."
+          ],
+          "selected": [
+            {
+              "name": "scale",
+              "value": "1.5"
+            },
+            {
+              "name": "event_order",
+              "value": "arrivals_first"
+            }
+          ]
+        }
+      },
+      {
+        "id": "mobile_overview_real",
+        "url": "http://localhost:3000/",
+        "observed_at": "2026-11-03T06:25:13.096Z",
+        "canvases": [
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Сеть, которую можно проверить.",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Доля e-bike / member?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Работающие станции?Станции, допускающие работу в выбранный момент по GBFS; N/A без полного покрытия сети.",
+          "Сопоставимый тренд: поездки по дням",
+          "Очередь сценарных рисков?Сценарная доля розыгрышей, где станция хотя бы раз пуста/полна за горизонт; Monte Carlo интервал — не калибровка.",
+          "Прогноз F4?ML-оценка опубликованных поездок по станции и часу с origin, горизонтом и версией; не факт.",
+          "API доступен",
+          "Допустимые поездки за период",
+          "Поездки по часу начала",
+          "Опубликовано с ограничениями качества"
+        ],
+        "height": 900,
+        "kpi": [
+          "4 697 240",
+          "13,5 мин",
+          "72,6% / 81%",
+          "N/A",
+          "3 860 371"
+        ],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-overview-publication": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+            "data-overview-state": "ok"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": []
+      },
+      {
+        "id": "mobile_analytics_filters",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&to_station=&vehicle=&membership=&grain=day&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:25:28.580Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 278,
+            "h": 310,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "14 539",
+          "600,5 с",
+          "14 539 / 14 565"
+        ],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "observed": {
+          "outside": [
+            "<button type=\"button\" class=\"term\" title=\"arrivals − departures. Не изменение фактического inventory: перевозки не видны",
+            "<button type=\"button\" class=\"term\" title=\"Поездки с известной end station и окончанием в периоде.\" data-term=\"arrivals\">"
+          ],
+          "tables": [
+            {
+              "container": 262,
+              "scrollWidth": 307,
+              "width": 307
+            },
+            {
+              "container": 262,
+              "scrollWidth": 262,
+              "width": 262
+            },
+            {
+              "container": 278,
+              "scrollWidth": 377,
+              "width": 377
+            },
+            {
+              "container": 262,
+              "scrollWidth": 365,
+              "width": 365
+            },
+            {
+              "container": 278,
+              "scrollWidth": 278,
+              "width": 278
+            }
+          ]
+        }
+      },
+      {
+        "id": "mobile_analytics_hour_drilldown",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&to_station=&vehicle=&membership=&grain=day&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:26:02.347Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 278,
+            "h": 310,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "14 539",
+          "600,5 с",
+          "14 539 / 14 565"
+        ],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "observed": {
+          "rows": [
+            30
+          ],
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nNYC · ФАКТЫ ПОЕЗДОК · DEEP ANALYTICS\n\nИстория в деталях.\n\nОпубликованные завершённые поездки. Отправления по времени начала, прибытия — по времени окончания. Это не скрытый спрос и не наличие велосипедов.\n\nФильтры\nНачало, NY\nКонец, не включён\nСтанция отправления\nМаршрут → станция\nВелосипед\nВсе\nclassic_bike\nelectric_bike\nunknown\nПользователь\nВсе\nmember\ncasual\nunknown\nИнтервал\nДень NY\nМесяц NY\nЧас UTC, ≤31 дня\nСравнить с, начало\nСравнить с, конец\nГеография\nНачала поездок\nОкончания поездок\nПрименить\nАктивная публикация\nФакт · история поездок\nДопустимые поездки?\n14 539\nФакт · история поездок\nСредняя длительность?\n600,5 с\n\nСумма длительностей / число поездок с допустимой длительностью.\n\nФакт · история поездок\nОтправления / прибытия\n14 539 / 14 565\n\nТолько известные station IDs. Net flow?: 26. Не изменение inventory.\n\nФакт · исто"
+        }
+      },
+      {
+        "id": "mobile_analytics_hour_drilldown_confirmed",
+        "url": "http://localhost:3000/analytics?start_date=2026-04-01&end_date=2026-04-02&station_id=6140.05&grain=hour&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+        "observed_at": "2026-11-03T06:26:24.025Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 278,
+            "h": 310,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "573",
+          "657,5 с",
+          "573 / 571"
+        ],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "action": "Activate 2026-04-01 link with Enter; first click had left URL unchanged and was not counted as success",
+        "observed": {
+          "grain": "day",
+          "rows": [
+            24
+          ]
+        }
+      },
+      {
+        "id": "mobile_station_filter_detail",
+        "url": "http://localhost:3000/stations?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&vehicle=&membership=&q=6140.05&station_id=6140.05",
+        "observed_at": "2026-11-03T06:27:29.702Z",
+        "canvases": [
+          {
+            "cssH": 420,
+            "cssW": 278,
+            "h": 420,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "6140.05 · W 21 St & 6 Ave",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "6140.05"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "observed": {
+          "detail": "Факт · история поездок\n6140.05 · W 21 St & 6 Ave\nОтправления?\n14 539\nПрибытия?\n14 565\nNet trip flow?\n26\nКоординаты\n40.74173969, -73.99415556 (NY-месяц 2026-04; изменений в периоде: 0)\nПериод\n2026-04-01 → 2026-05-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nNo valid captured GBFS interval mapped to this trip station_id; not shown as zero bikes or docks\n\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nСтанция вне когорты опубликованного сценария F5. Сценарии ↗\n\nПрогноз: недоступен для станции. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · история поездок\nМаршруты отсюда?\n\nПокрытие 99,8%; показано 10 из 686 пар.\n\n6266.06 — 482\n6306.06 — 409\n6072.06 — 209\n6030.06 — 195\n6224.05 — 195\n6459.04 — 192\n6224.03 — 182\n6306.01 — 169\n6364.07 — 167\n6331.01 — 166\nФакт · история поездок\nМаршруты сюда?\n\nПокрытие 0,4%; показано 10 из 711 пар.\n\n5989.02 — 248\n6306.06 — 245\n5980.10 — 209\n6233.04 — 202\n6266.06 — 198\n6072.11 — 182\n5763.03 — 180\n5914.03 — 165\n5880.02 — 150\n6013.12 — 150\nИстория координат и названий\nNY-месяц\tСторона\tlat, lon\tНазвание\tСобытий / с координатами / модальных\n2026-04\tокончания\t40.74173969, -73.99415556\tW 21 St & 6 Ave\t14 565 / 14 565 / 14 565\n2026-04\tначала\t40.74173969, -73.99415556\tW 21 St & 6 Ave\t14 539 / 14 539 / 14 539",
+          "form": [
+            {
+              "name": "publication_id",
+              "value": "<redacted>"
+            },
+            {
+              "name": "start_date",
+              "value": "2026-04-01"
+            },
+            {
+              "name": "end_date",
+              "value": "2026-05-01"
+            },
+            {
+              "name": "q",
+              "value": "6140.05"
+            },
+            {
+              "name": "station_id",
+              "value": "6140.05"
+            }
+          ]
+        }
+      },
+      {
+        "id": "mobile_station_map_mouse_click_before_fix",
+        "url": "http://localhost:3000/stations?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&station_id=6970.02",
+        "observed_at": "2026-11-03T06:28:12.209Z",
+        "canvases": [
+          {
+            "cssH": 420,
+            "cssW": 278,
+            "h": 420,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "6970.02 · Ditmars Blvd & 102 St",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "6970.02"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "action": "Click visible point (275,341); mobile axis/legend overlap observed in mobile-map-before.jpg",
+        "observed": {
+          "detail": "Факт · история поездок\n6970.02 · Ditmars Blvd & 102 St\nОтправления?\n196\nПрибытия?\n201\nNet trip flow?\n5\nКоординаты\n40.76894, -73.86832 (NY-месяц 2026-04; изменений в периоде: 0)\nПериод\n2026-04-01 → 2026-05-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nNo valid captured GBFS interval mapped to this trip station_id; not shown as zero bikes or docks\n\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nИсключена из сценария: gbfs_quality:stale_status, stale_gbfs_station. Сценарии ↗\n\nПрогноз: истёк — значения не показываются. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · история поездок\nМаршруты отсюда?\n\nПокрытие 99,5%; по"
+        }
+      },
+      {
+        "id": "mobile_forecast_real_expired",
+        "url": "http://localhost:3000/forecasts?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&station_id=6970.02",
+        "observed_at": "2026-11-03T06:28:27.981Z",
+        "canvases": [],
+        "headings": [
+          "Прогноз, только если он действителен.",
+          "Прогноз недоступен: окно истекло"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-forecast-page": "expired"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "observed": {
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nПРОГНОЗ F4 · ОПУБЛИКОВАННЫЕ НАБЛЮДАЕМЫЕ ПОЕЗДКИ\n\nПрогноз, только если он действителен.\n\nПоказывается лишь активная опубликованная версия до её valid_until. Истёкший или устаревший прогноз — unavailable, а не свежая оценка.\n\nСтанция (cohort F4)\nПоказать\nВсе\nПрогноз · ML\nПрогноз недоступен: окно истекло\n\nvalid_until 30 окт. 2026 г., 08:00 NY уже прошёл. Значения скрыты; новая публикация требует отдельного batch F4/F7, а не запуска модели из UI.\n\nPublication\n1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810\nForecast origin\n29 окт. 2026 г., 07:46 NY\nГоризонт\n1–24 ч после origin (UTC-часы)\nvalid_until\n30 окт. 2026 г., 08:00 NY\nМодель / baseline\nbundle 7b2c9a85bf11…; F4 frozen selection: delayed Seasonal Naive baseline для departures и arrivals; operational promotion NOT VERIFIED. Семейство модели не публикуется в serving-контракте F4.\nCoverage\n3 024 valid / 48 unavailable строк\nQuality\nwarning · accuracy evidence: approximate retrospective · strict\nДанные as-of\n1 окт. 2026 г., 00:00 NY (source event window end); возраст источника 28,3 из 62 дней\nLineage\ndataset d9b87571006b… · F2 5c4f166d0126… · F3 38f4a4bfaf9d…\nОграничения\nPublished observed trip counts; no weather/GBFS; station operating status unknown; no prediction intervals; retrospective accuracy not operational uplift\n\nКарточка станции 6970.02 ↗",
+          "values": 0
+        }
+      },
+      {
+        "id": "mobile_scenarios_real",
+        "url": "http://localhost:3000/scenarios?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+        "observed_at": "2026-11-03T06:28:34.592Z",
+        "canvases": [
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Сценарии, а не распоряжения.",
+          "Архивный recorded-as-of replay — не текущая рекомендация",
+          "Политики: simulated unserved?Ожидаемые неисполненные попытки аренды/возврата только по допущениям симулятора., loss + λ·cost?loss + λ·cost: simulated unserved + cost_weight × относительная стоимость перемещений.",
+          "Перемещения при масштабе 1",
+          "Риск станций?Сценарная доля розыгрышей, где станция хотя бы раз пуста/полна за горизонт; Monte Carlo интервал — не калибровка. (1 · uniform)",
+          "Исключённые станции (61)",
+          "Допущения симулятора"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-scenario-id": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+            "data-scenario-state": "archival_replay"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": []
+      },
+      {
+        "id": "mobile_scenarios_table_horizontal_scroll",
+        "url": "http://localhost:3000/scenarios?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+        "observed_at": "2026-11-03T06:28:49.401Z",
+        "canvases": [
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Сценарии, а не распоряжения.",
+          "Архивный recorded-as-of replay — не текущая рекомендация",
+          "Политики: simulated unserved?Ожидаемые неисполненные попытки аренды/возврата только по допущениям симулятора., loss + λ·cost?loss + λ·cost: simulated unserved + cost_weight × относительная стоимость перемещений.",
+          "Перемещения при масштабе 1",
+          "Риск станций?Сценарная доля розыгрышей, где станция хотя бы раз пуста/полна за горизонт; Monte Carlo интервал — не калибровка. (1 · uniform)",
+          "Исключённые станции (61)",
+          "Допущения симулятора"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-scenario-id": "99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a",
+            "data-scenario-state": "archival_replay"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "observed": [
+          {
+            "scrollLeft": 326.3999938964844,
+            "scrollWidth": 588,
+            "width": 262
+          },
+          {
+            "scrollLeft": 0,
+            "scrollWidth": 266,
+            "width": 262
+          }
+        ]
+      },
+      {
+        "id": "mobile_forecast_controlled_valid",
+        "url": "http://127.0.0.1:54479/forecasts",
+        "observed_at": "2026-11-03T06:28:58.514Z",
+        "canvases": [
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Прогноз, только если он действителен.",
+          "Действительный прогноз",
+          "Станция 000?ML-оценка опубликованных поездок по станции и часу с origin, горизонтом и версией; не факт."
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-forecast-page": "valid"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "data_mode": "controlled_fixture",
+        "observed": {
+          "rows": 24,
+          "tables": [
+            {
+              "scrollWidth": 317,
+              "width": 262
+            }
+          ]
+        }
+      },
+      {
+        "id": "mobile_forecast_empty_station",
+        "url": "http://127.0.0.1:54479/forecasts?station_id=no-such-station",
+        "observed_at": "2026-11-03T06:29:13.839Z",
+        "canvases": [],
+        "headings": [
+          "Прогноз, только если он действителен.",
+          "Прогноз не опубликован"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-forecast-page": "empty"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "data_mode": "controlled_fixture",
+        "observed": {
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nПРОГНОЗ F4 · ОПУБЛИКОВАННЫЕ НАБЛЮДАЕМЫЕ ПОЕЗДКИ\n\nПрогноз, только если он действителен.\n\nПоказывается лишь активная опубликованная версия до её valid_until. Истёкший или устаревший прогноз — unavailable, а не свежая оценка.\n\nСтанция (cohort F4)\nПоказать\nВсе\nПрогноз · ML\nПрогноз не опубликован\n\nНет активной публикации прогноза.\n\nPublication\n880d152665b4e5ba66ee7926db5ee6e75c0e054e9c6670c306689cfe6c5ee393\nForecast origin\n3 нояб. 2026 г., 01:15 NY\nГоризонт\n1–24 ч после origin (UTC-часы)\nvalid_until\n4 нояб. 2026 г., 02:00 NY\nМодель / baseline\nbundle fd8247d57a57…; F4 frozen selection: delayed Seasonal Naive baseline для departures и arrivals; operational promotion NOT VERIFIED. Семейство модели не публикуется в serving-контракте F4.\nCoverage\n192 valid / 0 unavailable строк\nQuality\nwarning · accuracy evidence: approximate retrospective · strict\nДанные as-of\n1 нояб. 2026 г., 00:00 NY (source event window end); возраст источника 2,1 из 62 дней\nLineage\ndataset 7e023cce81d5… · F2 1a8c87005124… · F3 e2d2cbcbe3c2…\nОграничения\nPublished observed trip counts; no weather/GBFS; station operating status unknown; no prediction intervals; retrospective accuracy not operational uplift\n\nКарточка станции no-such-station ↗",
+          "values": 0
+        }
+      },
+      {
+        "id": "mobile_forecast_controlled_api_unavailable",
+        "url": "http://127.0.0.1:54479/forecasts?station_id=no-such-station",
+        "observed_at": "2026-11-03T06:30:07.449Z",
+        "canvases": [],
+        "headings": [
+          "Прогноз, только если он действителен.",
+          "Прогноз недоступен"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-forecast-page": "unavailable"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "data_mode": "controlled_fixture_outage",
+        "observed": {
+          "text": "BikeFlow Intelligence\nОбзор\nАналитика\nСтанции\nПрогнозы\nСценарии\n\nПРОГНОЗ F4 · ОПУБЛИКОВАННЫЕ НАБЛЮДАЕМЫЕ ПОЕЗДКИ\n\nПрогноз, только если он действителен.\n\nПоказывается лишь активная опубликованная версия до её valid_until. Истёкший или устаревший прогноз — unavailable, а не свежая оценка.\n\nСтанция (cohort F4)\nПоказать\nВсе\nПрогноз недоступен\n\nСервис данных недоступен. Значения не показываются.",
+          "values": 0
+        }
+      },
+      {
+        "id": "regression_filter_sync_before",
+        "url": "http://localhost:3000/analytics?start_date=2026-04-01&end_date=2026-04-02&station_id=6140.05&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&grain=hour",
+        "observed_at": "2026-11-03T06:30:42.208Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 278,
+            "h": 310,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "573",
+          "657,5 с",
+          "573 / 571"
+        ],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "status": "FAIL",
+        "observed": {
+          "form": [
+            {
+              "name": "start_date",
+              "value": "2026-04-01"
+            },
+            {
+              "name": "end_date",
+              "value": "2026-04-02"
+            },
+            {
+              "name": "station_id",
+              "value": "6140.05"
+            },
+            {
+              "name": "to_station",
+              "value": ""
+            },
+            {
+              "name": "vehicle",
+              "value": ""
+            },
+            {
+              "name": "membership",
+              "value": ""
+            },
+            {
+              "name": "grain",
+              "value": "day"
+            },
+            {
+              "name": "compare_start",
+              "value": ""
+            },
+            {
+              "name": "compare_end",
+              "value": ""
+            },
+            {
+              "name": "event_type",
+              "value": "start"
+            }
+          ],
+          "rows": [
+            24
+          ],
+          "url": "http://localhost:3000/analytics?start_date=2026-04-01&end_date=2026-04-02&station_id=6140.05&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&grain=hour"
+        }
+      },
+      {
+        "id": "regression_filter_sync_after_mobile",
+        "url": "http://127.0.0.1:3001/analytics?start_date=2026-04-01&end_date=2026-04-02&station_id=6140.05&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&grain=hour",
+        "observed_at": "2026-11-03T06:32:44.702Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 278,
+            "h": 310,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "573",
+          "657,5 с",
+          "573 / 571"
+        ],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "status": "PASS",
+        "observed": {
+          "form": [
+            {
+              "name": "start_date",
+              "value": "2026-04-01"
+            },
+            {
+              "name": "end_date",
+              "value": "2026-04-02"
+            },
+            {
+              "name": "station_id",
+              "value": "6140.05"
+            },
+            {
+              "name": "to_station",
+              "value": ""
+            },
+            {
+              "name": "vehicle",
+              "value": ""
+            },
+            {
+              "name": "membership",
+              "value": ""
+            },
+            {
+              "name": "grain",
+              "value": "hour"
+            },
+            {
+              "name": "compare_start",
+              "value": ""
+            },
+            {
+              "name": "compare_end",
+              "value": ""
+            },
+            {
+              "name": "event_type",
+              "value": "start"
+            }
+          ],
+          "rows": [
+            24
+          ],
+          "url": "http://127.0.0.1:3001/analytics?start_date=2026-04-01&end_date=2026-04-02&station_id=6140.05&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&grain=hour"
+        }
+      },
+      {
+        "id": "regression_mobile_map_after",
+        "url": "http://127.0.0.1:3001/stations?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&station_id=6970.02",
+        "observed_at": "2026-11-03T06:33:24.069Z",
+        "canvases": [
+          {
+            "cssH": 420,
+            "cssW": 278,
+            "h": 420,
+            "w": 278
+          },
+          {
+            "cssH": 270,
+            "cssW": 278,
+            "h": 270,
+            "w": 278
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "6970.02 · Ditmars Blvd & 102 St",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 375,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "6970.02"
+          }
+        ],
+        "visibility": "visible",
+        "width": 390,
+        "logs": [],
+        "status": "PASS",
+        "screenshot": "docs/evidence/f6-visual/mobile-map-after.jpg",
+        "observed": {
+          "detail": "Факт · история поездок\n6970.02 · Ditmars Blvd & 102 St\nОтправления?\n196\nПрибытия?\n201\nNet trip flow?\n5\nКоординаты\n40.76894, -73.86832 (NY-месяц 2026-04; изменений в периоде: 0)\nПериод\n2026-04-01 → 2026-05-01, NY, конец не включён\nГлубокая аналитика станции ↗\nGBFS · наблюдение состояния\nGBFS · свежесть?\n\nNo valid captured GBFS interval mapped to this trip station_id; not shown as zero bikes or docks\n\nСимуляция · сценарий\nСценарии F5 и прогноз F4\n\nИсключена из сценария: gbfs_quality:stale_status, stale_gbfs_station. Сценарии ↗\n\nПрогноз: истёк — значения не показываются. Прогнозы ↗\n\nФакт · история поездок\nОтправления и прибытия по дням\nФакт · ис",
+          "station": "6970.02"
+        }
+      },
+      {
+        "id": "regression_filter_sync_after_desktop",
+        "url": "http://127.0.0.1:3001/analytics?start_date=2026-04-01&end_date=2026-04-02&station_id=6140.05&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&grain=hour",
+        "observed_at": "2026-11-03T06:34:36.204Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "573",
+          "657,5 с",
+          "573 / 571"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "end": "2026-04-02",
+          "grain": "hour",
+          "rows": [
+            24
+          ]
+        }
+      },
+      {
+        "id": "regression_desktop_map_after",
+        "url": "http://localhost:3000/stations?start_date=2026-04-01&end_date=2026-05-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&station_id=6642.08",
+        "observed_at": "2026-11-03T06:35:02.291Z",
+        "canvases": [
+          {
+            "cssH": 560,
+            "cssW": 1022,
+            "h": 560,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "Станции на карте.",
+          "Карта · net trip flow?arrivals − departures. Не изменение фактического inventory: перевозки не видны. за 2026-04-01 → 2026-05-01",
+          "6642.08 · 34 Ave & 113 St",
+          "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.",
+          "Сценарии F5 и прогноз F4",
+          "Отправления и прибытия по дням",
+          "Маршруты отсюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Маршруты сюда?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "История координат и названий"
+        ],
+        "height": 900,
+        "kpi": [],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-geo-id": "775a7495b8834d86eb3c1315cd463dd79f15d0d16ecfb75daa5769fb6ad2e850",
+            "data-stations-state": "ok",
+            "data-stations-total": "2347"
+          },
+          {
+            "data-station-detail": "6642.08"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "station": "6642.08"
+        }
+      },
+      {
+        "id": "regression_desktop_category_filter_after",
+        "url": "http://localhost:3000/analytics?publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&to_station=&vehicle=electric_bike&membership=&grain=day&compare_start=&compare_end=&event_type=start",
+        "observed_at": "2026-11-03T06:35:21.262Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "9 724",
+          "583,7 с",
+          "9 724 / 9 749"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "routes": [
+            "6140.05/6266.06\t229\t—\t—"
+          ],
+          "vehicle": "electric_bike"
+        }
+      },
+      {
+        "id": "regression_desktop_route_filter_after",
+        "url": "http://localhost:3000/analytics?start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&vehicle=electric_bike&grain=day&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&to_station=6266.06",
+        "observed_at": "2026-11-03T06:35:27.419Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "9 724",
+          "583,7 с",
+          "9 724 / 9 749"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "routes": [
+            "6140.05/6266.06\t229\t—\t—"
+          ],
+          "to_station": "6266.06"
+        }
+      },
+      {
+        "id": "desktop_analytics_seasonality_rendered_after",
+        "url": "http://localhost:3000/analytics?start_date=2026-04-01&end_date=2026-05-01&station_id=6140.05&vehicle=electric_bike&grain=day&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&to_station=6266.06",
+        "observed_at": "2026-11-03T06:36:22.346Z",
+        "canvases": [
+          {
+            "cssH": 310,
+            "cssW": 1022,
+            "h": 310,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 469,
+            "h": 320,
+            "w": 469
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          },
+          {
+            "cssH": 320,
+            "cssW": 1022,
+            "h": 320,
+            "w": 1022
+          }
+        ],
+        "headings": [
+          "История в деталях.",
+          "Фильтры",
+          "Допустимые поездки?Число допустимых опубликованных ride_id с началом в [start, end). Не весь спрос и не наличие велосипедов.",
+          "Средняя длительность?Сумма допустимых длительностей / число допустимых длительностей; знаменатель явен.",
+          "Отправления / прибытия",
+          "Равное сравнение периодов?(текущее − базовое) / базовое; только при равных днях, часах UTC, наборе weekday, полном покрытии и базовом ≠ 0.",
+          "Динамика поездок",
+          "Пики отправлений и прибытий",
+          "Сезонность по месяцам",
+          "Профиль: день недели × локальный час NY",
+          "Станции",
+          "Маршруты?Поездки по паре известных start/end station; доля покрытия указывается.",
+          "Категории?Поездки категории / поездки с известной сопоставимой категорией; unknown показан отдельно.",
+          "Гео-агрегаты (сетка 0.01°)",
+          "Происхождение, покрытие и качество",
+          "Наблюдённая доступность сети"
+        ],
+        "height": 900,
+        "kpi": [
+          "9 724",
+          "583,7 с",
+          "9 724 / 9 749"
+        ],
+        "overflow": false,
+        "scrollWidth": 1265,
+        "states": [
+          {
+            "data-analytics-state": "ok",
+            "data-publication-id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+          }
+        ],
+        "visibility": "visible",
+        "width": 1280,
+        "logs": [],
+        "observed": {
+          "monthlyChart": "This is a chart with type Bar chart named Поездки.The first 10 items are: the data for 2024-10 is 0, 10903, the data for 2024-11 is 1, 8487, the data for 2024-12 is 2, 5754, the data for 2025-01 is 3, 5767, the data for 2025-02 is 4, 5827, the data for 2025-03 is 5, 8130, the data for 2025-04 is 6, 8624, the data for 2025-05 is 7, 9082, the data for 2025-06 is 8, 10408, the data for 2025-07 is 9, 10658. "
+        }
+      }
+    ],
+    "case_assessments": {
+      "mobile_analytics_hour_drilldown": "NOT VERIFIED: first click left URL at the daily period; not counted as successful drill-down",
+      "mobile_analytics_hour_drilldown_confirmed": "Hourly rows/URL confirmed after Enter, but selected grain still day; this is the reproduced filter defect, not a form-sync PASS",
+      "regression_filter_sync_before": "FAIL preserved; fixed by remounting the uncontrolled form when query changes",
+      "mobile_station_map_mouse_click_before_fix": "Point click PASS; axis/legend readability FAIL preserved in mobile-map-before.jpg",
+      "regression_filter_sync_after_mobile": "PASS: identical dirty-select day-to-hour procedure; form grain hour, end2026-04-02, 24 rows, URL agree",
+      "regression_filter_sync_after_desktop": "PASS: same regression at1280x900",
+      "regression_mobile_map_after": "PASS: legible separated longitude ticks, full signed net legend, same point selects6970.02",
+      "regression_desktop_map_after": "PASS: point(780,249) selects6642.08 after Docker deployment"
+    },
+    "regression_tests": [
+      {
+        "name": "dirty grain select followed by day-to-hour drill-down",
+        "execution": "Visible CUA browser regression, not a new alternate browser automator",
+        "steps": [
+          "Open April2026 analytics for station6140.05",
+          "Select month then day without submitting",
+          "Expand daily table and activate2026-04-01 link with Enter",
+          "Read URL, displayed select, end date, 24 hourly rows"
+        ],
+        "before": "grain=day with hourly URL/data",
+        "after": "hour/2026-04-02/24 rows agree at390 and1280",
+        "status": "PASS"
+      },
+      {
+        "name": "mobile coordinate map readability and selection",
+        "execution": "Visible screenshot and mouse regression",
+        "steps": [
+          "Open April2026 stations6140.05 at390x900",
+          "Focus station field, PageDown",
+          "Inspect axis ticks and legend",
+          "Click visible point(275,341), confirm6970.02 card"
+        ],
+        "before": "overlapping longitude labels and clipped legend",
+        "after": "two longitude divisions with hideOverlap and signed compact net legend; selection retained",
+        "status": "PASS"
+      }
+    ],
+    "screenshots": [
+      {
+        "path": "docs/evidence/f6-visual/desktop-analytics.jpg",
+        "bytes": 88420,
+        "sha256": "205a55e1adf800d7360f8eadadc5e859e150c4b573d439093e75e2ff6b8bc4e9"
+      },
+      {
+        "path": "docs/evidence/f6-visual/desktop-controlled-forecast.jpg",
+        "bytes": 85402,
+        "sha256": "a091fcef410b832769b6caddb3b2b04c4d12bb80dd6ae393c30077f778807573"
+      },
+      {
+        "path": "docs/evidence/f6-visual/desktop-scenarios.jpg",
+        "bytes": 89650,
+        "sha256": "cfb31e0150e8c8bb8c178291b8d026a2d318b3e328fc9c8d0f067557494044ec"
+      },
+      {
+        "path": "docs/evidence/f6-visual/desktop-station-map.jpg",
+        "bytes": 69328,
+        "sha256": "10e34be2baa9a0e15667d606419075c417ccd56b0eca5dd859e59884210997ea"
+      },
+      {
+        "path": "docs/evidence/f6-visual/mobile-analytics.jpg",
+        "bytes": 34343,
+        "sha256": "8c8d8fa5620714f15c9381c32cb33f8bfb07af8242f9a4aec597572e7f5c5c0d"
+      },
+      {
+        "path": "docs/evidence/f6-visual/mobile-filter-after.jpg",
+        "bytes": 30219,
+        "sha256": "770aebe6c36eb111349628ab295097c319f84533b0c4f416f012968c8e1ed6f9"
+      },
+      {
+        "path": "docs/evidence/f6-visual/mobile-filter-before.jpg",
+        "bytes": 29795,
+        "sha256": "872424eaac595523b9aae6a32dce68905a44fc7f3c9f36948f6132a732baad11"
+      },
+      {
+        "path": "docs/evidence/f6-visual/mobile-map-after.jpg",
+        "bytes": 41321,
+        "sha256": "360a7aca8d2509de32e2443a2ee381780c3505f46752f1c9cbf0bad4ae33659a"
+      },
+      {
+        "path": "docs/evidence/f6-visual/mobile-map-before.jpg",
+        "bytes": 42520,
+        "sha256": "0322a9069fc5e3126d762905ea59b5320669985dfcb8fa118ee6fedb350b8d13"
+      },
+      {
+        "path": "docs/evidence/f6-visual/mobile-overview.jpg",
+        "bytes": 30628,
+        "sha256": "048c8cddd06b3b4be7ccb6b2bc7dd97cdcfb5e09b8bb521b0a00069199afc44f"
+      }
+    ],
+    "real_source_api_html_recheck": {
+      "mode": "real_official",
+      "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+      "overview": {
+        "silver": 4697240,
+        "api": 4697240,
+        "html": 4697240,
+        "baseline_silver": 4975250,
+        "baseline_api": 4975250,
+        "change_independent": -0.055878599065373596,
+        "change_api": -0.055878599065373596,
+        "change_html": -0.055878599065373596,
+        "publication_html": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+      },
+      "stations": {
+        "6611.07": {
+          "silver": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "api_v4": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "api_v2": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "html": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "coordinate_silver": [
+            40.75676475086503,
+            -73.99971440439913
+          ],
+          "coordinate_api": [
+            40.75676475086503,
+            -73.99971440439913
+          ],
+          "split_partner": null,
+          "split_html": null
+        },
+        "5980.1": {
+          "silver": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "api_v4": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "api_v2": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "html": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "coordinate_silver": [
+            40.737006,
+            -73.990134
+          ],
+          "coordinate_api": [
+            40.737006,
+            -73.990134
+          ],
+          "split_partner": "5980.10",
+          "split_html": "5980.10"
+        },
+        "5980.10": {
+          "silver": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "api_v4": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "api_v2": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "html": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "coordinate_silver": [
+            40.737006,
+            -73.990134
+          ],
+          "coordinate_api": [
+            40.737006,
+            -73.990134
+          ],
+          "split_partner": "5980.1",
+          "split_html": "5980.1"
+        },
+        "3138.03": {
+          "silver": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "api_v4": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "api_v2": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "html": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "coordinate_silver": [
+            40.645705,
+            -74.020292
+          ],
+          "coordinate_api": [
+            40.645705,
+            -74.020292
+          ],
+          "split_partner": null,
+          "split_html": null
+        }
+      },
+      "dst_hours": {
+        "2025-11-02": 25,
+        "2026-03-08": 23
+      },
+      "forecast": {
+        "api_status": "stale",
+        "valid_until": "2026-10-30T12:00:00+00:00",
+        "expired_now": true,
+        "html_state": "expired",
+        "html_values_shown": false
+      },
+      "scenario": {
+        "artifact_cells": 27,
+        "served_cells": 27,
+        "objective_mismatches": 0,
+        "status": "archival_replay",
+        "html_state": "archival_replay",
+        "html_coverage": "3/64",
+        "artifact_coverage": "3/64",
+        "no_action_best_cells": 9,
+        "as_of": "2026-10-30T06:36:54.163891+00:00",
+        "action_verdict": "no_action",
+        "rendered_cells": 9
+      },
+      "filter_states": {
+        "reversed": "error",
+        "half": "error",
+        "unknown_station": "empty",
+        "invalid_vehicle": "error"
+      },
+      "api_latency": {
+        "v2_kpi_28d": {
+          "first_ms": 33.9,
+          "p50_ms": 33.12,
+          "p95_ms": 36.66,
+          "max_ms": 36.66,
+          "samples": 20
+        },
+        "v2_timeseries_28d": {
+          "first_ms": 38.0,
+          "p50_ms": 34.21,
+          "p95_ms": 35.85,
+          "max_ms": 35.85,
+          "samples": 20
+        },
+        "v2_compare_28d": {
+          "first_ms": 36.81,
+          "p50_ms": 36.91,
+          "p95_ms": 41.07,
+          "max_ms": 41.07,
+          "samples": 20
+        },
+        "v4_stations_28d_map": {
+          "first_ms": 250.36,
+          "p50_ms": 231.58,
+          "p95_ms": 313.18,
+          "max_ms": 313.18,
+          "samples": 20
+        },
+        "v4_stations_full_window": {
+          "first_ms": 787.74,
+          "p50_ms": 716.71,
+          "p95_ms": 872.95,
+          "max_ms": 872.95,
+          "samples": 20
+        },
+        "v4_station_detail": {
+          "first_ms": 36.01,
+          "p50_ms": 38.04,
+          "p95_ms": 40.12,
+          "max_ms": 40.12,
+          "samples": 20
+        },
+        "v4_risk": {
+          "first_ms": 32.02,
+          "p50_ms": 31.24,
+          "p95_ms": 32.85,
+          "max_ms": 32.85,
+          "samples": 20
+        },
+        "v3_forecasts": {
+          "first_ms": 28.82,
+          "p50_ms": 27.9,
+          "p95_ms": 32.01,
+          "max_ms": 32.01,
+          "samples": 20
+        }
+      },
+      "html_render": {
+        "overview": {
+          "first_ms": 242.33,
+          "p50_ms": 218.92,
+          "p95_ms": 225.82,
+          "max_ms": 225.82,
+          "samples": 5,
+          "bytes": 113125
+        },
+        "analytics_default": {
+          "first_ms": 1199.0,
+          "p50_ms": 1131.91,
+          "p95_ms": 1209.29,
+          "max_ms": 1209.29,
+          "samples": 5,
+          "bytes": 704288
+        },
+        "analytics_28d_station": {
+          "first_ms": 1320.75,
+          "p50_ms": 1294.77,
+          "p95_ms": 1381.08,
+          "max_ms": 1381.08,
+          "samples": 5,
+          "bytes": 158580
+        },
+        "stations": {
+          "first_ms": 358.14,
+          "p50_ms": 314.55,
+          "p95_ms": 365.95,
+          "max_ms": 365.95,
+          "samples": 5,
+          "bytes": 566188
+        },
+        "station_detail": {
+          "first_ms": 306.25,
+          "p50_ms": 300.22,
+          "p95_ms": 346.29,
+          "max_ms": 346.29,
+          "samples": 5,
+          "bytes": 592328
+        },
+        "forecasts": {
+          "first_ms": 40.59,
+          "p50_ms": 40.64,
+          "p95_ms": 41.41,
+          "max_ms": 41.41,
+          "samples": 5,
+          "bytes": 15959
+        },
+        "scenarios": {
+          "first_ms": 63.25,
+          "p50_ms": 62.69,
+          "p95_ms": 63.98,
+          "max_ms": 63.98,
+          "samples": 5,
+          "bytes": 78266
+        }
+      },
+      "checked_at": "2026-11-03T06:36:28.847513+00:00"
+    },
+    "controlled_fixture": {
+      "mode": "controlled_fixture",
+      "database": "bikeflow_test_5ef9aaf5b31d4fb3a603970955d161e1",
+      "api": "http://127.0.0.1:54478",
+      "web": "http://127.0.0.1:54479",
+      "started_at": "2026-11-03T06:14:23.611786+00:00",
+      "states": {
+        "empty": {
+          "/": "empty",
+          "/analytics": "empty",
+          "/stations": "empty",
+          "/forecasts": "empty",
+          "/scenarios": "empty"
+        },
+        "valid": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "current_scenario"
+        }
+      },
+      "command": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m tests.integration.product_smoke --mode fixture --api-url http://127.0.0.1:54478 --web-url http://127.0.0.1:54479 --data-dir C:\\Users\\nurs\\citibike\\.cache\\f6-visual\\fixture-data --output C:\\Users\\nurs\\citibike\\.cache\\f6-visual\\fixture-smoke.json",
+      "grid_count": {
+        "api_cells": 2,
+        "html_cells": 2
+      },
+      "purpose": "Visible controlled F4 and missing-coordinate/ID-split UI only; isolated disposable DB",
+      "status": "PASS",
+      "real_publications_unchanged": true,
+      "finished_at": "2026-11-03T06:30:15.219867+00:00",
+      "disposable_database_removed": true
+    },
+    "performance": {
+      "browser_navigation": {
+        "status": "NOT VERIFIED",
+        "milliseconds": null
+      },
+      "first_useful_screen": {
+        "status": "NOT VERIFIED",
+        "milliseconds": null
+      },
+      "charts_ready": {
+        "status": "NOT VERIFIED",
+        "milliseconds": null
+      },
+      "reason": "Read-only DOM scope returned typeof performance=undefined and typeof document.defaultView?.performance=undefined. Navigator/version unavailable as well. No alternative automator, URL substitution to bypass guards, security-setting changes, injected timing instrumentation or wall-clock proxy used.",
+      "http_timings": "Real smoke api_latency/html_render above are HTTP-only observations and are not browser timings.",
+      "three_second_target": "NOT VERIFIED; PROJECT_SPEC6 / OPERATIONS7 target remains an unmeasured hypothesis, not an SLA"
+    },
+    "dod": [
+      {
+        "criterion": "overview",
+        "status": "PASS",
+        "evidence": "mobile_overview_real: four primary KPI, actual4697240 and source/freshness distinctions; current real source/API/HTML parity"
+      },
+      {
+        "criterion": "analytics_visible_charts_filters_categories_routes",
+        "status": "PASS",
+        "evidence": "desktop/mobile cases; five actual positive-size canvases, rendered trend/seasonality/heatmap and tooltips;14539 -> electric9724, route482 -> electric229"
+      },
+      {
+        "criterion": "time_slices_and_drilldown",
+        "status": "PASS",
+        "evidence": "DST25/23 UTC rows; real missing fall-back values N/A; corrected form and24-hour drill-down verified at both widths"
+      },
+      {
+        "criterion": "coordinate_map_mouse_search_detail",
+        "status": "PASS",
+        "evidence": "2347 real points in April, actual mouse selections6642.08/6970.02; station6140.05 counts14539/14565/net26, history and routes; corrected mobile labels"
+      },
+      {
+        "criterion": "id_split_and_missing_coordinates",
+        "status": "PASS",
+        "evidence": "Controlled isolated003 has no point, N/A metrics and explicit missing coordinates;5980.1/.10 separate flagged rows and card warning; real source-coordinate parity retained"
+      },
+      {
+        "criterion": "forecast_charts_freshness_empty_unavailable",
+        "status": "PASS",
+        "evidence": "Visible controlled valid24-row/2-series canvas desktop/mobile; real expired valid_until2026-10-30 hides all forecast values; unknown controlled station empty and isolated API outage unavailable"
+      },
+      {
+        "criterion": "scenario_objective_verdict_coverage_archive",
+        "status": "PASS",
+        "evidence": "Visible actual9-cell/27-outcome plot and tooltip; no-action verdict, coverage3/64, archival_replay; scale1.5/event arrivals_first controls change movement/risk selection; real artifact/API/HTML objective parity"
+      },
+      {
+        "criterion": "mobile_five_pages_navigation_interactions",
+        "status": "PASS",
+        "evidence": "All five pages390x900 visible; filters/navigation/station mouse selection; local table scrollLeft326.4 of326.4; no document overflow; canvas/controls accessible"
+      },
+      {
+        "criterion": "javascript_errors_and_empty_states",
+        "status": "PASS",
+        "evidence": "Captured34 cases have0 console errors/warnings; forecast empty/unavailable and station empty explicitly displayed without false numeric fallback; earlier all-five empty/outage/recovery evidence unchanged"
+      },
+      {
+        "criterion": "coordinate_visualization_scope",
+        "status": "PASS",
+        "evidence": "Visible WGS84 coordinate scatter, lat/lon labels, net flow, diamond ID-split, selected point and card; explicit absence of street basemap; no unapproved tile provider inferred"
+      },
+      {
+        "criterion": "compatibility_and_preservation",
+        "status": "PASS",
+        "evidence": "Protected204 tracked files outside4 allowed targets unchanged;4932 JSON hashes and13769 data-file size/mtime unchanged; public API/schema/objective/models/normative documents untouched"
+      },
+      {
+        "criterion": "browser_performance_measurements",
+        "status": "NOT VERIFIED",
+        "evidence": "Conditional measurement unsupported by permitted tool; not a functional F6 blocker and not a measured3s SLA"
+      },
+      {
+        "criterion": "git_ci_checkpoint_bundle",
+        "status": "NOT VERIFIED",
+        "evidence": "Delivery follows reviewed commit/push; exact current SHA, actual CI, annotated checkpoint and verified Git-only bundle recorded after commit, without a self-referential SHA loop"
+      }
+    ],
+    "checks": [
+      {
+        "command": "npm --prefix apps/web run lint",
+        "status": "PASS",
+        "result": "27 files, repeated after fixes"
+      },
+      {
+        "command": "npm --prefix apps/web run typecheck",
+        "status": "PASS",
+        "result": "no TypeScript errors, repeated after fixes"
+      },
+      {
+        "command": "npm --prefix apps/web test",
+        "status": "PASS",
+        "result": "6 passed,0 failed, repeated after fixes; existing MODULE_TYPELESS_PACKAGE_JSON warning"
+      },
+      {
+        "command": "npm --prefix apps/web run build",
+        "status": "PASS",
+        "result": "all routes built, repeated after fixes"
+      },
+      {
+        "command": "uv run --locked ruff check .",
+        "status": "PASS",
+        "result": "all checks passed"
+      },
+      {
+        "command": "uv run --locked ruff format --check .",
+        "status": "PASS",
+        "result": "124 files already formatted"
+      },
+      {
+        "command": "uv run --locked mypy",
+        "status": "PASS",
+        "result": "124 source files, no issues"
+      },
+      {
+        "command": "uv run --locked --group ml python -m tests.integration.product_smoke --mode real",
+        "status": "PASS",
+        "result": "PASS before and after fixes; no real data regeneration"
+      },
+      {
+        "command": "docker compose build web",
+        "status": "PASS",
+        "result": "production image built"
+      },
+      {
+        "command": "docker compose up -d --no-deps --wait --wait-timeout 120 web",
+        "status": "PASS",
+        "result": "only web recreated and healthy"
+      },
+      {
+        "command": "git diff --check",
+        "status": "PASS",
+        "result": "PASS"
+      }
+    ],
+    "preservation": {
+      "tracked_baseline_files": 208,
+      "protected_tracked_files": 204,
+      "protected_json_hashes": 4932,
+      "data_files_size_mtime": 13769,
+      "old_evidence_root_keys": 13,
+      "prior_journal_bytes": 233982,
+      "prior_journal_entries": 34,
+      "old_records": "unchanged"
+    },
+    "limitations": [
+      "Browser timing and3s target NOT VERIFIED",
+      "F4 real forecast remains expired and operational promotion unverified; no serving gate bypass",
+      "F5 is recorded-as-of3/64 scenario comparison, not current operational risk, calibrated latent demand or measured economic effect",
+      "Responsive viewport only; real-device and production load acceptance not claimed",
+      "Historical evidence retained with its original statuses; this appended assessment resolves only F6 visual remainder",
+      "No F7; independent owner acceptance pending"
+    ],
+    "remaining_functional_f6": [],
+    "external_backup": "New F6 bundle will be verified locally; no independent external copy authorized for this payload. Previous Drive approval is restricted to docs-post-F5-20261103-f629901.bundle.",
+    "next_step": "Independent owner acceptance of F6; do not start F7 automatically"
+  }
 }

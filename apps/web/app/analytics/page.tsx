@@ -246,7 +246,12 @@ export default async function AnalyticsPage({
       </section>
       <section className="panel">
         <h2>Фильтры</h2>
-        <form action="/analytics" method="get" className="analytics-filters">
+        <form
+          key={JSON.stringify(input)}
+          action="/analytics"
+          method="get"
+          className="analytics-filters"
+        >
           {pub && <input type="hidden" name="publication_id" value={pub.publication_id} />}
           <label>
             Начало, NY
