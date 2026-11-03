@@ -158,9 +158,9 @@ export default async function ScenariosPage({
               Политики: <Term name="simulated_unserved">simulated unserved</Term>,{" "}
               <Term name="objective">loss + λ·cost</Term>
             </h2>
-            <p>
-              Все 9 ячеек масштаб × порядок; меньший objective лучше. Отметка «лучший» — по
-              objective внутри ячейки, ничьи показываются все.
+            <p data-scenario-cells={cells.length}>
+              Показано ячеек масштаб × порядок: {cells.length}; меньший objective лучше. Отметка
+              «лучший» — по objective внутри ячейки, ничьи показываются все.
             </p>
             <p data-scenario-action={noActionBest ? "no_action" : "compare_only"}>
               {noActionBest

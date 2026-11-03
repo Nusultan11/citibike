@@ -1406,6 +1406,116 @@
         "tests/integration/product_smoke.py"
       ],
       "status": "PASS"
+    },
+    "grid_count_correction": {
+      "status": "PASS",
+      "reproduction": {
+        "actual_fixture_cells": 2,
+        "pre_fix_literal_cells": 9,
+        "cause": "Fixed label despite configurable scale/order grid",
+        "source_revision": "eb8214c",
+        "test": "independent cells grouping in check_action_verdict now also verifies rendered count"
+      },
+      "change": "SSR label now uses actual cells.length; data-scenario-cells is checked against independently grouped outcome cells",
+      "fixture_protocol": {
+        "mode": "controlled_fixture",
+        "database": "bikeflow_test_db400e87505943f3bb92b476a183644a",
+        "api": "http://127.0.0.1:61574",
+        "web": "http://127.0.0.1:61575",
+        "started_at": "2026-11-03T05:49:08.086021+00:00",
+        "states": {
+          "empty": {
+            "/": "empty",
+            "/analytics": "empty",
+            "/stations": "empty",
+            "/forecasts": "empty",
+            "/scenarios": "empty"
+          },
+          "valid": {
+            "/": "ok",
+            "/analytics": "ok",
+            "/stations": "ok",
+            "/forecasts": "valid",
+            "/scenarios": "current_scenario"
+          },
+          "api_down": {
+            "/": "unavailable",
+            "/analytics": "error",
+            "/stations": "unavailable",
+            "/forecasts": "unavailable",
+            "/scenarios": "unavailable"
+          },
+          "recovered": {
+            "/": "ok",
+            "/analytics": "ok",
+            "/stations": "ok",
+            "/forecasts": "valid",
+            "/scenarios": "current_scenario"
+          }
+        },
+        "command": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m tests.integration.product_smoke --mode fixture --api-url http://127.0.0.1:61574 --web-url http://127.0.0.1:61575 --data-dir C:\\Users\\nurs\\citibike\\.cache\\f6-corrective\\fixture-data --output C:\\Users\\nurs\\citibike\\.cache\\f6-corrective\\fixture-smoke.json",
+        "grid_count": {
+          "api_cells": 2,
+          "html_cells": 2
+        },
+        "status": "PASS",
+        "real_publications_unchanged": true,
+        "finished_at": "2026-11-03T05:50:03.996194+00:00",
+        "disposable_database_removed": true
+      },
+      "fixture_smoke": {
+        "mode": "controlled_fixture",
+        "analytics_publication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+        "geo_id": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+        "forecast_publication": "b5bf381dc82ae51471f437adc8304942885a8c8b9001b81c5b6d35d3866b343b",
+        "risk_publication": "4c53156a7f533223bb034acb86b6e77042b118a00cfed3b336dfbb95e85b5260",
+        "independent_silver": {
+          "completed_published_rides": 5,
+          "stations": {
+            "001": {
+              "departures": 2,
+              "arrivals": 3
+            },
+            "002": {
+              "departures": 2,
+              "arrivals": 2
+            }
+          },
+          "coords": {
+            "001": [
+              89.999999999,
+              179.999999999
+            ],
+            "002": [
+              40.7,
+              -74.0
+            ]
+          }
+        },
+        "checks": "fixture Silver→API→HTML for overview/stations/forecasts/scenarios",
+        "checked_at": "2026-11-03T05:50:00.880630+00:00"
+      },
+      "real_regression": {
+        "mode": "real_official",
+        "artifact": "data\\f5\\results\\99f703bf3372edad673fc40e43bc6ea6746ff2a44a263aea5e4983234983c83a\\manifest.json",
+        "artifact_cells": 9,
+        "html_cells": 9,
+        "verdict": "no_action",
+        "status": "PASS",
+        "method": "Direct immutable F5 artifact→current HTML; Silver/F3 unchanged by label-only correction"
+      },
+      "negative_control": "EXPECTED FAIL: fixed9 label rejected for independent2-cell control",
+      "checks": {
+        "ruff_check": "PASS",
+        "ruff_format_check": "PASS",
+        "mypy": "PASS124",
+        "web_lint": "PASS",
+        "web_typecheck": "PASS",
+        "web_tests": "PASS6",
+        "web_build": "PASS",
+        "compose_web_build_start": "PASS"
+      },
+      "retesting_scope": "Existing real Silver/API/HTML suite already passed before this label-only change; final direct immutable F5 artifact/current HTML checks and complete fixture smoke repeated. Production Python calculations unchanged; final CI exercises updated smoke."
     }
   }
 }

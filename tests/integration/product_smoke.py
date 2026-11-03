@@ -34,6 +34,7 @@ def check_action_verdict(
     )
     expected = "no_action" if no_action_best else "compare_only"
     assert attribute(html, "data-scenario-action") == expected
+    assert attribute(html, "data-scenario-cells") == str(len(cells))
     if no_action_best:
         assert "Перевозки не рекомендуются" in html
     return expected
@@ -384,6 +385,9 @@ def real(api: str, web: str, samples: int) -> dict[str, Any]:
             "no_action_best_cells": no_action_best,
             "as_of": artifact["data_as_of"],
             "action_verdict": action_verdict,
+            "rendered_cells": int(
+                attribute(scenario_html, "data-scenario-cells") or -1
+            ),
         }
         s = checks["scenario"]
         assert s["artifact_cells"] == s["served_cells"] == 27
