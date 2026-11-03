@@ -392,9 +392,11 @@ GBFS также обновляет существующий availability mart/se
 использованием trip partitions и проверенных geo aggregates, без нового Silver scan.
 Один общий OS lock на warehouse и Prefect runner/deployment limits=1
 исключают параллельных F7 writers.
-Transient source/DB ошибки имеют максимум 3 попытки с backoff 1/2 s; schema/PIT/
-parity ошибки не повторяются. Worker tree ограничен wall time/RSS/free disk;
-timeout убивает дочерние процессы. Defaults: 300 s, 2048 MiB, 512 MiB free.
+Transient source/DB ошибки имеют максимум 3 task attempts с backoff 1/2 s;
+schema/PIT/parity ошибки не повторяются. Существующие HTTP helpers имеют свои
+bounded retries внутри общего worker budget. Переданный worker `HTTPStatusError`
+с permanent4xx, кроме429, не повторяется. Worker tree ограничен wall time/RSS/free
+disk; timeout убивает дочерние процессы. Defaults: 300 s, 2048 MiB, 512 MiB free.
 Full history/tuning/backtesting и автоматическое обучение по расписанию не запускаются.
 
 ```sh

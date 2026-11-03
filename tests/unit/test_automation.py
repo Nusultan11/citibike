@@ -33,6 +33,32 @@ def test_config_budget_and_unknown_fields() -> None:
             Config(**fields)
 
 
+def test_safe_failure_metadata_and_permanent_http_no_retry() -> None:
+    from citibike.automation.worker import failure
+    from citibike.serving.db import DatabaseUnavailable
+
+    request = httpx.Request("GET", "https://source.invalid/private-token")
+    for status, retry in [(404, False), (429, True), (503, True)]:
+        error = httpx.HTTPStatusError(
+            "sensitive message",
+            request=request,
+            response=httpx.Response(status, request=request),
+        )
+        report = failure(error)
+        assert report["reason"] == f"source_http_{status}"
+        assert report["retryable"] is retry
+        assert "sensitive" not in str(report) and "private-token" not in str(report)
+    assert (
+        failure(ValueError("F4 artifact checksum mismatch"))["reason"]
+        == "artifact_checksum_mismatch"
+    )
+    assert failure(ValueError("password=sensitive"))["reason"] == "operation_rejected"
+    unavailable = failure(DatabaseUnavailable("password=sensitive"))
+    assert unavailable["status"] == "unavailable" and unavailable["retryable"]
+    assert unavailable["reason"] == "database_unavailable"
+    assert "sensitive" not in str(unavailable)
+
+
 def test_source_schema_drift_before_processing(tmp_path: Path) -> None:
     archive = write_zip(tmp_path / "schema.zip", {"bad.csv": [ride(1)]})
     path = ingest_fixture(archive, "2026-04", tmp_path)

@@ -1,6 +1,7 @@
 """One bounded subprocess operation. Heavy work reuses existing F1–F6 functions."""
 
 import argparse
+import subprocess
 from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -473,6 +474,56 @@ def run(config: Config, operation: str) -> dict[str, Any]:
     }[operation](config)
 
 
+def failure(exc: Exception) -> dict[str, Any]:
+    """Safe exact codes; third-party exception text can carry credentials/URLs."""
+    from citibike.serving.db import DatabaseUnavailable
+
+    retryable = False
+    if isinstance(exc, gates.GateRejected):
+        reason = str(exc)
+    elif isinstance(exc, httpx.HTTPStatusError):
+        status = exc.response.status_code
+        reason = f"source_http_{status}"
+        retryable = status == 429 or status >= 500
+    elif isinstance(exc, httpx.TransportError):
+        reason, retryable = "source_transport_failure", True
+    elif isinstance(exc, (DatabaseUnavailable, psycopg.Error)):
+        reason, retryable = "database_unavailable", True
+    elif isinstance(exc, ConnectionError):
+        reason, retryable = "source_unavailable", True
+    elif isinstance(exc, FileNotFoundError):
+        reason = "required_input_missing"
+    elif isinstance(exc, subprocess.CalledProcessError):
+        reason = "processing_subprocess_failed"
+    elif isinstance(exc, ImportError):
+        reason = "worker_dependency_missing"
+    else:
+        # Only fixed trusted validator messages are mapped; arbitrary raw text
+        # and exception command/DSN never enter monitoring.
+        reason = {
+            "Incompatible F4 artifact version": "artifact_schema_drift",
+            "F4 artifact checksum mismatch": "artifact_checksum_mismatch",
+            "Unsupported GBFS envelope version": "gbfs_schema_drift",
+            "Forecast schema mismatch": "forecast_schema_drift",
+            "Forecast window stale; previous publication retained": "forecast_stale",
+            "Forecast row count mismatch": "forecast_row_count_mismatch",
+            "Future forecast feature": "forecast_future_feature",
+            "All forecasts unavailable; previous publication retained": (
+                "forecast_unavailable"
+            ),
+            "Duplicate forecast ML grain": "forecast_duplicate_grain",
+            "GBFS Silver checksum mismatch": "gbfs_checksum_mismatch",
+        }.get(str(exc), "operation_rejected")
+    return {
+        "status": "unavailable"
+        if isinstance(exc, (DatabaseUnavailable, psycopg.Error)) or not retryable
+        else "failed",
+        "reason": reason,
+        "error_type": type(exc).__name__,
+        "retryable": retryable,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=OPERATIONS)
@@ -482,36 +533,10 @@ def main() -> None:
     try:
         result = run(load(args.config), args.operation)
         write_json(args.result, result)
-    except (httpx.HTTPError, psycopg.Error, ConnectionError) as exc:
-        write_json(
-            args.result,
-            {
-                "status": "failed",
-                "reason": "source_or_database_unavailable",
-                "error_type": type(exc).__name__,
-                "retryable": True,
-            },
-        )
-        raise SystemExit(75) from None
     except Exception as exc:
-        from citibike.serving.db import DatabaseUnavailable
-
-        retryable = isinstance(exc, DatabaseUnavailable)
-        # Only explicit gate codes can be emitted. Third-party exceptions may carry
-        # DSNs, source tokens or local secrets; retain their type, never raw text.
-        reason = (
-            str(exc) if isinstance(exc, gates.GateRejected) else "operation_rejected"
-        )
-        write_json(
-            args.result,
-            {
-                "status": "unavailable",
-                "reason": reason,
-                "error_type": type(exc).__name__,
-                "retryable": retryable,
-            },
-        )
-        raise SystemExit(75 if retryable else 2) from None
+        rejected = failure(exc)
+        write_json(args.result, rejected)
+        raise SystemExit(75 if rejected["retryable"] else 2) from None
 
 
 if __name__ == "__main__":

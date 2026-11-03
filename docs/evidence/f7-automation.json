@@ -1,7 +1,7 @@
 {
   "phase": "F7 Automation",
   "date": "2026-11-03",
-  "status": "PARTIAL_PENDING_CI_DELIVERY",
+  "status": "PARTIAL_PENDING_CORRECTIVE_CI_DELIVERY",
   "independent_acceptance": "PENDING owner review; F6 authorization supplied in F7 request",
   "base_sha": "14ea78c1bd910141bba95994d3feb2129c911faf",
   "base_actual_ci": {
@@ -1547,8 +1547,130 @@
       "Seasonal Naive from valid inputs; injected primary ML failure -> verified explicit fallback",
       "forecast and risk repeat without duplicate publications",
       "real MLflow version/lineage payload checks, rejected unapproved promotion and isolated approved-version rollback",
-      "structured failure/recovery alert events; optional invalid webhook config handled without leaking URL"
-    ]
+      "structured failure/recovery alert events; optional invalid webhook config handled without leaking URL",
+      "safe typed HTTP4xx/429/5xx retry classification, missing input/artifact checksum failure codes; no URL/DSN/sensitive message leaked; DB unavailable contract retained"
+    ],
+    "post_review_error_regression": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "20",
+      "time": "151.486",
+      "timestamp": "2026-11-03T14:09:29.196796+05:00",
+      "hostname": "DESKTOP-9CGUR1M",
+      "cases": [
+        {
+          "name": "test_config_budget_and_unknown_fields",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_safe_failure_metadata_and_permanent_http_no_retry",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_source_schema_drift_before_processing",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.019
+        },
+        {
+          "name": "test_gbfs_parity_freshness_and_no_activation",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.753
+        },
+        {
+          "name": "test_model_gates_fail_closed[feature_schema-feature_schema_drift]",
+          "class": "tests.unit.test_automation",
+          "seconds": 34.672
+        },
+        {
+          "name": "test_model_gates_fail_closed[feature_recipe-train_serve_parity]",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.011
+        },
+        {
+          "name": "test_model_gates_fail_closed[created_at-pit_unavailable_at_origin]",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.012
+        },
+        {
+          "name": "test_monitoring_alert_recovery_and_webhook_failure",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.029
+        },
+        {
+          "name": "test_late_accuracy_only_observed_and_available",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_timeout_kills_child_tree_before_late_publication",
+          "class": "tests.unit.test_automation",
+          "seconds": 2.56
+        },
+        {
+          "name": "test_rss_limit_and_disk_limit",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.088
+        },
+        {
+          "name": "test_gbfs_ttl_suppresses_early_network_poll",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.133
+        },
+        {
+          "name": "test_invalid_primary_never_hides_schema_drift",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.016
+        },
+        {
+          "name": "test_source_processing_validation_serving_and_partial_recovery",
+          "class": "tests.integration.test_automation",
+          "seconds": 58.102
+        },
+        {
+          "name": "test_forecast_repeat_fallback_risk_and_outage",
+          "class": "tests.integration.test_automation",
+          "seconds": 25.08
+        },
+        {
+          "name": "test_ml_failure_uses_only_verified_seasonal_bundle",
+          "class": "tests.integration.test_automation",
+          "seconds": 0.928
+        },
+        {
+          "name": "test_registry_lineage_promotion_rejection_and_isolated_rollback",
+          "class": "tests.integration.test_automation",
+          "seconds": 5.807
+        },
+        {
+          "name": "test_prefect_actual_bounded_retries_and_recovery",
+          "class": "tests.integration.test_automation",
+          "seconds": 4.201
+        },
+        {
+          "name": "test_concurrent_writer_is_rejected_before_start",
+          "class": "tests.integration.test_automation",
+          "seconds": 2.105
+        },
+        {
+          "name": "test_real_local_scheduler_trigger_and_repeated_run",
+          "class": "tests.integration.test_automation",
+          "seconds": 13.832
+        }
+      ]
+    },
+    "post_review_scheduler": {
+      "mode": "controlled_scheduler",
+      "scheduled_run_ids": [
+        "01a1a0ad-dd4f-7944-8dc4-5e61bbea0924",
+        "01a1a0ad-dd4f-7607-88f9-82283280685d"
+      ],
+      "automatic_training": false,
+      "publication_changes": 0
+    }
   },
   "checks": [
     {
@@ -1615,6 +1737,17 @@
     {
       "command": "git diff --check",
       "result": "PASS"
+    },
+    {
+      "command": "uv run --locked --group automation --group ml pytest -q tests/unit/test_automation.py tests/integration/test_automation.py --basetemp .cache/f7-errors --junitxml=.cache/f7-errors.xml",
+      "result": "PASS",
+      "tests": 20,
+      "seconds": 151.48
+    },
+    {
+      "command": "uv run --locked --group automation --group ml pytest -q tests/unit/test_automation.py -k safe_failure",
+      "result": "PASS",
+      "tests": 1
     }
   ],
   "preservation": {
@@ -1691,6 +1824,10 @@
     {
       "failure": "npm build EBUSY .next/standalone held by existing start.mjs process on3001",
       "resolution": "verified project process briefly stopped, exact build passed, production endpoint3001 restored healthy"
+    },
+    {
+      "failure": "Draft safe-error classification changed DB outage status from unavailable to failed; existing integration regression caught it (19 passed/1 failed).",
+      "resolution": "Retained unavailable for DB outage with retryable=True;20 F7 tests then passed, including3 actual DB attempts/recovery; HTTP404/429/503 and secret redaction verified."
     }
   ],
   "limitations": [
@@ -1709,11 +1846,17 @@
   },
   "delivery": {
     "branch": "main",
-    "code_sha": null,
+    "code_sha": "8da0bfe2a4393a727bd862f8c69ca66540afd4ff",
     "final_sha": null,
-    "ci": "PENDING",
+    "ci": "implementation success; corrective SHA pending",
     "checkpoint": "PENDING",
-    "backup": "PENDING verified Git-only bundle; no database/model backup claim"
+    "backup": "PENDING verified Git-only bundle; no database/model backup claim",
+    "implementation_ci": {
+      "run_id": 41607233592,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Nusultan11/citibike/actions/runs/41607233592"
+    }
   },
   "audit": {
     "tracked_and_new_files": 230,
