@@ -87,6 +87,9 @@ jobs:
       - run: uv run --locked python -m tests.integration.analytics_smoke
       - run: uv run --locked --group ml pytest -q tests/integration/test_product.py
       - run: uv run --locked --group ml --group automation pytest -q tests/integration/test_automation.py
+      - run: uv run --locked pytest -q tests/integration/test_release.py
+      - name: Loopback-only staging Compose renders
+        run: RELEASE_ID=ci STAGING_DB_PASSWORD=ci STAGING_READER_PASSWORD=ci docker compose -f compose.staging.yaml config --quiet
       - name: API image excludes optional F7 runtime
         run: docker compose run --rm --no-deps api python -c "import importlib.util; assert all(importlib.util.find_spec(p) is None for p in ('mlflow','prefect'))"
       - run: uv run --locked --group ml python -m tests.integration.product_smoke --mode fixture

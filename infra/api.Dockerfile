@@ -8,6 +8,12 @@ COPY src/ ./src/
 RUN uv sync --locked --no-dev --no-editable
 
 FROM python:3.12.13-slim@sha256:229a2c5bfa27522db7815ea81f9bed70af17ccb9de9fc7ad142b1877b5830d36 AS runtime
+# Apply vendor fixes to the pinned base; deployed OCI image ID is retained.
+RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* \
+    && python -m pip uninstall -y pip
+ARG RELEASE_ID=development
+LABEL org.opencontainers.image.revision=$RELEASE_ID
+ENV BIKEFLOW_API_RELEASE=$RELEASE_ID
 ENV PATH="/app/.venv/bin:$PATH" PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 BIKEFLOW_API_HOST=0.0.0.0
 WORKDIR /app
 COPY --from=build --chown=10001:10001 /app/.venv /app/.venv

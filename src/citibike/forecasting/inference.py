@@ -139,10 +139,13 @@ def predict(
     stations: list[str] | None = None,
     *,
     activate: bool = True,
+    dataset_location: Path | None = None,
 ) -> Path:
     before = time.monotonic()
     bundle = checked(bundle_path)
-    dataset_path = Path(bundle["dataset_path"])
+    # A restored immutable dataset may live elsewhere. Identity and every member
+    # checksum still have to match; the original frozen manifests are untouched.
+    dataset_path = dataset_location or Path(bundle["dataset_path"])
     data = checked(dataset_path)
     if bundle["dataset_id"] != data["id"]:
         raise ValueError("Model/dataset version mismatch")

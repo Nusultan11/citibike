@@ -8,7 +8,11 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException
+from starlette.middleware.cors import CORSMiddleware
 
+from apps.api.config import Settings
+from apps.api.security import SecurityMiddleware
+from citibike.release.database import readiness
 from citibike.serving.analytics_api import router as analytics_router
 from citibike.serving.db import DatabaseUnavailable
 from citibike.serving.forecast_api import router as forecast_router
@@ -42,7 +46,15 @@ def error_response(status: int, code: str, message: str) -> JSONResponse:
 
 
 def create_app() -> FastAPI:
+    settings = Settings()
     application = FastAPI(title="BikeFlow Intelligence API", version="0.1.0")
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_methods=["GET"],
+        allow_headers=[],
+    )
+    application.add_middleware(SecurityMiddleware, settings=settings)
     application.include_router(analytics_router)
     application.include_router(forecast_router)
     application.include_router(station_router)
@@ -51,6 +63,14 @@ def create_app() -> FastAPI:
     @application.get("/health", response_model=HealthResponse)
     async def health() -> HealthResponse:
         return HealthResponse()
+
+    @application.get("/ready", include_in_schema=False)
+    def ready() -> JSONResponse:
+        available = readiness()
+        return JSONResponse(
+            {"status": "ok" if available else "unavailable"},
+            status_code=200 if available else 503,
+        )
 
     @application.get("/v1/publication", response_model=PublicationResponse)
     def publication() -> PublicationResponse:

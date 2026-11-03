@@ -14,3 +14,6 @@ class Settings(BaseSettings):
     host: str = Field(default="127.0.0.1", min_length=1)
     port: int = Field(default=8000, ge=1, le=65535)
     log_level: Literal["debug", "info", "warning", "error", "critical"] = "info"
+    release: str = Field(default="development", pattern=r"^[A-Za-z0-9_.-]{1,100}$")
+    rate_per_minute: int = Field(default=600, ge=1, le=100000)
+    cors_origins: list[str] = []

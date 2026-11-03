@@ -18,7 +18,7 @@ Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
 | F5 | `COMPLETED` в сценарном recorded-as-of scope: risk, heuristic, bounded transport MILP и CLI | [Controlled comparison и real-official as-of replay](docs/evidence/f5-risk.md):3/64 eligible; это не текущий live risk |
 | F6 | Product views: overview, analytics, stations, forecasts, scenarios | [Функциональная desktop/mobile проверка с ограничениями timings](docs/evidence/f6-product.json) |
 | F7 | Prefect workflows/scheduler, локальный MLflow Registry, gates, events, fallback | [Результаты и границы фактических проверок](docs/evidence/f7-automation.json); независимая приёмка отдельно |
-| F8 | `PLANNED`: production hardening | Release gates — [OPERATIONS](OPERATIONS.md) |
+| F8 | `PARTIAL`: изолированный loopback staging, security perimeter, load, backup/restore, rollback, monitoring | [Локальные проверки и release blockers](docs/evidence/f8-release.json); production deploy/TLS `BLOCKED` |
 
 Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Принятие
 F2/F3/F4 пользователем подтверждено заданием F5 с сохранёнными ограничениями;
@@ -449,6 +449,38 @@ candidate hash и действию. Реального approval/нового ind
 он проверяет механизм, не доказывает качество или разрешение на real promotion.
 Fallback остаётся Seasonal Naive. SQLite/model artifacts/secrets в Git не входят.
 Production deploy/security/load и обязательные restore gates остаются F8.
+
+## F8 — изолированный локальный staging
+
+Staging — отдельный Compose project `bikeflow-staging` со своей PostgreSQL,
+volume и `data/staging/` (ignored). Порты только `127.0.0.1`: web 13000,
+API 18000, PostgreSQL 25432. Prefect/MLflow в staging не публикуются. API ходит
+в БД ролью `bikeflow_reader` (только SELECT); миграции применяет owner-роль
+через checksummed `schema_migrations`. Публичного deploy-пути в коде нет.
+
+```sh
+uv run --locked python -m citibike.release init            # пароли в ignored runtime.env
+uv run --locked python -m citibike.release deploy --release <id> --approval <file.json>
+uv run --locked python -m citibike.release seed --registry <isolated-f7-registry>
+uv run --locked python -m citibike.release rollback
+uv run --locked python -m citibike.release backup --target data/staging/backups/<ts>
+uv run --locked python -m citibike.release restore --source <backup> --store <new-dir>
+uv run --locked --group ml python -m citibike.release model-parity --restored <new-dir> --work <dir>
+uv run --locked python -m citibike.release monitor --backup <backup>
+uv run --locked python -m citibike.release benchmark --output <file.json>
+```
+
+Approval — локальный JSON `{"release", "environment": "local_staging",
+"approved_by": "owner", "approved": true}`; без него deploy ничего не меняет.
+Образы собираются до мутаций, `up` запускается с `--no-build --pull never`;
+при неудачном health/smoke API и web возвращаются на предыдущий релиз. Образ БД
+имеет стабильный тег, поэтому релиз и rollback не пересоздают PostgreSQL.
+Миграции только forward: rollback кода совместим, пока новые миграции аддитивны.
+`seed` копирует из dev-БД (read-only транзакция) только небольшие реальные
+публикации F1/F4/F5 и immutable F4 bundle/dataset/Registry; F3 (84 GB) и
+зависящая от него geo не копируются — staging показывает их как `empty`, а не нули.
+Restore всегда создаёт новую БД и новый каталог, проверяет checksums до записи
+и логические дайджесты таблиц после. Результаты — [f8-release.json](docs/evidence/f8-release.json).
 
 ## Проверки и CI
 
