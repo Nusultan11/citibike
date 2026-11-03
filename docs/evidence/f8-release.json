@@ -19,12 +19,22 @@
     },
     "isolation": "own Compose project, network, volume postgres_data, data/staging store; dev DB only read in a read-only REPEATABLE READ transaction by seed",
     "images": {
-      "api f8-local-rc": "sha256:8a7e7283fd7c0198c93e64fcb3f22f33726fc3af5f1e7e50839ecf6aa9938aaa",
-      "web f8-local-rc": "sha256:679945f03f27c52473c0aee56c0de817410d4411560b48a06c0502cdbc0a2dba",
-      "db 17-patched (gosu removed)": "rebuilt in session; image id recorded by final deploy",
-      "base pins": "python:3.12.13-slim@sha256:229a2c5b..., node:24.18.0-bookworm-slim@sha256:6f7b03f7..., postgres:17@sha256:31ba9c94... + apt upgrade at build"
+      "api f8-f02d321": "sha256:8aa9811c35a8eec541e3e9095f0ab0213643da8215a2aaf9d55bdb1c87f05e55",
+      "web f8-f02d321": "sha256:ce05bf8c17a5d31b145ed24f3f612de65268481d6fd82173fda4b0266eaa4dee",
+      "db 17-patched (gosu removed)": "sha256:a9b40e27d90ffeef78f64d34b9421c0cc01f372f70a59c568832c812b1b0c1be",
+      "base pins": "python:3.12.13-slim@sha256:229a2c5b..., node:24.18.0-bookworm-slim@sha256:6f7b03f7..., postgres:17@sha256:31ba9c94... + apt upgrade at build",
+      "trivy_scanned": "final f8-f02d321 api/web and running db image"
     },
-    "final_release": null
+    "final_release": {
+      "release": "f8-f02d321",
+      "code_sha": "f02d3218d9acce3e420154d7afee18c3ff7bb0ac",
+      "deploy_seconds_with_build": 43.44,
+      "smoke": "PASS api 4 + pages 5",
+      "db_recreated": false,
+      "rollback_target": "f8-local-rc",
+      "monitor_status": "failed",
+      "monitor_reasons": "forecast_valid=False, stale_workflows=['trips', 'gbfs', 'forecast', 'risk']"
+    }
   },
   "seed": {
     "status": "seeded",
@@ -64,7 +74,9 @@
     "failure_missing_image": "f8-missing-image: compose up db refused (No such image) in 1.40 s, before migrations/service change; active release unchanged",
     "failure_bad_api": "f8-bad-api (API exits 1): up --wait failed, api+web automatically returned to f8-local-rc with smoke PASS in 23.22 s; active.json unchanged",
     "db_not_recreated": "defect found: DB image was tagged with RELEASE_ID so every deploy recreated PostgreSQL; fixed with stable tag 17-patched; subsequent deploy+rollback: 0 DB recreates, data kept (3 860 371 rides)",
-    "migrations": "checksummed schema_migrations under advisory lock in one transaction; failing migration rolls back atomically (regression test); no new migration in F8, so code rollback is schema-compatible"
+    "migrations": "checksummed schema_migrations under advisory lock in one transaction; failing migration rolls back atomically (regression test); no new migration in F8, so code rollback is schema-compatible",
+    "failure_bad_api_final": "repeated on f8-f02d321: stderr 'Automatic rollback: PASS f8-f02d321 api 4 pages 5' in 22.58 s; active.json unchanged",
+    "db_image_update": "finding: Compose does not recreate a running container when only the image behind an unchanged tag changes; the gosu-free DB image was applied by an explicit --force-recreate --no-deps db (volume kept, KPI 3 860 371). DB image patching is therefore an explicit maintenance step, not part of app deploy"
   },
   "security": {
     "loopback_only": "docker inspect HostIp=127.0.0.1 for 13000/18000/25432; netstat LISTEN only 127.0.0.1; LAN 10.121.216.146 and 172.21.96.1 -> connection refused on all three ports",
