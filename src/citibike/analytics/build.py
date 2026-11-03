@@ -24,6 +24,7 @@ from citibike.ingestion.archive import checksum
 from citibike.processing.history_publish import PUBLICATION_VERSION, publish_history
 from citibike.processing.resources import peak_rss_bytes
 from citibike.storage import identity, read_json, write_json
+from citibike.storage import publish_directory as publish_directory
 
 
 def configured(path: Path) -> duckdb.DuckDBPyConnection:
@@ -32,18 +33,6 @@ def configured(path: Path) -> duckdb.DuckDBPyConnection:
     db.execute("SET preserve_insertion_order=false; SET enable_progress_bar=false")
     db.execute("SET temp_directory=?", [str(path.parent / "spill")])
     return db
-
-
-def publish_directory(stage: Path, target: Path) -> None:
-    """Bounded retry for transient Windows scanner handles; never overwrite."""
-    for attempt in range(6):
-        try:
-            stage.rename(target)
-            return
-        except PermissionError:
-            if attempt == 5 or target.exists():
-                raise
-            time.sleep(0.2 * (attempt + 1))
 
 
 def checked(path: Path) -> dict[str, Any]:

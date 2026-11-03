@@ -16,7 +16,9 @@ import pytest
 from fastapi.testclient import TestClient
 from prefect import flow
 from prefect.client.orchestration import get_client
+from prefect.client.schemas.filters import FlowRunFilter
 from prefect.settings import PREFECT_API_URL, get_current_settings, temporary_settings
+from prefect.states import Scheduled
 
 from apps.api.main import create_app
 from citibike.automation import flows
@@ -495,7 +497,15 @@ def test_real_local_scheduler_trigger_and_repeated_run(
             deadline = time.monotonic() + 150
             with get_client(sync_client=True) as api:
                 while time.monotonic() < deadline:
-                    runs = api.read_flow_runs(limit=100)
+                    # Filter BEFORE pagination. Scheduler prefetch creates future
+                    # runs with newer IDs; ID_DESC/limit=100 can hide Completed
+                    # runs forever even while the runner is working correctly.
+                    runs = api.read_flow_runs(
+                        flow_run_filter=FlowRunFilter.model_validate(
+                            {"state": {"type": {"any_": ["COMPLETED"]}}}
+                        ),
+                        limit=100,
+                    )
                     completed = [
                         r
                         for r in runs
@@ -516,6 +526,30 @@ def test_real_local_scheduler_trigger_and_repeated_run(
                     time.sleep(0.5)
             assert len(completed) >= 2, logfile.read_text(errors="replace")[-3000:]
             assert all(r.state and r.state.is_completed() for r in completed)
+            # Reproduce the old false negative deterministically with a backlog
+            # larger than its page, without manufacturing successful executions.
+            # These future records never run; proof still requires two real
+            # auto_scheduled Completed deployment runs above.
+            with get_client(sync_client=True) as api:
+                for _ in range(110):
+                    api.create_flow_run(
+                        flows.retraining_review,
+                        parameters={"config_path": str(config_path.resolve())},
+                        state=Scheduled(
+                            scheduled_time=datetime.now(UTC) + timedelta(days=1)
+                        ),
+                    )
+                completed_ids = {r.id for r in completed}
+                assert not completed_ids.intersection(
+                    r.id for r in api.read_flow_runs(limit=100)
+                )
+                visible = api.read_flow_runs(
+                    flow_run_filter=FlowRunFilter.model_validate(
+                        {"state": {"type": {"any_": ["COMPLETED"]}}}
+                    ),
+                    limit=100,
+                )
+                assert {r.id for r in completed} <= {r.id for r in visible}
             assert not list((tmp_path / "automation/published").glob("*.json"))
             assert not list((tmp_path / "f4/models").glob("*"))
             write_json(
@@ -525,6 +559,8 @@ def test_real_local_scheduler_trigger_and_repeated_run(
                     "scheduled_run_ids": [str(r.id) for r in completed],
                     "automatic_training": False,
                     "publication_changes": 0,
+                    "future_backlog": 110,
+                    "old_unfiltered_query_misses_completed": True,
                 },
             )
         finally:

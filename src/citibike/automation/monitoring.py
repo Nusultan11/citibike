@@ -14,7 +14,15 @@ from citibike.features.contracts import utc
 from citibike.storage import read_json, write_json
 
 
-def event(root: Path, operation: str, status: str, **details: Any) -> dict[str, Any]:
+def event(
+    root: Path,
+    operation: str,
+    status: str,
+    *,
+    local_webhook: str | None = None,
+    **details: Any,
+) -> dict[str, Any]:
+    notify = details.pop("notify", True)
     now = datetime.now(UTC).isoformat()
     directory = root / "automation/monitoring"
     previous_path = directory / f"{operation}.json"
@@ -46,11 +54,18 @@ def event(root: Path, operation: str, status: str, **details: Any) -> dict[str, 
     alert = status in {"failed", "unavailable"} or recovered
     record["alert"] = alert
     # Never log raw exception messages, credentials or webhook URL.
-    if alert and os.environ.get("BIKEFLOW_ALERT_WEBHOOK"):
-        url = os.environ["BIKEFLOW_ALERT_WEBHOOK"]
+    url = local_webhook or os.environ.get("BIKEFLOW_ALERT_WEBHOOK")
+    if alert and notify and url:
         parsed = urlsplit(url)
         if (
-            parsed.scheme != "https"
+            not (
+                (local_webhook is None and parsed.scheme == "https")
+                or (
+                    local_webhook is not None
+                    and parsed.scheme == "http"
+                    and parsed.hostname in {"127.0.0.1", "::1"}
+                )
+            )
             or not parsed.hostname
             or parsed.username
             or parsed.password
@@ -58,7 +73,9 @@ def event(root: Path, operation: str, status: str, **details: Any) -> dict[str, 
             record["webhook"] = "invalid_configuration"
         else:
             try:
-                with httpx.Client(timeout=5, follow_redirects=False) as client:
+                with httpx.Client(
+                    timeout=5, follow_redirects=False, trust_env=False
+                ) as client:
                     client.post(url, json=record).raise_for_status()
                 record["webhook"] = "delivered"
             except httpx.HTTPError:

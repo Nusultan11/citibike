@@ -9,7 +9,14 @@ import {
   type RiskData,
   readFilters,
   splitPartner,
+  stationPeriod,
 } from "./operations.ts";
+
+test("absent F3 period stays unavailable without fictional dates or null arrows", () => {
+  assert.equal(stationPeriod(null, null), " · период не опубликован");
+  assert.equal(stationPeriod("2026-04-01", null), " · период не опубликован");
+  assert.equal(stationPeriod("2026-04-01", "2026-05-01"), " за 2026-04-01 → 2026-05-01");
+});
 
 test("filters: duplicates, enum, reversed and half-specified periods are errors", () => {
   assert.match(readFilters({ start_date: ["a", "b"] }).error, /один раз/);

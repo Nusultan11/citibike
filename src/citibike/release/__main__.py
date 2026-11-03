@@ -7,7 +7,7 @@ from pathlib import Path
 
 from citibike.release import staging
 from citibike.release.benchmark import measure
-from citibike.release.monitoring import check
+from citibike.release.monitoring import check, watch
 from citibike.release.recovery import backup, model_parity, restore
 from citibike.serving.db import DatabaseSettings
 from citibike.storage import read_json, write_json
@@ -34,6 +34,11 @@ def main() -> None:
     recover.add_argument("--store", required=True, type=Path)
     monitor = sub.add_parser("monitor")
     monitor.add_argument("--backup", type=Path)
+    monitor.add_argument("--watch", action="store_true")
+    monitor.add_argument("--interval", type=float, default=60)
+    monitor.add_argument("--samples", type=int)
+    monitor.add_argument("--latency-budget-ms", type=float, default=1000)
+    monitor.add_argument("--test-webhook", help="Isolated loopback HTTP test receiver")
     bench = sub.add_parser("benchmark")
     bench.add_argument("--url", default="http://127.0.0.1:18000/v1/kpi")
     bench.add_argument("--requests", type=int, default=200)
@@ -84,7 +89,26 @@ def main() -> None:
     elif args.command == "restore":
         _, result = restore(staging.compose(), staging.owner(), args.source, args.store)
     elif args.command == "monitor":
-        result = check(staging.owner(), staging.ROOT / "store", args.backup)
+        if args.watch:
+            watch(
+                staging.owner(),
+                staging.ROOT / "store",
+                args.backup,
+                interval=args.interval,
+                samples=args.samples,
+                local_webhook=args.test_webhook,
+                latency_budget_ms=args.latency_budget_ms,
+                log_command=staging.compose(),
+            )
+            return
+        result = check(
+            staging.owner(),
+            staging.ROOT / "store",
+            args.backup,
+            local_webhook=args.test_webhook,
+            latency_budget_ms=args.latency_budget_ms,
+            log_command=staging.compose(),
+        )
     else:
         result = measure(args.url, args.requests, args.concurrency)
         write_json(args.output, result)

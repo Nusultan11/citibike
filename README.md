@@ -448,7 +448,8 @@ candidate hash и действию. Реального approval/нового ind
 пока нет. Controlled promotion/rollback разрешён только в `f7-test-*` namespace;
 он проверяет механизм, не доказывает качество или разрешение на real promotion.
 Fallback остаётся Seasonal Naive. SQLite/model artifacts/secrets в Git не входят.
-Production deploy/security/load и обязательные restore gates остаются F8.
+Production deploy остаётся BLOCKED в F8; локальные staging/security/load/restore
+проверки и ограничения приведены ниже и в F8 evidence.
 
 ## F8 — изолированный локальный staging
 
@@ -467,6 +468,9 @@ uv run --locked python -m citibike.release backup --target data/staging/backups/
 uv run --locked python -m citibike.release restore --source <backup> --store <new-dir>
 uv run --locked --group ml python -m citibike.release model-parity --restored <new-dir> --work <dir>
 uv run --locked python -m citibike.release monitor --backup <backup>
+uv run --locked python -m citibike.release monitor --backup <backup> --watch --interval 60
+# Bounded drill; --test-webhook accepts only an isolated loopback HTTP receiver.
+uv run --locked python -m citibike.release monitor --backup <backup> --watch --interval 2 --samples 12 --test-webhook http://127.0.0.1:<port>/alerts
 uv run --locked python -m citibike.release benchmark --output <file.json>
 ```
 
@@ -482,6 +486,27 @@ Approval — локальный JSON `{"release", "environment": "local_staging"
 Restore всегда создаёт новую БД и новый каталог, проверяет checksums до записи
 и логические дайджесты таблиц после. Результаты — [f8-release.json](docs/evidence/f8-release.json).
 
+`monitor --watch` — отдельный локальный процесс, завершение через Ctrl+C.
+Он сохраняет snapshot-метрики в
+`data/staging/store/automation/monitoring/release-metrics.jsonl`, immutable F7 events
+и latest summaries. Проверяются HTTP readiness/latency/errors, PostgreSQL,
+disk, backup age/checksums, F7 terminal states/cadence и forecast validity.
+Окно реального HTTP traffic — последние 60 s / максимум 10000 строк существующих
+структурированных API logs; окна перекрываются и не суммируются как счётчики.
+Probe latency хранится отдельно. `--latency-budget-ms` по умолчанию 1000 — локальный
+порог мониторинга, не утверждённый SLA. Alert/recovery создаются при смене каждого
+сигнала; восстановление БД видно и при просроченном forecast. HTTPS production
+webhook остаётся опциональным F7 env-настройкой; локальная доставка проверяется
+изолированным приёмником без секретов. Production alert/on-call и retention
+локальных метрик требуют решения владельца. Сам монитор не запускает F7 writers
+и не обновляет timestamp исходных публикаций.
+
+F6 функционально завершён, F7 реализован и проверен локально; независимая приёмка
+не выводится из этих статусов. **F8 PARTIAL**: public hosting/TLS/access/secrets/
+off-host backup policies не утверждены. Single API worker/2 CPU сохраняются;
+простои при restart/deploy измеряются, выбор второго инстанса либо maintenance
+window остаётся за владельцем. Empty F3 и expired forecast не превращаются в нули.
+
 ## Проверки и CI
 
 Быстрые проверки и полный локальный suite (PostgreSQL нужен для integration):
@@ -491,11 +516,12 @@ uv sync --locked --group ml --group automation
 uv run --locked ruff check .
 uv run --locked ruff format --check .
 uv run --locked mypy
-uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration --basetemp .cache/dt
+uv run --locked --group ml --group automation pytest -q tests/unit tests/data_contracts tests/ml tests/integration --basetemp .cache/dt
 uv build
 npm --prefix apps/web ci
 npm --prefix apps/web run lint
 npm --prefix apps/web run typecheck
+npm --prefix apps/web test
 npm --prefix apps/web run build
 git diff --check
 ```
@@ -525,7 +551,7 @@ forecast/analytics smoke и F1 outage/recovery. Полная история и r
 | Operational champion, ML_SPEC §5 | `NOT VERIFIED`: forward/shadow evaluation отсутствует. Local champion manifests выбирают baseline, это fallback без доказанного operational uplift; strict current input gate не заменяет forward evaluation |
 | MLflow lifecycle, ML_SPEC §7 | `IMPLEMENTED` в F7: database-backed Registry, version/run lineage и guarded operator transition; автоматического promotion нет. [Проверки](docs/evidence/f7-automation.json) |
 | Risk/Optimization, ML_SPEC §6 | `VERIFIED` controlled и real-official recorded-as-of scenario3/64. Current live readiness/calibration `NOT VERIFIED`; no-action дешевле по loss+λcost этого малого replay. [F5 evidence](docs/evidence/f5-risk.md) |
-| Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F6–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
+| Product/performance, PROJECT_SPEC / OPERATIONS | F6 functional `VERIFIED`, F7 local automation `VERIFIED`, F8 local hardening `PARTIAL`: [F6](docs/evidence/f6-product.json), [F7](docs/evidence/f7-automation.json), [F8](docs/evidence/f8-release.json). Исторический F3 p95 monthly route с category filter **2413.46 ms** сохраняется как прежний performance debt; concurrent production SLA/cold cache и full-scale restore `NOT VERIFIED` |
 
 F2/F3/F4 приняты пользователем в задании F5 с явно сохранённым F3 performance debt
 и NOT VERIFIED operational promotion F4. Эти ограничения передаются в F5;
@@ -546,8 +572,9 @@ frozen selection/final-test/serving не переизбираются.
 **один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
 приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
 допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая
-приёмка F7 с сохранёнными ограничениями current live inputs и operational promotion.
-F8 автоматически не начинать.
+приёмка корректирующего локального результата F8 и решения владельца по открытым
+production gates; ограничения current live inputs и operational promotion сохранены.
+Публичный deploy не разрешён.
 
 [Citi Bike System Data](https://citibikenyc.com/system-data),
 [Data Sharing Policy](https://citibikenyc.com/data-sharing-policy).

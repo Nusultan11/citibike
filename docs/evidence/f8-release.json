@@ -682,5 +682,3447 @@
     "Isolated cold OS/DB cache benchmark; multi-worker/horizontal scaling",
     "High availability (single Compose host is not HA)",
     "Live GBFS freshness and current forecast validity (official feed stale; forecast window expired)"
-  ]
+  ],
+  "corrective_20261103": {
+    "status": "PARTIAL; production gates BLOCKED; independent acceptance separate",
+    "recorded_at": "2026-11-03T13:55:03.645011+00:00",
+    "base_head": "36c38235bc55994745f3d43430d9a43e06f1d694",
+    "historical_fields": "All pre-existing root evidence preserved as historical; this section supersedes the earlier monitor/live429/empty-state observations only for current local correction.",
+    "scheduler": {
+      "first_fail_ci": "https://github.com/Nusultan11/citibike/actions/runs/41628237565/attempts/1",
+      "cause": "ID_DESC limit100 unfiltered Prefect runs page is dominated by future schedule prefetch. CI log includes Completed runs but observer reports zero; at capacity is expected for runner limit1, not proof of deadlock.",
+      "fix": "Server-side COMPLETED filtering before pagination; retain deployment_id, auto_scheduled, Completed and exact config-path assertions. No deadline increase/concurrency bypass/artificial completion.",
+      "regression": "Two actual auto_scheduled completed runs required. 110 future unexecuted records deterministically hide these IDs from old page; filtered query still returns them. Two independent servers tested concurrently.",
+      "proofs": [
+        {
+          "mode": "controlled_scheduler",
+          "scheduled_run_ids": [
+            "01a1a165-f808-754e-a317-7a48aae9af87",
+            "01a1a165-f808-7117-a09a-5f2b8b67c87b"
+          ],
+          "automatic_training": false,
+          "publication_changes": 0,
+          "future_backlog": 110,
+          "old_unfiltered_query_misses_completed": true
+        },
+        {
+          "mode": "controlled_scheduler",
+          "scheduled_run_ids": [
+            "01a1a166-2ee8-7867-acf7-c3895b06ddc3",
+            "01a1a166-2ee8-743b-ad68-4fd6ce8137c0"
+          ],
+          "automatic_training": false,
+          "publication_changes": 0,
+          "future_backlog": 110,
+          "old_unfiltered_query_misses_completed": true
+        }
+      ],
+      "failed_attempts": "Initial regression erroneously checked all Completed including the manual UUID4 bootstrap; corrected assertion compares actual scheduled IDs, then both repeats PASS."
+    },
+    "windows_audit_failure": {
+      "reproduced": "Full suite: 239 PASS / 1 FAIL, WinError5 at historical.prepare audit directory rename. Historical F7 journal recorded same intermittency.",
+      "fix": "Move existing bounded six-attempt atomic-directory helper to shared storage, preserve analytics import, use for F2 audit rename; same versions/checksums/formulas, fail on persistent refusal or existing target.",
+      "regression": "Transient real prepare/reconciliation + immutable repeat; persistent failure six attempts; existing publication no retry/overwrite.",
+      "additional_failure": "Supplementary parallel run: Prefect startup timeout; 17 passed, 5 setup errors. Long observation gap / elapsed 3331s; OS sleep not confirmed (no matching System event). Timeout not increased. Independent explicit F7 final suite 7 PASS."
+    },
+    "monitoring": {
+      "command": [
+        "uv run --locked python",
+        "-m",
+        "citibike.release",
+        "monitor",
+        "--backup",
+        "data/staging/backups/f8-corrective-20261103",
+        "--watch",
+        "--interval",
+        "2",
+        "--samples",
+        "12",
+        "--test-webhook",
+        "http://127.0.0.1:54159/alerts"
+      ],
+      "samples": 12,
+      "interval_seconds": 2,
+      "db_stop_start_recovery_seconds": 16.51500000001397,
+      "all_table_digests": "PASS",
+      "latest": {
+        "event_id": "fb47da6260db4098bd100f439e7daaa4",
+        "created_at": "2026-11-03T12:43:33.135073+00:00",
+        "operation": "release",
+        "status": "failed",
+        "last_terminal_status": "failed",
+        "recovery": "required",
+        "accuracy": {
+          "status": "pending_actuals",
+          "mae": null,
+          "wape": null,
+          "bias": null
+        },
+        "signals": {
+          "database_ready": true,
+          "disk_free_bytes": 415532314624,
+          "backup_age_seconds": 228.046393,
+          "backup_integrity": true,
+          "workflow_failures": [],
+          "forecast": {
+            "publication_id": "1e204ac4a944381529e00b500586a00a82c7b8eca31cd8f4c978b1c282d81810",
+            "status": "ok",
+            "valid_until": "2026-10-30T12:00:00+00:00",
+            "data_as_of": "2026-10-01T04:00:00+00:00"
+          },
+          "ingestion": {},
+          "http": {
+            "observations": [
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 22.130999946966767
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 22.100399946793914
+              },
+              {
+                "path": "/ready",
+                "status": 503,
+                "latency_ms": 4022.740700049326
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 503,
+                "latency_ms": 3116.402299958281
+              },
+              {
+                "path": "/ready",
+                "status": 503,
+                "latency_ms": 3199.095500051044
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 55.88170001283288
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 56.575900060124695
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 55.71829993277788
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 35.1270999526605
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 25.651499978266656
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 42.73139999713749
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 28.05880003143102
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 16.900000046007335
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 20.024499972350895
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 45.755599974654615
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 25.66130005288869
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 16.48610003758222
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 17.482499941252172
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 42.21840004902333
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 20.984399947337806
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 19.221400027163327
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 19.72290000412613
+              },
+              {
+                "path": "/ready",
+                "status": 200,
+                "latency_ms": 19.60450003389269
+              },
+              {
+                "path": "/v1/kpi",
+                "status": 200,
+                "latency_ms": 20.24750004056841
+              }
+            ],
+            "window_samples": 24,
+            "errors": 3,
+            "error_rate": 0.125,
+            "latency_ms": {
+              "p50": 25.651499978266656,
+              "p95": 3199.095500051044,
+              "p99": 4022.740700049326
+            },
+            "scope": "bounded synthetic probes; not production traffic telemetry"
+          },
+          "traffic": {
+            "scope": "last 60s, at most 10000 log lines; overlapping windows; current container",
+            "samples": 41,
+            "errors": 5,
+            "error_rate": 0.12195121951219512,
+            "latency_ms": {
+              "p50": 18.251,
+              "p95": 3195.426,
+              "p99": 4006.14
+            },
+            "throughput_rps": 0.6833333333333333,
+            "collector_ok": true
+          },
+          "stale_workflows": [
+            "trips",
+            "gbfs",
+            "forecast",
+            "risk"
+          ],
+          "connections": {
+            "total": 6
+          },
+          "database_bytes": {
+            "bytes": 299488947
+          },
+          "forecast_valid": false
+        },
+        "checks": {
+          "api": true,
+          "latency": true,
+          "database": true,
+          "disk": true,
+          "backup": true,
+          "workflows": false,
+          "forecast": false,
+          "traffic": false
+        },
+        "latency_budget_ms": 1000,
+        "transitions": [],
+        "alert": true
+      },
+      "delivered_events": [
+        {
+          "event_id": "4f121e95934f4acda7bbfbe132b1b794",
+          "operation": "release.workflows",
+          "status": "failed",
+          "recovery": "required"
+        },
+        {
+          "event_id": "f8e9d219aa9d4949a01159701af244c0",
+          "operation": "release.forecast",
+          "status": "failed",
+          "recovery": "required"
+        },
+        {
+          "event_id": "15221074e15d4b63aa23e552d0db0346",
+          "operation": "release.api",
+          "status": "failed",
+          "recovery": "required"
+        },
+        {
+          "event_id": "0780bdb75e9b4d39bb7e22b1abb8d633",
+          "operation": "release.latency",
+          "status": "failed",
+          "recovery": "required"
+        },
+        {
+          "event_id": "9034f2254c974ede9bd5d2bb2b18a8d1",
+          "operation": "release.database",
+          "status": "failed",
+          "recovery": "required"
+        },
+        {
+          "event_id": "f6b6a2e9472041d691f5674aac2f29e2",
+          "operation": "release.traffic",
+          "status": "failed",
+          "recovery": "required"
+        },
+        {
+          "event_id": "c5196424b2114a15b4d3b491df811142",
+          "operation": "release.database",
+          "status": "ok",
+          "recovery": "recovered"
+        },
+        {
+          "event_id": "605707660d7947bb843ee829b8ce46fc",
+          "operation": "release.api",
+          "status": "ok",
+          "recovery": "recovered"
+        },
+        {
+          "event_id": "cf6a6acf30b842b1bb3a3107bdf17583",
+          "operation": "release.latency",
+          "status": "ok",
+          "recovery": "recovered"
+        }
+      ],
+      "running_process": {
+        "started_utc": "2026-11-03T12:49:45.2116742Z",
+        "scope": "loopback staging only; no external webhook",
+        "pid": 28332,
+        "interval_seconds": 60
+      },
+      "latest_background": {
+        "event_id": "5c04337d33474ee88c2ee5bbb647f100",
+        "status": "failed",
+        "checks": {
+          "api": true,
+          "latency": true,
+          "database": true,
+          "disk": true,
+          "backup": true,
+          "workflows": false,
+          "forecast": false,
+          "traffic": true
+        }
+      },
+      "local_metrics_path": "data/staging/store/automation/monitoring/release-metrics.jsonl",
+      "limits": [
+        "local process only, not boot persistence/HA",
+        "60s/10000-log traffic snapshots overlap; probes separate",
+        "log collector follows current API container; unavailable-connection errors require probes",
+        "owner still decides production external channel/on-call, metric retention and source F7 deployment"
+      ]
+    },
+    "staging_quality": {
+      "mode": "controlled_fixture",
+      "database": "bikeflow_test_4a025ad4345443769636db419f7edace",
+      "full_84gb_publication": false,
+      "empty_html": "PASS",
+      "limited_f3": {
+        "analytics_smoke": "PASS, independent fixture answer 5 and filtered 1",
+        "geo": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+        "stations": 2,
+        "html": "PASS"
+      },
+      "live_rate_limit": {
+        "limit_per_minute": 3,
+        "statuses": [
+          200,
+          200,
+          200,
+          429,
+          429
+        ],
+        "retry_after": "60",
+        "restored_limit": 6000,
+        "restored_http": 200,
+        "staging_config_changed": false
+      }
+    },
+    "performance": {
+      "before_shared_matrix": [
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 200,
+          "concurrency": 1,
+          "first_request_ms": 27.632800047285855,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 19.724300014786422,
+            "p95": 25.42880002874881,
+            "p99": 27.6219000807032
+          },
+          "seconds": 4.083565799985081,
+          "requests_per_second": 48.97680355750131,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 60.61,
+              "memory_samples": [
+                "65.02MiB / 512MiB",
+                "65.47MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 55.06,
+              "memory_samples": [
+                "66.33MiB / 2GiB",
+                "68.41MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 0.0,
+              "memory_samples": [
+                "105.5MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 1000,
+          "concurrency": 8,
+          "first_request_ms": 28.55940000154078,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 95.36140004638582,
+            "p95": 154.48750008363277,
+            "p99": 177.75959998834878
+          },
+          "seconds": 12.627384399995208,
+          "requests_per_second": 79.19296414231117,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 164.08,
+              "memory_samples": [
+                "65.7MiB / 512MiB",
+                "65.85MiB / 512MiB",
+                "65.88MiB / 512MiB",
+                "66.21MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 106.92,
+              "memory_samples": [
+                "72.62MiB / 2GiB",
+                "73.18MiB / 2GiB",
+                "74.47MiB / 2GiB",
+                "76.71MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 31.77,
+              "memory_samples": [
+                "105.5MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 30.94910003710538,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 438.36689996533096,
+            "p95": 645.2835999662057,
+            "p99": 775.5475000012666
+          },
+          "seconds": 13.788112300098874,
+          "requests_per_second": 72.52624421929238,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 181.04,
+              "memory_samples": [
+                "67.99MiB / 512MiB",
+                "68.41MiB / 512MiB",
+                "68.61MiB / 512MiB",
+                "78.56MiB / 512MiB",
+                "79.19MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 103.95,
+              "memory_samples": [
+                "66.46MiB / 2GiB",
+                "75.68MiB / 2GiB",
+                "89.12MiB / 2GiB",
+                "90.36MiB / 2GiB",
+                "99.64MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 35.67,
+              "memory_samples": [
+                "105.5MiB / 512MiB",
+                "118.2MiB / 512MiB",
+                "121.9MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 20.30820003710687,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 561.1489999573678,
+            "p95": 929.1381000075489,
+            "p99": 1063.9056999934837
+          },
+          "seconds": 18.353647399926558,
+          "requests_per_second": 54.485082894422476,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 173.09,
+              "memory_samples": [
+                "68.18MiB / 512MiB",
+                "69.21MiB / 512MiB",
+                "69.66MiB / 512MiB",
+                "69.84MiB / 512MiB",
+                "69.91MiB / 512MiB",
+                "69.95MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 114.95,
+              "memory_samples": [
+                "106.2MiB / 2GiB",
+                "82.85MiB / 2GiB",
+                "82.98MiB / 2GiB",
+                "88.28MiB / 2GiB",
+                "88.88MiB / 2GiB",
+                "91.06MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 50.88,
+              "memory_samples": [
+                "105.5MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v3/forecasts",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 76.13519998267293,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 152.07660000305623,
+            "p95": 247.5572000257671,
+            "p99": 282.403799938038
+          },
+          "seconds": 10.018139000050724,
+          "requests_per_second": 49.9094692135404,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 204.54,
+              "memory_samples": [
+                "67.7MiB / 512MiB",
+                "69.63MiB / 512MiB",
+                "73.25MiB / 512MiB",
+                "78.62MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 174.31,
+              "memory_samples": [
+                "66.57MiB / 2GiB",
+                "74.57MiB / 2GiB",
+                "76.65MiB / 2GiB",
+                "76.66MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 1.55,
+              "memory_samples": [
+                "105.5MiB / 512MiB",
+                "108.6MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v4/risk",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 42.882599984295666,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 157.39800001028925,
+            "p95": 210.61599999666214,
+            "p99": 242.6580999745056
+          },
+          "seconds": 10.04395039996598,
+          "requests_per_second": 49.781209592760796,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 179.54,
+              "memory_samples": [
+                "68.17MiB / 512MiB",
+                "68.25MiB / 512MiB",
+                "68.42MiB / 512MiB",
+                "68.98MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 119.31,
+              "memory_samples": [
+                "66.14MiB / 2GiB",
+                "74.67MiB / 2GiB",
+                "76.72MiB / 2GiB",
+                "77.35MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 32.92,
+              "memory_samples": [
+                "105.5MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/publication",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 17.996800015680492,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 77.55749998614192,
+            "p95": 112.14839993044734,
+            "p99": 141.48069999646395
+          },
+          "seconds": 5.037841400015168,
+          "requests_per_second": 99.24885686129274,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 202.84,
+              "memory_samples": [
+                "68.22MiB / 512MiB",
+                "68.54MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 164.63,
+              "memory_samples": [
+                "73.07MiB / 2GiB",
+                "76.4MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 0.01,
+              "memory_samples": [
+                "105.5MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:13000/",
+          "requests": 200,
+          "concurrency": 4,
+          "first_request_ms": 404.3585000326857,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 750.2286999952048,
+            "p95": 1452.4318999610841,
+            "p99": 1906.9488999666646
+          },
+          "seconds": 39.961315399967134,
+          "requests_per_second": 5.00484025608838,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 202.6,
+              "memory_samples": [
+                "68.69MiB / 512MiB",
+                "68.81MiB / 512MiB",
+                "68.94MiB / 512MiB",
+                "68.95MiB / 512MiB",
+                "69.05MiB / 512MiB",
+                "69.45MiB / 512MiB",
+                "69.52MiB / 512MiB",
+                "71.32MiB / 512MiB",
+                "74.14MiB / 512MiB",
+                "78.14MiB / 512MiB",
+                "79.73MiB / 512MiB",
+                "79.88MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 240.87,
+              "memory_samples": [
+                "66.14MiB / 2GiB",
+                "66.2MiB / 2GiB",
+                "66.51MiB / 2GiB",
+                "73.44MiB / 2GiB",
+                "73.77MiB / 2GiB",
+                "77.71MiB / 2GiB",
+                "78.51MiB / 2GiB",
+                "79.35MiB / 2GiB",
+                "81.82MiB / 2GiB",
+                "84.48MiB / 2GiB",
+                "84.85MiB / 2GiB",
+                "89.79MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 177.43,
+              "memory_samples": [
+                "111MiB / 512MiB",
+                "115.4MiB / 512MiB",
+                "116.4MiB / 512MiB",
+                "120.7MiB / 512MiB",
+                "121.6MiB / 512MiB",
+                "123.1MiB / 512MiB",
+                "124.1MiB / 512MiB",
+                "125.3MiB / 512MiB",
+                "125.4MiB / 512MiB",
+                "125.7MiB / 512MiB",
+                "125MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:13000/forecasts",
+          "requests": 200,
+          "concurrency": 4,
+          "first_request_ms": 128.76700004562736,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 153.46589998807758,
+            "p95": 277.194399968721,
+            "p99": 317.27469991892576
+          },
+          "seconds": 8.246571899973787,
+          "requests_per_second": 24.252501818438727,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 137.66,
+              "memory_samples": [
+                "68.37MiB / 512MiB",
+                "68.45MiB / 512MiB",
+                "76.07MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 116.57,
+              "memory_samples": [
+                "59.81MiB / 2GiB",
+                "60.98MiB / 2GiB",
+                "62.65MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 122.81,
+              "memory_samples": [
+                "126.2MiB / 512MiB",
+                "127.4MiB / 512MiB",
+                "128.8MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        }
+      ],
+      "after_shared_matrix": [
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 200,
+          "concurrency": 1,
+          "first_request_ms": 26.67340007610619,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 22.051699925214052,
+            "p95": 31.198799959383905,
+            "p99": 38.310399977490306
+          },
+          "seconds": 4.654598699999042,
+          "requests_per_second": 42.96825846663025,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 73.14,
+              "memory_samples": [
+                "52.16MiB / 512MiB",
+                "52.87MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 51.7,
+              "memory_samples": [
+                "24.59MiB / 2GiB",
+                "25.96MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 47.63,
+              "memory_samples": [
+                "93.57MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 1000,
+          "concurrency": 8,
+          "first_request_ms": 49.70329999923706,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 110.03250000067055,
+            "p95": 196.87189999967813,
+            "p99": 240.48599996604025
+          },
+          "seconds": 14.844871400040574,
+          "requests_per_second": 67.36333195835343,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 207.66,
+              "memory_samples": [
+                "53.21MiB / 512MiB",
+                "53.41MiB / 512MiB",
+                "58.56MiB / 512MiB",
+                "73.17MiB / 512MiB",
+                "85.79MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 157.65,
+              "memory_samples": [
+                "24.77MiB / 2GiB",
+                "32.54MiB / 2GiB",
+                "32.5MiB / 2GiB",
+                "33.86MiB / 2GiB",
+                "35.11MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 13.5,
+              "memory_samples": [
+                "93.57MiB / 512MiB",
+                "93.65MiB / 512MiB",
+                "93.66MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 35.941700101830065,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 391.3244999712333,
+            "p95": 810.6208000099286,
+            "p99": 980.7266999268904
+          },
+          "seconds": 13.553689999971539,
+          "requests_per_second": 73.78064571361008,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 215.05,
+              "memory_samples": [
+                "56.86MiB / 512MiB",
+                "56.88MiB / 512MiB",
+                "56.93MiB / 512MiB",
+                "57.1MiB / 512MiB",
+                "67.84MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 160.07,
+              "memory_samples": [
+                "24.59MiB / 2GiB",
+                "34.43MiB / 2GiB",
+                "39.48MiB / 2GiB",
+                "39.86MiB / 2GiB",
+                "41.27MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 49.16,
+              "memory_samples": [
+                "109MiB / 512MiB",
+                "93.74MiB / 512MiB",
+                "93.75MiB / 512MiB",
+                "94.29MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 31.279199989512563,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 442.48829991556704,
+            "p95": 653.5190000431612,
+            "p99": 740.2664000401273
+          },
+          "seconds": 13.962900499929674,
+          "requests_per_second": 71.61835751855688,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 211.3,
+              "memory_samples": [
+                "57.32MiB / 512MiB",
+                "57.68MiB / 512MiB",
+                "57.6MiB / 512MiB",
+                "57.71MiB / 512MiB",
+                "58.24MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 168.42,
+              "memory_samples": [
+                "24.79MiB / 2GiB",
+                "27.72MiB / 2GiB",
+                "34.03MiB / 2GiB",
+                "39.5MiB / 2GiB",
+                "46.07MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 0.02,
+              "memory_samples": [
+                "93.84MiB / 512MiB",
+                "93.85MiB / 512MiB",
+                "93.93MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v3/forecasts",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 30.073000001721084,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 109.89060008432716,
+            "p95": 151.43550001084805,
+            "p99": 184.32600004598498
+          },
+          "seconds": 7.048275100067258,
+          "requests_per_second": 70.93934230734394,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 190.25,
+              "memory_samples": [
+                "57.61MiB / 512MiB",
+                "58.07MiB / 512MiB",
+                "58.71MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 153.19,
+              "memory_samples": [
+                "25.31MiB / 2GiB",
+                "33.52MiB / 2GiB",
+                "36.38MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 26.0,
+              "memory_samples": [
+                "108.9MiB / 512MiB",
+                "109.7MiB / 512MiB",
+                "98.61MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v4/risk",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 40.520799928344786,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 135.2609999012202,
+            "p95": 191.55550003051758,
+            "p99": 217.49209996778518
+          },
+          "seconds": 8.773943700012751,
+          "requests_per_second": 56.98691684097236,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 190.0,
+              "memory_samples": [
+                "58.13MiB / 512MiB",
+                "58.28MiB / 512MiB",
+                "58.55MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 134.52,
+              "memory_samples": [
+                "34.33MiB / 2GiB",
+                "35.86MiB / 2GiB",
+                "36.35MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 0.02,
+              "memory_samples": [
+                "93.94MiB / 512MiB",
+                "94.02MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18000/v1/publication",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 20.2729000011459,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 79.23330005723983,
+            "p95": 113.3228000253439,
+            "p99": 127.06199998501688
+          },
+          "seconds": 5.080325699993409,
+          "requests_per_second": 98.41888680496383,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 205.02,
+              "memory_samples": [
+                "58.59MiB / 512MiB",
+                "58.6MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 152.78,
+              "memory_samples": [
+                "32.77MiB / 2GiB",
+                "32.89MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 33.89,
+              "memory_samples": [
+                "94.03MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:13000/",
+          "requests": 200,
+          "concurrency": 4,
+          "first_request_ms": 161.6663000313565,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 485.9675000188872,
+            "p95": 720.373300020583,
+            "p99": 851.6059999819845
+          },
+          "seconds": 25.303814599988982,
+          "requests_per_second": 7.903946624715116,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 195.73,
+              "memory_samples": [
+                "59.89MiB / 512MiB",
+                "59.92MiB / 512MiB",
+                "60.77MiB / 512MiB",
+                "61.22MiB / 512MiB",
+                "61.34MiB / 512MiB",
+                "61.38MiB / 512MiB",
+                "61.58MiB / 512MiB",
+                "71.42MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 163.79,
+              "memory_samples": [
+                "25.07MiB / 2GiB",
+                "25.42MiB / 2GiB",
+                "33.56MiB / 2GiB",
+                "39.15MiB / 2GiB",
+                "41.24MiB / 2GiB",
+                "43.61MiB / 2GiB",
+                "44.76MiB / 2GiB",
+                "46.33MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 120.81,
+              "memory_samples": [
+                "109.6MiB / 512MiB",
+                "113.5MiB / 512MiB",
+                "119.2MiB / 512MiB",
+                "121.6MiB / 512MiB",
+                "122.1MiB / 512MiB",
+                "122.4MiB / 512MiB",
+                "122.7MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:13000/forecasts",
+          "requests": 200,
+          "concurrency": 4,
+          "first_request_ms": 55.879499996080995,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 100.96519999206066,
+            "p95": 153.82150001823902,
+            "p99": 209.85860005021095
+          },
+          "seconds": 5.393537599942647,
+          "requests_per_second": 37.08141387614072,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "observed_resources": {
+            "bikeflow-staging-api-1": {
+              "max_cpu_percent": 145.5,
+              "memory_samples": [
+                "60.79MiB / 512MiB",
+                "60.84MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 221.81,
+              "memory_samples": [
+                "46.01MiB / 2GiB",
+                "48.42MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-web-1": {
+              "max_cpu_percent": 126.78,
+              "memory_samples": [
+                "125.2MiB / 512MiB",
+                "129.2MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        }
+      ],
+      "crossover": [
+        {
+          "url": "http://127.0.0.1:18001/v1/kpi",
+          "requests": 200,
+          "concurrency": 1,
+          "first_request_ms": 42.7995000500232,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 27.18760003335774,
+            "p95": 38.91449992079288,
+            "p99": 44.42279995419085
+          },
+          "seconds": 5.693306199973449,
+          "requests_per_second": 35.12897303871215,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "label": "before",
+          "image": "bikeflow-staging-api:f8-f02d321",
+          "observed_resources": {
+            "bikeflow-f8-perf-before": {
+              "max_cpu_percent": 59.34,
+              "memory_samples": [
+                "49.57MiB / 512MiB",
+                "49.83MiB / 512MiB",
+                "50.1MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 62.29,
+              "memory_samples": [
+                "26.83MiB / 2GiB",
+                "27.3MiB / 2GiB",
+                "27.95MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18002/v1/kpi",
+          "requests": 200,
+          "concurrency": 1,
+          "first_request_ms": 30.185100040398538,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 18.98689998779446,
+            "p95": 27.580499998293817,
+            "p99": 30.095200054347515
+          },
+          "seconds": 4.128748100018129,
+          "requests_per_second": 48.44083367525421,
+          "errors": 0,
+          "statuses": {
+            "200": 200
+          },
+          "label": "after",
+          "image": "bikeflow-staging-api:f8-corrective-20261103",
+          "observed_resources": {
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 57.59,
+              "memory_samples": [
+                "26.89MiB / 2GiB",
+                "27.22MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-f8-perf-after": {
+              "max_cpu_percent": 50.59,
+              "memory_samples": [
+                "49.05MiB / 512MiB",
+                "49.57MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18001/v1/kpi",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 25.849100085906684,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 115.7969000050798,
+            "p95": 172.65099997166544,
+            "p99": 206.80409995839
+          },
+          "seconds": 7.43142630008515,
+          "requests_per_second": 67.28183525069353,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "label": "before",
+          "image": "bikeflow-staging-api:f8-f02d321",
+          "observed_resources": {
+            "bikeflow-f8-perf-before": {
+              "max_cpu_percent": 166.89,
+              "memory_samples": [
+                "51.96MiB / 512MiB",
+                "52.39MiB / 512MiB",
+                "52.5MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 114.49,
+              "memory_samples": [
+                "31.68MiB / 2GiB",
+                "33.3MiB / 2GiB",
+                "34.91MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18002/v1/kpi",
+          "requests": 500,
+          "concurrency": 8,
+          "first_request_ms": 26.74160001333803,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 77.3429999826476,
+            "p95": 110.42049992829561,
+            "p99": 124.23049996141344
+          },
+          "seconds": 4.97313870000653,
+          "requests_per_second": 100.54012770634037,
+          "errors": 0,
+          "statuses": {
+            "200": 500
+          },
+          "label": "after",
+          "image": "bikeflow-staging-api:f8-corrective-20261103",
+          "observed_resources": {
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 171.81,
+              "memory_samples": [
+                "33.69MiB / 2GiB",
+                "35.54MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-f8-perf-after": {
+              "max_cpu_percent": 204.36,
+              "memory_samples": [
+                "50.06MiB / 512MiB",
+                "50.95MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18001/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 29.707200010307133,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 576.9687000429258,
+            "p95": 956.209999974817,
+            "p99": 1099.833199987188
+          },
+          "seconds": 19.001803899998777,
+          "requests_per_second": 52.626582468839416,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "label": "before",
+          "image": "bikeflow-staging-api:f8-f02d321",
+          "observed_resources": {
+            "bikeflow-f8-perf-before": {
+              "max_cpu_percent": 175.77,
+              "memory_samples": [
+                "60.04MiB / 512MiB",
+                "60.86MiB / 512MiB",
+                "61.42MiB / 512MiB",
+                "61.96MiB / 512MiB",
+                "62.09MiB / 512MiB",
+                "62.16MiB / 512MiB",
+                "62MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 116.35,
+              "memory_samples": [
+                "35.36MiB / 2GiB",
+                "35.3MiB / 2GiB",
+                "38.11MiB / 2GiB",
+                "41.94MiB / 2GiB",
+                "42.37MiB / 2GiB",
+                "45.52MiB / 2GiB",
+                "50.61MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18002/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 45.72219995316118,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 476.41989996191114,
+            "p95": 773.4418000327423,
+            "p99": 875.5610999651253
+          },
+          "seconds": 15.546996899996884,
+          "requests_per_second": 64.32110371104534,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "label": "after",
+          "image": "bikeflow-staging-api:f8-corrective-20261103",
+          "observed_resources": {
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 182.4,
+              "memory_samples": [
+                "25.77MiB / 2GiB",
+                "39.02MiB / 2GiB",
+                "41.58MiB / 2GiB",
+                "41.91MiB / 2GiB",
+                "42.91MiB / 2GiB",
+                "66.78MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-f8-perf-after": {
+              "max_cpu_percent": 208.31,
+              "memory_samples": [
+                "52.96MiB / 512MiB",
+                "52.99MiB / 512MiB",
+                "53.33MiB / 512MiB",
+                "53.39MiB / 512MiB",
+                "53.56MiB / 512MiB",
+                "53.64MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18002/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 21.45050000399351,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 366.3353000301868,
+            "p95": 535.4079999960959,
+            "p99": 604.477799963206
+          },
+          "seconds": 11.651084200013429,
+          "requests_per_second": 85.82892225590881,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "label": "after",
+          "image": "bikeflow-staging-api:f8-corrective-20261103",
+          "observed_resources": {
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 141.07,
+              "memory_samples": [
+                "26.1MiB / 2GiB",
+                "37.88MiB / 2GiB",
+                "45.65MiB / 2GiB",
+                "50.36MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-f8-perf-after": {
+              "max_cpu_percent": 204.44,
+              "memory_samples": [
+                "53.24MiB / 512MiB",
+                "53.3MiB / 512MiB",
+                "53.5MiB / 512MiB",
+                "54.48MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        },
+        {
+          "url": "http://127.0.0.1:18001/v1/kpi",
+          "requests": 1000,
+          "concurrency": 32,
+          "first_request_ms": 35.40130006149411,
+          "first_status": 200,
+          "cache": "first request vs repeated; OS/DB page cache NOT flushed",
+          "latency_ms": {
+            "p50": 737.269900040701,
+            "p95": 1162.9982999293134,
+            "p99": 1279.893499915488
+          },
+          "seconds": 23.667090000002645,
+          "requests_per_second": 42.252765337854726,
+          "errors": 0,
+          "statuses": {
+            "200": 1000
+          },
+          "label": "before",
+          "image": "bikeflow-staging-api:f8-f02d321",
+          "observed_resources": {
+            "bikeflow-f8-perf-before": {
+              "max_cpu_percent": 172.53,
+              "memory_samples": [
+                "62.18MiB / 512MiB",
+                "62.48MiB / 512MiB",
+                "62.66MiB / 512MiB",
+                "62.77MiB / 512MiB",
+                "62.7MiB / 512MiB",
+                "63.04MiB / 512MiB",
+                "63.14MiB / 512MiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            },
+            "bikeflow-staging-db-1": {
+              "max_cpu_percent": 120.31,
+              "memory_samples": [
+                "33.82MiB / 2GiB",
+                "40.65MiB / 2GiB",
+                "42.3MiB / 2GiB",
+                "43MiB / 2GiB",
+                "44.34MiB / 2GiB",
+                "48.36MiB / 2GiB",
+                "48.84MiB / 2GiB",
+                "65.93MiB / 2GiB"
+              ],
+              "sampling": "docker stats --no-stream, roughly every 2-3s; maxima are sampled, not hard peak bounds"
+            }
+          }
+        }
+      ],
+      "configuration": "each API: 2 CPU, 512 MiB, 1 uvicorn worker, rate 6000/min; same PostgreSQL/publications; warm cache; no OS/DB flush",
+      "method": "c1/c8 paired and c32 ABBA on two disposable loopback API containers, sequential requests per container; original and optimized image share current staging DB. Both controls removed.",
+      "limits": "Shared laptop; full test suite and other projects may contend for resources. Broad before/after matrix has variable contention and DB image refresh; cross-over controls DB/image config. Small number of repeats is not a confidence interval/SLA.",
+      "profile_before": "         280238 function calls (280078 primitive calls) in 1.034 seconds\n\n   Ordered by: cumulative time\n   List reduced from 468 to 18 due to restriction <18>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n       50    0.004    0.000    1.031    0.021 /app/.venv/lib/python3.12/site-packages/citibike/serving/read.py:117(get_kpi)\n       50    0.027    0.001    1.016    0.020 /app/.venv/lib/python3.12/site-packages/citibike/serving/read.py:71(get_series)\n       50    0.001    0.000    0.583    0.012 /app/.venv/lib/python3.12/site-packages/citibike/serving/db.py:23(connect)\n       50    0.002    0.000    0.511    0.010 /app/.venv/lib/python3.12/site-packages/psycopg/connection.py:81(connect)\n       50    0.003    0.000    0.455    0.009 /app/.venv/lib/python3.12/site-packages/psycopg/waiting.py:114(wait_conn)\n      350    0.231    0.001    0.234    0.001 /app/.venv/lib/python3.12/site-packages/psycopg/_connection_base.py:436(_connect_gen)\n      300    0.001    0.000    0.222    0.001 {method 'send' of 'generator' objects}\n      300    0.003    0.000    0.209    0.001 /usr/local/lib/python3.12/selectors.py:451(select)\n      300    0.206    0.001    0.206    0.001 {method 'poll' of 'select.epoll' objects}\n      150    0.154    0.001    0.199    0.001 /app/.venv/lib/python3.12/site-packages/psycopg/connection.py:479(wait)\n      100    0.000    0.000    0.189    0.002 /app/.venv/lib/python3.12/site-packages/psycopg/connection.py:281(execute)\n      100    0.001    0.000    0.185    0.002 /app/.venv/lib/python3.12/site-packages/psycopg/cursor.py:100(execute)\n       50    0.001    0.000    0.110    0.002 /app/.venv/lib/python3.12/site-packages/citibike/serving/read.py:25(publication_row)\n    36050    0.050    0.000    0.105    0.000 /app/.venv/lib/python3.12/site-packages/pydantic/main.py:746(model_validate)\n       50    0.047    0.001    0.083    0.002 /app/.venv/lib/python3.12/site-packages/psycopg/cursor.py:274(fetchall)\n       50    0.001    0.000    0.070    0.001 /app/.venv/lib/python3.12/site-packages/pydantic_settings/main.py:221(__init__)\n    36300    0.059    0.000    0.059    0.000 {method 'validate_python' of 'pydantic_core._pydantic_core.SchemaValidator' objects}\n       50    0.000    0.000    0.039    0.001 /app/.venv/lib/python3.12/site-packages/psycopg/_conninfo_attempts.py:23(conninfo_attempts)\n\n\n",
+      "profile_after": "         135550 function calls (135390 primitive calls) in 2.422 seconds\n\n   Ordered by: cumulative time\n   List reduced from 464 to 18 due to restriction <18>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n       50    0.004    0.000    2.419    0.048 /app/.venv/lib/python3.12/site-packages/citibike/serving/read.py:117(get_kpi)\n       50    0.002    0.000    1.654    0.033 /app/.venv/lib/python3.12/site-packages/citibike/serving/db.py:23(connect)\n       50    0.004    0.000    1.392    0.028 /app/.venv/lib/python3.12/site-packages/psycopg/connection.py:81(connect)\n       50    0.006    0.000    1.181    0.024 /app/.venv/lib/python3.12/site-packages/psycopg/waiting.py:114(wait_conn)\n      150    0.598    0.004    0.719    0.005 /app/.venv/lib/python3.12/site-packages/psycopg/connection.py:479(wait)\n      350    0.680    0.002    0.685    0.002 /app/.venv/lib/python3.12/site-packages/psycopg/_connection_base.py:436(_connect_gen)\n      300    0.001    0.000    0.663    0.002 {method 'send' of 'generator' objects}\n      100    0.001    0.000    0.654    0.007 /app/.venv/lib/python3.12/site-packages/psycopg/connection.py:281(execute)\n      100    0.001    0.000    0.645    0.006 /app/.venv/lib/python3.12/site-packages/psycopg/cursor.py:100(execute)\n      300    0.007    0.000    0.471    0.002 /usr/local/lib/python3.12/selectors.py:451(select)\n      300    0.462    0.002    0.462    0.002 {method 'poll' of 'select.epoll' objects}\n       50    0.002    0.000    0.411    0.008 /app/.venv/lib/python3.12/site-packages/citibike/serving/read.py:25(publication_row)\n       50    0.003    0.000    0.260    0.005 /app/.venv/lib/python3.12/site-packages/pydantic_settings/main.py:221(__init__)\n       50    0.004    0.000    0.182    0.004 /app/.venv/lib/python3.12/site-packages/pydantic_settings/main.py:558(_settings_build_values)\n      100    0.004    0.000    0.170    0.002 /app/.venv/lib/python3.12/site-packages/pydantic_settings/sources/base.py:702(__call__)\n       50    0.001    0.000    0.170    0.003 /app/.venv/lib/python3.12/site-packages/psycopg/_conninfo_attempts.py:23(conninfo_attempts)\n       50    0.002    0.000    0.161    0.003 /app/.venv/lib/python3.12/site-packages/psycopg/_conninfo_attempts.py:70(_resolve_hostnames)\n       50    0.007    0.000    0.158    0.003 /usr/local/lib/python3.12/socket.py:961(getaddrinfo)\n\n\n",
+      "decision": "Push SUM to SQL to avoid 720 per-request HourPoint conversions/transfer; parity includes zero vs empty and pinned versions. New DB connection per request remains dominant. No connection-pool dependency, cache, worker/CPU increase, formula/schema/API change. 300ms remains an unapproved hypothesis, c32 still exceeds it."
+    },
+    "reliability": [
+      {
+        "name": "redeploy",
+        "status": "PASS",
+        "seconds": 4.594000000040978,
+        "result": {
+          "status": "PASS",
+          "release": "f8-corrective-20261103",
+          "api": 4,
+          "pages": 5
+        },
+        "ready_probes": 49,
+        "failed_probes": 0,
+        "observed_failure_span_seconds": 0
+      },
+      {
+        "name": "rollback",
+        "status": "PASS",
+        "seconds": 19.594000000040978,
+        "result": {
+          "status": "PASS",
+          "release": "f8-f02d321",
+          "api": 4,
+          "pages": 5,
+          "rolled_back_from": "f8-corrective-20261103"
+        },
+        "ready_probes": 193,
+        "failed_probes": 109,
+        "observed_failure_span_seconds": 9.687999999965541
+      },
+      {
+        "name": "deploy_again",
+        "status": "PASS",
+        "seconds": 21.719000000040978,
+        "result": {
+          "status": "PASS",
+          "release": "f8-corrective-20261103",
+          "api": 4,
+          "pages": 5
+        },
+        "ready_probes": 202,
+        "failed_probes": 89,
+        "observed_failure_span_seconds": 8.48499999998603
+      },
+      {
+        "name": "failed_deploy",
+        "status": "EXPECTED FAILURE",
+        "seconds": 38.32799999997951,
+        "result": {
+          "error_type": "CalledProcessError"
+        },
+        "ready_probes": 297,
+        "failed_probes": 155,
+        "observed_failure_span_seconds": 18.108999999938533
+      },
+      {
+        "name": "restart",
+        "status": "PASS",
+        "seconds": 14.078000000095926,
+        "result": {
+          "ready": "PASS"
+        },
+        "ready_probes": 146,
+        "failed_probes": 136,
+        "observed_failure_span_seconds": 12.329000000027008
+      }
+    ],
+    "reliability_preservation": {
+      "all_36_table_digests": "PASS",
+      "db_container_unchanged": true,
+      "active_release": "f8-corrective-20261103"
+    },
+    "database_image_refresh": {
+      "previous_image": "sha256:a9b40e27d90ffeef78f64d34b9421c0cc01f372f70a59c568832c812b1b0c1be",
+      "actual_image": "sha256:691389c060941aeb3390dcf13893cf1de8962f055b52b5234feffddfc16976a5",
+      "all_36_table_digests": "PASS",
+      "seconds": 38.60900000005495,
+      "failed_readiness_probes": 5,
+      "failure_span_seconds": 0.48400000005494803,
+      "reason": "Apply already-built audited vendor-patched DB image explicitly; stable tag does not recreate DB during app releases"
+    },
+    "security": {
+      "scanner": "aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c",
+      "images": {
+        "api": {
+          "tag": "bikeflow-staging-api:f8-corrective-20261103",
+          "image_id": "sha256:1007384d969aab797e2eaaf18010860b6ef3d08fcf68a2b2b1da328a123d9a5b",
+          "severity": {
+            "LOW": 61,
+            "HIGH": 45,
+            "MEDIUM": 72,
+            "UNKNOWN": 7
+          },
+          "with_fix": [],
+          "high_critical": [
+            {
+              "id": "CVE-2026-76642",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-54369",
+              "package": "libacl1",
+              "version": "2.3.2-2+b1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "acl: Symlink traversal privilege escalation via libacl functions",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-54369"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "libncursesw6",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-119373",
+              "package": "libsqlite3-0",
+              "version": "3.46.1-7+deb13u2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "sqlite: sqlite: Denial of service via heap-based buffer overflow in FTS5",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-119373"
+            },
+            {
+              "id": "CVE-2026-16742",
+              "package": "libsystemd0",
+              "version": "257.13-1~deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "systemd: systemd-homed: Local privilege escalation via missing home-record signature verification",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-16742"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "libtinfo6",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-16742",
+              "package": "libudev1",
+              "version": "257.13-1~deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "systemd: systemd-homed: Local privilege escalation via missing home-record signature verification",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-16742"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "ncurses-base",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "ncurses-bin",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-9538",
+              "package": "perl-base",
+              "version": "5.40.1-6+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "perl-Archive-Tar: perl-Archive-Tar: Denial of Service via crafted tar header with large entry size",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-9538"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            }
+          ]
+        },
+        "web": {
+          "tag": "bikeflow-staging-web:f8-corrective-20261103",
+          "image_id": "sha256:acffdef8a9821ddba91a3f467e12d343f467c18cb095b22c57701fe45e5e5b73",
+          "severity": {
+            "LOW": 83,
+            "HIGH": 32,
+            "MEDIUM": 99,
+            "CRITICAL": 1
+          },
+          "with_fix": [],
+          "high_critical": [
+            {
+              "id": "CVE-2026-53613",
+              "package": "bsdutils",
+              "version": "1:2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "bsdutils",
+              "version": "1:2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "bsdutils",
+              "version": "1:2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-41992",
+              "package": "gzip",
+              "version": "1.12-1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "gzip: gzip: Information disclosure via global buffer overflow in LZH decompression",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-41992"
+            },
+            {
+              "id": "CVE-2026-54369",
+              "package": "libacl1",
+              "version": "2.3.1-3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "acl: Symlink traversal privilege escalation via libacl functions",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-54369"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "libblkid1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "libblkid1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libblkid1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "libmount1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "libmount1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libmount1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "libsmartcols1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "libsmartcols1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libsmartcols1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-16742",
+              "package": "libsystemd0",
+              "version": "252.39-1~deb12u2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "systemd: systemd-homed: Local privilege escalation via missing home-record signature verification",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-16742"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "libtinfo6",
+              "version": "6.4-4",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-16742",
+              "package": "libudev1",
+              "version": "252.39-1~deb12u2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "systemd: systemd-homed: Local privilege escalation via missing home-record signature verification",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-16742"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "libuuid1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "libuuid1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libuuid1",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "mount",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "mount",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "mount",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "ncurses-base",
+              "version": "6.4-4",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "ncurses-bin",
+              "version": "6.4-4",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-9538",
+              "package": "perl-base",
+              "version": "5.36.0-7+deb12u4",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "perl-Archive-Tar: perl-Archive-Tar: Denial of Service via crafted tar header with large entry size",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-9538"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "util-linux",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "util-linux",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "util-linux",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-53613",
+              "package": "util-linux-extra",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: TOCTOU in the mount program via ancestor directory swap on target path",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53613"
+            },
+            {
+              "id": "CVE-2026-53615",
+              "package": "util-linux-extra",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: Partition metadata compromise via integer overflow in DOS partition parser",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-53615"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "util-linux-extra",
+              "version": "2.38.1-5+deb12u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2023-45853",
+              "package": "zlib1g",
+              "version": "1:1.2.13.dfsg-1",
+              "severity": "CRITICAL",
+              "fix": null,
+              "status": "will_not_fix",
+              "title": "zlib: integer overflow and resultant heap-based buffer overflow in zipOpenNewFileInZip4_6",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2023-45853"
+            }
+          ]
+        },
+        "db": {
+          "tag": "bikeflow-staging-db:17-patched",
+          "image_id": "sha256:691389c060941aeb3390dcf13893cf1de8962f055b52b5234feffddfc16976a5",
+          "severity": {
+            "LOW": 138,
+            "HIGH": 62,
+            "MEDIUM": 128,
+            "UNKNOWN": 7,
+            "CRITICAL": 1
+          },
+          "with_fix": [],
+          "high_critical": [
+            {
+              "id": "CVE-2026-76642",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "bsdutils",
+              "version": "1:2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "dirmngr",
+              "version": "2.4.7-21+deb13u1+b5",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "gnupg",
+              "version": "2.4.7-21+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "gnupg-l10n",
+              "version": "2.4.7-21+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "gpg",
+              "version": "2.4.7-21+deb13u1+b5",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "gpg-agent",
+              "version": "2.4.7-21+deb13u1+b5",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "gpgconf",
+              "version": "2.4.7-21+deb13u1+b5",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-24882",
+              "package": "gpgsm",
+              "version": "2.4.7-21+deb13u1+b5",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "GnuPG: GnuPG: Stack-based buffer overflow in tpm2daemon allows arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-24882"
+            },
+            {
+              "id": "CVE-2026-54369",
+              "package": "libacl1",
+              "version": "2.3.2-2+b1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "acl: Symlink traversal privilege escalation via libacl functions",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-54369"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libblkid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "liblastlog2-2",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libmount1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "libncursesw6",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-9538",
+              "package": "libperl5.40",
+              "version": "5.40.1-6+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "perl-Archive-Tar: perl-Archive-Tar: Denial of Service via crafted tar header with large entry size",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-9538"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libsmartcols1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-119373",
+              "package": "libsqlite3-0",
+              "version": "3.46.1-7+deb13u2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "sqlite: sqlite: Denial of service via heap-based buffer overflow in FTS5",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-119373"
+            },
+            {
+              "id": "CVE-2026-16742",
+              "package": "libsystemd0",
+              "version": "257.13-1~deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "systemd: systemd-homed: Local privilege escalation via missing home-record signature verification",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-16742"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "libtinfo6",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-16742",
+              "package": "libudev1",
+              "version": "257.13-1~deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "systemd: systemd-homed: Local privilege escalation via missing home-record signature verification",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-16742"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "libuuid1",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-6653",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "CRITICAL",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: mingw-libxml2: libxml2: Denial of Service via crafted XML input due to use-after-free",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-6653"
+            },
+            {
+              "id": "CVE-2026-74860",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: double-free/UAF in libxml2 Python bindings",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-74860"
+            },
+            {
+              "id": "CVE-2026-86138",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: libxml2: Arbitrary code execution via heap-based buffer overflow",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-86138"
+            },
+            {
+              "id": "CVE-2026-86139",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: libxml2: Integer overflow in xmlURIEscapeStr may lead to arbitrary code execution",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-86139"
+            },
+            {
+              "id": "CVE-2026-86140",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: libxml2: Arbitrary code execution via stack-based buffer overflow in xmlSnprintfElements",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-86140"
+            },
+            {
+              "id": "CVE-2026-86142",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: libxml2: Heap-based buffer overflow in xmlXPtrEval due to xpointer length saturation",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-86142"
+            },
+            {
+              "id": "CVE-2026-86143",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: libxml2: Data integrity issues due to integer overflow in write callbacks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-86143"
+            },
+            {
+              "id": "CVE-2026-86144",
+              "package": "libxml2",
+              "version": "2.12.7+dfsg+really2.9.14-2.1+deb13u3",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "libxml2: libxml2: Information disclosure, SSRF, or denial of service due to improper parseFlags propagation.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-86144"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "login",
+              "version": "1:4.16.0-2+really2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "mount",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "ncurses-base",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2025-69720",
+              "package": "ncurses-bin",
+              "version": "6.5+20250216-2",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "ncurses: ncurses: Buffer overflow vulnerability may lead to arbitrary code execution.",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2025-69720"
+            },
+            {
+              "id": "CVE-2026-9538",
+              "package": "perl",
+              "version": "5.40.1-6+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "perl-Archive-Tar: perl-Archive-Tar: Denial of Service via crafted tar header with large entry size",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-9538"
+            },
+            {
+              "id": "CVE-2026-9538",
+              "package": "perl-base",
+              "version": "5.40.1-6+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "perl-Archive-Tar: perl-Archive-Tar: Denial of Service via crafted tar header with large entry size",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-9538"
+            },
+            {
+              "id": "CVE-2026-9538",
+              "package": "perl-modules-5.40",
+              "version": "5.40.1-6+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "fix_deferred",
+              "title": "perl-Archive-Tar: perl-Archive-Tar: Denial of Service via crafted tar header with large entry size",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-9538"
+            },
+            {
+              "id": "CVE-2026-76642",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: failed external mount helper still runs privileged X-mount post-hooks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-76642"
+            },
+            {
+              "id": "CVE-2026-78408",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: nsenter --join-cgroup leaks root cgroup migration authority",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78408"
+            },
+            {
+              "id": "CVE-2026-78409",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: X-mount.subdir detached-tree resolution can escape via intermediate symlinks",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78409"
+            },
+            {
+              "id": "CVE-2026-78410",
+              "package": "util-linux",
+              "version": "2.41.5-0+deb13u1",
+              "severity": "HIGH",
+              "fix": null,
+              "status": "affected",
+              "title": "util-linux: util-linux: restricted bind mounts do not pin the source, allowing X-mount.owner/group/mode redirection",
+              "primary_url": "https://avd.aquasec.com/nvd/cve-2026-78410"
+            }
+          ]
+        }
+      },
+      "runtime_dependency_audit": {
+        "dependencies": 24,
+        "findings": 0,
+        "command": "uvx --from pip-audit==2.10.0 pip-audit --no-deps --disable-pip -r .cache/f8-corrective/runtime-requirements.txt -f json -o .cache/f8-corrective/runtime-audit.json"
+      },
+      "worker_dependency_audit": {
+        "dependencies": 166,
+        "findings": 0,
+        "command": "uvx --from pip-audit==2.10.0 pip-audit --no-deps --disable-pip -r .cache/f8-corrective/worker-requirements.txt -f json -o .cache/f8-corrective/worker-audit.json"
+      },
+      "npm": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "impact": {
+        "web_zlib_CVE-2023-45853": {
+          "severity": "CRITICAL (scanner package finding)",
+          "fix": null,
+          "vendor_status": "will_not_fix",
+          "scope": "CVE names MiniZip zipOpenNewFileInZip4_64. dpkg -L zlib1g exposes only libz; find / -iname *minizip* finds no MiniZip component. App serves JSON/HTML; no ZIP upload/extraction endpoint. Vulnerable code reachability not proven; package finding retained, not claimed exploitable/cleared."
+        },
+        "db_libxml2_CVE-2026-6653": {
+          "severity": "CRITICAL",
+          "fix": null,
+          "vendor_status": "affected",
+          "scope": "Crafted XML/use-after-free in DB libxml2. API uses parameterized fixed SELECTs, no XML processing or raw SQL endpoint; DB is loopback and API role SELECT-only. Direct SQL XML processing by an authenticated DB user remains a potential surface. No exploit validation or owner acceptance claimed."
+        },
+        "other_HIGH": "Exact IDs/packages/severity/fix listed per image. Vendor fix absent in current scan. OS/runtime libraries and PostgreSQL are present; non-root/read-only/cap_drop/loopback limit exposure but do not prove each vulnerable function unreachable. No production risk acceptance inferred."
+      }
+    },
+    "recovery": {
+      "comparison": "PASS",
+      "api_routes": [
+        "/ready",
+        "/v1/kpi",
+        "/v1/publication",
+        "/v1/timeseries"
+      ],
+      "kpi": 3860371,
+      "tables": 36,
+      "checksummed_files": 20,
+      "restored_database_removed": "bikeflow_restore_8806cce54e8e4cbaa5c9966d807d2184",
+      "backup_bytes": 19247841,
+      "model": {
+        "comparison": "PASS",
+        "origin": "2026-11-03T12:41:43.294250+00:00",
+        "forecast_sha256": "4a7f80dd3b010ca55c6ab7e2a06fc70516586d0b3936cd7efdbe94e8c7e0ffc6"
+      },
+      "scope": {
+        "existing_dev_files": 13775,
+        "existing_json_hashes": 4932,
+        "changed_existing_files": [],
+        "changed_json_hashes": [],
+        "dev_active_metadata": "PASS",
+        "staging_all_36_tables": "PASS",
+        "separate_volumes": {
+          "bikeflow": [
+            {
+              "name": "bikeflow_postgres_data",
+              "destination": "/var/lib/postgresql/data"
+            }
+          ],
+          "bikeflow-staging": [
+            {
+              "name": "bikeflow-staging_postgres_data",
+              "destination": "/var/lib/postgresql/data"
+            }
+          ]
+        },
+        "data_sizes": {
+          "discovery": {
+            "files": 1,
+            "bytes": 46614
+          },
+          "evidence": {
+            "files": 2,
+            "bytes": 3200
+          },
+          "f2": {
+            "files": 1111,
+            "bytes": 48538159100
+          },
+          "f3": {
+            "files": 521,
+            "bytes": 2865110558
+          },
+          "f4": {
+            "files": 2613,
+            "bytes": 372601301
+          },
+          "f5": {
+            "files": 979,
+            "bytes": 92286122
+          },
+          "gbfs": {
+            "files": 139,
+            "bytes": 90872193
+          },
+          "tmp5m6n4kit": {
+            "files": 1,
+            "bytes": 117440512
+          },
+          "tmpsmiugj5s": {
+            "files": 1,
+            "bytes": 165675008
+          },
+          "tmpzl1nuhkc": {
+            "files": 1,
+            "bytes": 187695104
+          },
+          "automation": {
+            "files": 6,
+            "bytes": 708
+          },
+          "bronze": {
+            "files": 48,
+            "bytes": 17386234918
+          },
+          "decision_research": {
+            "files": 8310,
+            "bytes": 1892647560
+          },
+          "inventory": {
+            "files": 36,
+            "bytes": 1046989
+          },
+          "processed": {
+            "files": 6,
+            "bytes": 823748661
+          }
+        },
+        "dev_database_bytes": 94908331699,
+        "f3_serving_relation_bytes": 94562500608,
+        "unverified_recovery_scope": [
+          "raw Bronze ZIP/CSV",
+          "F2 immutable Silver/history",
+          "F3 Gold and full serving partitions"
+        ],
+        "policy": "No raw/F2/F3 copies made; source manifests and checksums exist, production backup/rebuild policy requires owner decision"
+      }
+    },
+    "checks": {
+      "f8-corrective-suite": {
+        "tests": 240,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 1057.434,
+        "junit": ".cache\\f8-corrective-suite.xml"
+      },
+      "f8-corrective-suite-final": {
+        "status": "NOT VERIFIED, still running",
+        "log": ".cache/f8-corrective-suite-final.log"
+      },
+      "f8-corrective-scheduler-fixed1": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 76.921,
+        "junit": ".cache\\f8-corrective-scheduler-fixed1.xml"
+      },
+      "f8-corrective-scheduler-fixed2": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 71.173,
+        "junit": ".cache\\f8-corrective-scheduler-fixed2.xml"
+      },
+      "f8-corrective-automation-final": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 3456.968,
+        "junit": ".cache\\f8-corrective-automation-final.xml"
+      },
+      "f8-corrective-fs-regression": {
+        "tests": 22,
+        "failures": 0,
+        "errors": 5,
+        "skipped": 0,
+        "seconds": 3330.966,
+        "junit": ".cache\\f8-corrective-fs-regression.xml"
+      },
+      "f8-corrective-release-negative": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "seconds": 17.787,
+        "junit": ".cache\\f8-corrective-release-negative.xml"
+      }
+    },
+    "static_frontend_package": "ruff check/format, mypy144, npm lint/typecheck/test7/build, uv build, dev compose config/build, git diff --check PASS; logs .cache/f8-corrective/",
+    "commands": [
+      "uv run --locked ruff check .",
+      "uv run --locked ruff format --check .",
+      "uv run --locked mypy",
+      "uv run --locked --group ml --group automation pytest -q tests/unit tests/data_contracts tests/ml tests/integration --basetemp .cache/f8-corrective-suite-final --junitxml=.cache/f8-corrective-suite-final.xml",
+      "uv run --locked pytest -q tests/integration/test_release.py --basetemp .cache/f8-corrective-release-negative --junitxml=.cache/f8-corrective-release-negative.xml",
+      "uv run --locked --group ml --group automation pytest -q tests/integration/test_automation.py --basetemp .cache/f8-corrective-automation-final --junitxml=.cache/f8-corrective-automation-final.xml",
+      "npm --prefix apps/web run lint",
+      "npm --prefix apps/web run typecheck",
+      "npm --prefix apps/web test",
+      "npm --prefix apps/web run build",
+      "uv build",
+      "docker compose config --quiet",
+      "docker compose build",
+      "git diff --check",
+      "uv run --locked python -m citibike.release backup --target data/staging/backups/f8-corrective-20261103",
+      "uv run --locked python -m citibike.release restore --source data/staging/backups/f8-corrective-20261103 --store data/staging/restore-f8-corrective-20261103",
+      "uv run --locked --group ml python -m citibike.release model-parity --restored data/staging/restore-f8-corrective-20261103 --work .cache/f8-corrective/model-parity",
+      "uv run --locked python .cache/f8-corrective/e2e.py (disposable PGDATABASE + loopback API/web; existing tests.integration.analytics_smoke, then limit3 -> 6000)",
+      "uv run --locked python .cache/f8-corrective/reliability.py (CLI helpers, same approval, failed image SystemExit42, readiness probes)",
+      "uv run --locked python .cache/f8-corrective/crossover.py (docker run old/new 2CPU/512MiB/1worker, c32 ABBA, then rm only owned test containers)",
+      "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v bikeflow-trivy-cache:/root/.cache/trivy -v C:/Users/nurs/citibike/.cache/f8-corrective:/out aquasec/trivy@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c image --scanners vuln --format json --output /out/trivy-<api|web|db>.json <actual-verified-image-tag>"
+    ],
+    "dod": {
+      "1_scheduler": "PASS: actual runs + backlog regression + concurrent repeats; see checks",
+      "2_monitor": "PASS local: periodic process + structured metrics + live receiver alert/recovery; production channel BLOCKED",
+      "3_empty_F3": "PASS unit and isolated real HTML regression; controlled F3 E2E not full production publication",
+      "4_performance": "PASS measured; c32 hypothesis unmet; resources/limits retained, see cross-over",
+      "5_reliability": "PASS live429/deploy/rollback/restart/DB-outage/data preservation; zero-downtime NOT VERIFIED, observed refusals",
+      "6_security_recovery": "PASS local audits/restore/checksums/API/model parity; residual CVEs and raw/F2/F3/off-host scope open",
+      "7_final_SHA_CI": "NOT VERIFIED until final delivery",
+      "8_blockers": "Listed; F8 remains PARTIAL/BLOCKED for production"
+    },
+    "production_blockers": [
+      "Public server/hosting and region: not chosen; owner forbade public production deploy",
+      "Domain and DNS: not chosen",
+      "Trusted TLS certificate and HTTPS termination: requires domain/endpoint",
+      "External access policy (public read-only vs auth/IP allowlist, WAF, proxy trust for X-Forwarded-For): not approved",
+      "Production secret storage and rotation: not chosen",
+      "Off-host immutable backup destination, retention, RPO/RTO and production-scale (88 GB) restore drill",
+      "Production load/SLA on target hardware and network",
+      "Production alert channel/on-call (webhook endpoint) and continuous metrics"
+    ],
+    "owner_decisions_remaining": [
+      "Hosting provider, region and server size (capacity target: users/concurrency, p95 budget)",
+      "Domain name and TLS approach (ACME vs managed certificate) and HTTPS-only redirect/HSTS",
+      "Access policy: public read-only demo or authenticated/allowlisted; whether /docs and /openapi.json stay public",
+      "Secret store and rotation policy for PostgreSQL owner/reader passwords",
+      "Backup destination (off-host, immutable), retention, RPO/RTO; whether raw Bronze/F2/F3 copies are required or rebuild-from-source is accepted",
+      "Production data scope: full 84 GB F3 serving publication and its load time/disk budget",
+      "Monitoring/alert channel and who receives alerts; whether F7 Prefect/MLflow run on the production host (loopback/admin only)",
+      "Acceptance of residual unfixed vendor CVEs or base-image change (web on Debian 12 bookworm; db libxml2 critical without fix)",
+      "F4 operational promotion remains NOT VERIFIED; Seasonal Naive/unavailable fallback is what production would serve until a separate promotion decision",
+      "Second API instance/routing versus announced maintenance window; downtime observations are not zero-downtime",
+      "Local metrics retention and restart-on-boot policy"
+    ],
+    "not_run": [
+      "Public deploy, HTTPS/domain/access-policy/production secret store",
+      "Raw/F2/F3 multi-GB copies and production-scale recovery",
+      "New training/tuning/backtesting or operational model promotion",
+      "Upload of new Git bundle to Google Drive"
+    ],
+    "delivery": {
+      "status": "pending code commit / final SHA CI / checkpoint / verified external-to-repository Git bundle"
+    }
+  }
 }

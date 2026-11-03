@@ -117,15 +117,44 @@ def get_series(
 def get_kpi(
     query: QueryFilters, settings: DatabaseSettings | None = None
 ) -> KpiResponse:
-    # One published month of hourly facts; no trip scanning in HTTP requests.
-    series = get_series(query, settings)
-    return KpiResponse(
-        status=series.status,
-        metadata=series.metadata,
-        filters=series.filters,
-        completed_published_rides=sum(
-            p.completed_published_rides for p in series.points
-        )
-        if series.points
-        else None,
-    )
+    # Same version, predicates and null/zero semantics as get_series. Aggregate
+    # in PostgreSQL instead of transferring/validating every hourly point just
+    # to sum it in Python. No cache or additional publication lifetime is added.
+    try:
+        with connect(settings, readonly=True) as connection:
+            publication = publication_row(connection, query.publication_id)
+            if not publication:
+                return KpiResponse(
+                    status="empty",
+                    metadata=None,
+                    filters=None,
+                    completed_published_rides=None,
+                )
+            filters = filters_for(query, publication)
+            if query.station_id:
+                row = connection.execute(
+                    "SELECT sum(departures_s) rides FROM station_hours "
+                    "WHERE publication_id=%s AND station_id=%s "
+                    "AND hour_utc>=%s AND hour_utc<%s",
+                    (
+                        publication.publication_id,
+                        query.station_id,
+                        filters.start,
+                        filters.end,
+                    ),
+                ).fetchone()
+            else:
+                row = connection.execute(
+                    "SELECT sum(completed_published_rides) rides FROM ride_hours "
+                    "WHERE publication_id=%s AND hour_utc>=%s AND hour_utc<%s",
+                    (publication.publication_id, filters.start, filters.end),
+                ).fetchone()
+            rides = int(row["rides"]) if row and row["rides"] is not None else None
+            return KpiResponse(
+                status="ok" if rides is not None else "empty",
+                metadata=publication,
+                filters=filters,
+                completed_published_rides=rides,
+            )
+    except psycopg.Error:
+        raise DatabaseUnavailable("Serving database unavailable") from None

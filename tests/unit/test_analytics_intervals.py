@@ -94,6 +94,57 @@ def test_transient_windows_atomic_rename_retry(
         return real(path, destination)
 
     monkeypatch.setattr(Path, "rename", transient)
-    monkeypatch.setattr("citibike.analytics.build.time.sleep", lambda _: None)
+    monkeypatch.setattr("citibike.storage.time.sleep", lambda _: None)
     publish_directory(stage, target)
     assert target.is_dir() and not stage.exists() and attempts == 3
+
+
+def test_atomic_publish_permanent_failure_is_bounded(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    stage, target = tmp_path / "stage", tmp_path / "target"
+    stage.mkdir()
+    attempts = []
+
+    def denied(path: Path, destination: Path) -> Path:
+        attempts.append(destination)
+        raise PermissionError("controlled persistent refusal")
+
+    monkeypatch.setattr(Path, "rename", denied)
+    monkeypatch.setattr("citibike.storage.time.sleep", lambda _: None)
+    with pytest.raises(PermissionError):
+        publish_directory(stage, target)
+    assert len(attempts) == 6 and stage.exists() and not target.exists()
+    target.mkdir()
+    attempts.clear()
+    with pytest.raises(PermissionError):
+        publish_directory(stage, target)
+    assert len(attempts) == 1  # Never retry over an existing publication.
+
+
+def test_historical_audit_retries_transient_handle_and_still_reconciles(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from citibike.ingestion.archive import ingest_fixture
+    from citibike.processing.historical import prepare
+    from citibike.storage import read_json
+    from tests.fixtures import fixture_archive
+
+    source = ingest_fixture(
+        fixture_archive(tmp_path / "input.zip"), "2026-04", tmp_path
+    )
+    real = Path.rename
+    attempts = []
+
+    def transient(path: Path, destination: Path) -> Path:
+        if path.name == "audit":
+            attempts.append(destination)
+            if len(attempts) < 3:
+                raise PermissionError("controlled transient scanner handle")
+        return real(path, destination)
+
+    monkeypatch.setattr(Path, "rename", transient)
+    monkeypatch.setattr("citibike.storage.time.sleep", lambda _: None)
+    state = prepare(source, tmp_path)
+    assert read_json(state)["status"] == "verified" and len(attempts) == 3
+    assert prepare(source, tmp_path) == state  # All immutable checksums still apply.

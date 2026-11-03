@@ -4,8 +4,21 @@ import hashlib
 import json
 import os
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
+
+
+def publish_directory(stage: Path, target: Path) -> None:
+    """Bounded retry for transient Windows scanner handles; never overwrite."""
+    for attempt in range(6):
+        try:
+            stage.rename(target)
+            return
+        except PermissionError:
+            if attempt == 5 or target.exists():
+                raise
+            time.sleep(0.2 * (attempt + 1))
 
 
 def identity(value: Any) -> str:

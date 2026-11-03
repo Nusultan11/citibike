@@ -9,6 +9,7 @@ import {
   message,
   readFilters,
   type StationData,
+  stationPeriod,
   withParams,
 } from "../../lib/operations";
 import Chart from "../chart";
@@ -176,16 +177,22 @@ export default async function StationsPage({
             >
               <Kind kind="fact" />
               <h2>
-                Карта · <Term name="net_trip_flow">net trip flow</Term> за{" "}
-                {String(list.filters.start_date)} → {String(list.filters.end_date)}
+                Карта · <Term name="net_trip_flow">net trip flow</Term>
+                {stationPeriod(list.filters.start_date, list.filters.end_date)}
               </h2>
-              <p>
-                {show(mapped.length)} станций с координатами, {show(missing.length)} без координат
-                (не на карте), {show(Number(list.coverage.suspected_id_split_stations ?? 0))} с
-                пометкой ID-split (ромб). Цвет: синий — прибытий больше, красный — отправлений
-                больше. Нажмите на точку для карточки станции. Базовая карта улиц не подключена: нет
-                утверждённого провайдера тайлов.
-              </p>
+              {list.status === "empty" && !list.publication ? (
+                <p role="status">
+                  Публикация F3 для выбранной области отсутствует. Данные карты недоступны.
+                </p>
+              ) : (
+                <p>
+                  {show(mapped.length)} станций с координатами, {show(missing.length)} без координат
+                  (не на карте), {show(Number(list.coverage.suspected_id_split_stations ?? 0))} с
+                  пометкой ID-split (ромб). Цвет: синий — прибытий больше, красный — отправлений
+                  больше. Нажмите на точку для карточки станции. Базовая карта улиц не подключена:
+                  нет утверждённого провайдера тайлов.
+                </p>
+              )}
               {list.geo ? (
                 <Chart
                   label="Карта станций по координатам с net trip flow"

@@ -357,3 +357,8 @@ export function message(cause: unknown): { state: "unavailable" | "error"; text:
     text: cause instanceof Error ? cause.message : "Ответ API не прошёл проверку.",
   };
 }
+export function stationPeriod(start: unknown, end: unknown): string {
+  return typeof start === "string" && start && typeof end === "string" && end
+    ? ` за ${start} → ${end}`
+    : " · период не опубликован";
+}

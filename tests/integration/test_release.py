@@ -1,7 +1,11 @@
 """Release perimeter + actual PostgreSQL dump/restore in disposable databases."""
 
+import json
 import shutil
 import sqlite3
+import threading
+from datetime import UTC, datetime, timedelta
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
@@ -14,15 +18,200 @@ from apps.api.main import create_app
 from citibike.ingestion.archive import checksum
 from citibike.release import database as release_db
 from citibike.release import staging
+from citibike.release.monitoring import check, watch
 from citibike.release.recovery import backup, restore, snapshot, verify
 from citibike.serving.db import DatabaseSettings, connect
 from citibike.serving.models import QueryFilters
 from citibike.serving.publish import publish
-from citibike.serving.read import get_kpi
+from citibike.serving.read import get_kpi, get_series
 from citibike.storage import read_json, write_json
 from tests.integration.test_serving import fixture_result
 
 pytest_plugins = ("tests.integration.test_serving",)
+
+
+def test_periodic_monitor_local_delivery_and_partial_recovery(
+    database: DatabaseSettings, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    release_db.migrate(database)
+    received: list[dict[str, Any]] = []
+    http_state = {"status": 200}
+
+    class Receiver(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            self.send_response(http_state["status"])
+            self.end_headers()
+
+        def do_POST(self) -> None:
+            received.append(
+                json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            )
+            self.send_response(204)
+            self.end_headers()
+
+        def log_message(self, format: str, *args: Any) -> None:
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Receiver)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    endpoint = f"http://127.0.0.1:{server.server_port}"
+    saved = tmp_path / "backup"
+    saved.mkdir()
+    (saved / "postgres.dump").write_bytes(
+        b"CONTROLLED integrity fixture, not a real dump"
+    )
+    write_json(
+        saved / "manifest.json",
+        {
+            "version": 1,
+            "created_at": datetime.now(UTC).isoformat(),
+            "files": {"postgres.dump": checksum(saved / "postgres.dump")},
+        },
+    )
+    for operation in ("trips", "gbfs", "forecast", "risk"):
+        write_json(
+            tmp_path / f"automation/monitoring/{operation}.json",
+            {
+                "operation": operation,
+                "status": "ok",
+                "last_terminal_status": "ok",
+                "created_at": datetime.now(UTC).isoformat(),
+            },
+        )
+    try:
+        first = check(
+            database, tmp_path, saved, api_url=endpoint, local_webhook=endpoint
+        )
+        assert first["checks"]["backup"] and first["checks"]["workflows"]
+        assert not first["checks"]["forecast"]  # No manufactured forecast validity.
+        http_state["status"] = 503
+        failed = check(
+            database.model_copy(update={"port": 1}),
+            tmp_path,
+            saved,
+            api_url=endpoint,
+            local_webhook=endpoint,
+        )
+        assert not failed["checks"]["api"] and not failed["checks"]["database"]
+        http_state["status"] = 200
+        recovered = check(
+            database, tmp_path, saved, api_url=endpoint, local_webhook=endpoint
+        )
+        assert recovered["checks"]["database"] and recovered["status"] == "failed"
+        assert {(r["operation"], r["recovery"]) for r in received} >= {
+            ("release.api", "required"),
+            ("release.api", "recovered"),
+            ("release.database", "required"),
+            ("release.database", "recovered"),
+        }
+        count = len(received)
+        watch(
+            database,
+            tmp_path,
+            saved,
+            api_url=endpoint,
+            local_webhook=endpoint,
+            interval=1,
+            samples=2,
+        )
+        assert len(received) == count  # Unchanged incidents do not spam alerts.
+        metrics = [
+            json.loads(line)
+            for line in (tmp_path / "automation/monitoring/release-metrics.jsonl")
+            .read_text()
+            .splitlines()
+        ]
+        assert len(metrics) == 5
+        assert metrics[-1]["signals"]["http"]["errors"] == 2
+        assert set(metrics[-1]["signals"]["http"]["latency_ms"]) == {
+            "p50",
+            "p95",
+            "p99",
+        }
+        (saved / "postgres.dump").write_bytes(b"corrupt")
+        negative = check(
+            database,
+            tmp_path,
+            saved,
+            api_url=endpoint,
+            local_webhook=endpoint,
+            latency_budget_ms=0.00001,
+        )
+        assert not negative["checks"]["backup"] and not negative["checks"]["latency"]
+        assert all(
+            r.get("webhook") == "delivered"
+            for r in [
+                read_json(tmp_path / "automation/monitoring/release.api.json"),
+                read_json(tmp_path / "automation/monitoring/release.database.json"),
+            ]
+        )
+        from citibike.automation.monitoring import event
+
+        rejected = event(
+            tmp_path,
+            "release.test",
+            "failed",
+            local_webhook="http://example.invalid/test",
+        )
+        assert rejected["webhook"] == "invalid_configuration"
+        manifest = read_json(saved / "manifest.json")
+        manifest["files"]["postgres.dump"] = checksum(saved / "postgres.dump")
+        manifest["created_at"] = (datetime.now(UTC) - timedelta(days=2)).isoformat()
+        write_json(saved / "manifest.json", manifest)
+        write_json(
+            tmp_path / "automation/monitoring/gbfs.json",
+            {
+                "status": "ok",
+                "created_at": (datetime.now(UTC) + timedelta(days=1)).isoformat(),
+            },
+        )
+        usage = shutil.disk_usage(tmp_path)
+        with monkeypatch.context() as scoped:
+            scoped.setattr(shutil, "disk_usage", lambda path: usage._replace(free=1))
+            rejected_signals = check(
+                database, tmp_path, saved, api_url=endpoint, local_webhook=endpoint
+            )
+        assert rejected_signals["signals"]["backup_integrity"]
+        assert not rejected_signals["checks"]["backup"]  # Valid but too old.
+        assert not rejected_signals["checks"]["disk"]
+        assert "gbfs" in rejected_signals["signals"]["stale_workflows"]
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_kpi_sql_sum_retains_series_semantics(
+    database: DatabaseSettings, tmp_path: Path
+) -> None:
+    from datetime import date
+
+    assert get_kpi(QueryFilters(), database).completed_published_rides is None
+    publication = publish(fixture_result(tmp_path), database)
+    for query in (
+        QueryFilters(),
+        QueryFilters(publication_id=publication),
+        QueryFilters(station_id="001"),
+        QueryFilters(station_id="missing"),
+        QueryFilters(start_date=date(2026, 4, 1), end_date=date(2026, 4, 2)),
+    ):
+        series = get_series(query, database)
+        result = get_kpi(query, database)
+        assert (result.status, result.metadata, result.filters) == (
+            series.status,
+            series.metadata,
+            series.filters,
+        )
+        assert result.completed_published_rides == (
+            sum(p.completed_published_rides for p in series.points)
+            if series.points
+            else None
+        )
+    with connect(database) as db:
+        db.execute("UPDATE ride_hours SET completed_published_rides=0")
+    zero = get_kpi(QueryFilters(), database)
+    assert zero.status == "ok" and zero.completed_published_rides == 0
 
 
 def test_http_security_boundaries(monkeypatch: pytest.MonkeyPatch) -> None:

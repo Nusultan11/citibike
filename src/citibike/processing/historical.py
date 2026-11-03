@@ -22,7 +22,7 @@ from citibike.processing.resources import peak_rss_bytes
 from citibike.processing.schemas import detect
 from citibike.processing.trips import process, verify_artifacts
 from citibike.quality.profiling import profile
-from citibike.storage import identity, read_json, write_json
+from citibike.storage import identity, publish_directory, read_json, write_json
 
 HISTORY_VERSION = "f2.0.0"
 AUDIT_VERSION = "f2-independent-1"
@@ -117,7 +117,7 @@ def prepare(source: Path, root: Path, *, base_only: bool = False) -> Path:
                 )
                 write_json(staged_audit / "baseline.json", baseline)
                 audit_dir.parent.mkdir(parents=True, exist_ok=True)
-                staged_audit.rename(audit_dir)
+                publish_directory(staged_audit, audit_dir)
         baseline = read_json(audit_file)
         with duckdb.connect() as db:
             db.execute("SET memory_limit='256MB'; SET threads=2")
