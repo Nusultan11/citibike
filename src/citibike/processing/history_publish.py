@@ -379,8 +379,6 @@ def publish_history(
             },
         )
         return destination
-    if not activate:
-        raise ValueError("Requested historical snapshot is not published")
     destination.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=destination.parent) as directory:
         stage = Path(directory) / "snapshot"
@@ -460,7 +458,8 @@ def publish_history(
         }
         write_json(stage / "manifest.json", report)
         stage.rename(destination)
-    activate_snapshot(root, {"snapshot_id": snapshot_id, "path": str(destination)})
+    if activate:
+        activate_snapshot(root, {"snapshot_id": snapshot_id, "path": str(destination)})
     write_json(
         root / "f2" / "runs" / f"{time.time_ns()}.json",
         {

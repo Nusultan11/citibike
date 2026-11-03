@@ -321,7 +321,11 @@ def normalize(
 
 
 def collect(
-    root: Path, collection_id: str | None = None, client: httpx.Client | None = None
+    root: Path,
+    collection_id: str | None = None,
+    client: httpx.Client | None = None,
+    *,
+    activate: bool = True,
 ) -> Path:
     collection_id = (
         collection_id
@@ -336,7 +340,7 @@ def collect(
         for name, feed_meta in manifest["feeds"].items():
             if checksum(destination / f"{name}.json") != feed_meta["checksum"]:
                 raise ValueError("Immutable GBFS checksum mismatch")
-        return materialize(root, destination)
+        return materialize(root, destination, activate=activate)
     own = client is None
     client = client or httpx.Client(timeout=httpx.Timeout(30, connect=10))
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -378,10 +382,10 @@ def collect(
         finally:
             if own:
                 client.close()
-    return materialize(root, destination)
+    return materialize(root, destination, activate=activate)
 
 
-def materialize(root: Path, bronze: Path) -> Path:
+def materialize(root: Path, bronze: Path, *, activate: bool = True) -> Path:
     manifest = read_json(bronze / "manifest.json")
     cid: str = manifest["collection_id"]
     destination = root / "gbfs" / "silver" / GBFS_PIPELINE / cid
@@ -390,15 +394,16 @@ def materialize(root: Path, bronze: Path) -> Path:
         if checksum(destination / "station_status.parquet") != quality["checksum"]:
             raise ValueError("GBFS Silver checksum mismatch")
         # Recover a crash after Silver rename but before history/pointer activation.
-        rebuild_station_history(root)
-        write_json(
-            root / "gbfs/active.json",
-            {
-                "collection_id": cid,
-                "path": str(destination),
-                "checksum": quality["checksum"],
-            },
-        )
+        rebuild_station_history(root, activate=activate)
+        if activate:
+            write_json(
+                root / "gbfs/active.json",
+                {
+                    "collection_id": cid,
+                    "path": str(destination),
+                    "checksum": quality["checksum"],
+                },
+            )
         return destination
     destination.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -478,15 +483,16 @@ def materialize(root: Path, bronze: Path) -> Path:
             }
             write_json(stage / "quality.json", quality)
             stage.rename(destination)
-        rebuild_station_history(root)
-        write_json(
-            root / "gbfs" / "active.json",
-            {
-                "collection_id": cid,
-                "path": str(destination),
-                "checksum": quality["checksum"],
-            },
-        )
+        rebuild_station_history(root, activate=activate)
+        if activate:
+            write_json(
+                root / "gbfs" / "active.json",
+                {
+                    "collection_id": cid,
+                    "path": str(destination),
+                    "checksum": quality["checksum"],
+                },
+            )
         return destination
     except Exception as exc:
         if isinstance(exc, InvalidStations):
@@ -500,7 +506,7 @@ def materialize(root: Path, bronze: Path) -> Path:
         raise
 
 
-def rebuild_station_history(root: Path) -> Path:
+def rebuild_station_history(root: Path, *, activate: bool = True) -> Path:
     records: dict[str, list[dict[str, Any]]] = {}
     collections = []
     for path in sorted(
@@ -566,10 +572,15 @@ def rebuild_station_history(root: Path) -> Path:
         saved = read_json(destination / "manifest.json")
         if checksum(destination / "dim_station_history.parquet") != saved["checksum"]:
             raise ValueError("Immutable station history changed")
-        write_json(
-            root / "gbfs/station_history/active.json",
-            {"version": version, "path": str(destination), "intervals": len(intervals)},
-        )
+        if activate:
+            write_json(
+                root / "gbfs/station_history/active.json",
+                {
+                    "version": version,
+                    "path": str(destination),
+                    "intervals": len(intervals),
+                },
+            )
         return destination
     with tempfile.TemporaryDirectory(dir=destination.parent) as working:
         stage = Path(working) / "history"
@@ -583,10 +594,11 @@ def rebuild_station_history(root: Path) -> Path:
             },
         )
         stage.rename(destination)
-    write_json(
-        root / "gbfs" / "station_history" / "active.json",
-        {"version": version, "path": str(destination), "intervals": len(intervals)},
-    )
+    if activate:
+        write_json(
+            root / "gbfs" / "station_history" / "active.json",
+            {"version": version, "path": str(destination), "intervals": len(intervals)},
+        )
     return destination
 
 

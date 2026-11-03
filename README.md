@@ -16,7 +16,9 @@ Parquet и quarantine → Gold → PostgreSQL → FastAPI → Next.js Dashboard.
 | F3 | Gold, фильтры, временная/географическая аналитика, маршруты, GBFS intervals, `/analytics` | Default start-window **92 076 054**; [контракт](docs/analytics-contract.md), [сверка](docs/evidence/f3-analytics.json), [benchmark](docs/evidence/f3-performance.md), [UI](docs/evidence/f3-ui.json) |
 | F4 | Departures/arrivals на 24 часа, Seasonal Naive/Poisson/LightGBM/CatBoost, backtest, batch/API | Cohort 64 станции; [контракт и catalog](docs/forecasting-contract.md), [эксперимент](docs/evidence/f4-forecasting.md), [evidence](docs/evidence/f4-forecasting.json) |
 | F5 | `COMPLETED` в сценарном recorded-as-of scope: risk, heuristic, bounded transport MILP и CLI | [Controlled comparison и real-official as-of replay](docs/evidence/f5-risk.md):3/64 eligible; это не текущий live risk |
-| F6–F8 | `PLANNED`: полные product views, Prefect/MLflow automation, production hardening | Не реализованы; критерии и зависимости — [ROADMAP §§1–5](ROADMAP.md#1-стратегия-реализации) |
+| F6 | Product views: overview, analytics, stations, forecasts, scenarios | [Функциональная desktop/mobile проверка с ограничениями timings](docs/evidence/f6-product.json) |
+| F7 | Prefect workflows/scheduler, локальный MLflow Registry, gates, events, fallback | [Результаты и границы фактических проверок](docs/evidence/f7-automation.json); независимая приёмка отдельно |
+| F8 | `PLANNED`: production hardening | Release gates — [OPERATIONS](OPERATIONS.md) |
 
 Журнал сохраняет исторические `COMPLETED` F0–F4 по прежним критериям. Принятие
 F2/F3/F4 пользователем подтверждено заданием F5 с сохранёнными ограничениями;
@@ -32,7 +34,8 @@ PostgreSQL/psycopg, FastAPI/Pydantic, Next.js/TypeScript, ECharts, Docker Compos
 и GitHub Actions. ML libraries устанавливаются отдельной dependency group и
 не входят в API image. Структура: `src/citibike/` — pipeline, analytics, features,
 forecasting и serving; `apps/api/`, `apps/web/`, `tests/`, `docs/evidence/`.
-Polars/PyArrow, MapLibre, Prefect, MLflow Registry, Optuna и OR-Tools из целевой
+Prefect и MLflow устанавливаются отдельной группой `automation`; PyArrow — её
+транзитивная зависимость. Polars, MapLibre, Optuna и OR-Tools из целевой
 [архитектуры](ARCHITECTURE.md) не следует считать внедрёнными по наличию в плане.
 
 ## Установка и локальный запуск
@@ -237,7 +240,8 @@ Immutable models, predictions/residuals и manifests находятся в `data
 input timestamps, но не доказывает operational accuracy. Недостаточная история
 даёт `unavailable`; source window старше 62 суток блокирует batch. Неудачный batch
 не заменяет корректную публикацию. Prediction intervals не реализованы;
-MLflow Registry остаётся F7. Детали — [forecasting-contract](docs/forecasting-contract.md).
+MLflow Registry добавлен в [F7](#f7--локальная-автоматизация).
+Детали F4 — [forecasting-contract](docs/forecasting-contract.md).
 
 Отдельное постаудитное A/B-исследование (требует тех же локальных Gold inputs):
 
@@ -338,12 +342,118 @@ Wilson intervals характеризуют Monte Carlo precision, не кали
 отказов. Operational promotion F4 NOT VERIFIED; Seasonal Naive/unavailable
 fallback сохранён. Новых зависимостей, API, migrations и F5 web UI нет.
 
+## F7 — локальная автоматизация
+
+F7 вызывает существующие функции F2–F6. Режим подготовки без активации сохраняет
+все прежние файловые active pointers; SQL active переключается только после
+gates и зависимых публикаций. Результат и последняя валидная версия каждого
+контура — `data/automation/published/`. Новые data/model artifacts остаются
+immutable в существующих каталогах. API не запускает scheduler, ML или Registry.
+
+```sh
+uv sync --locked --group ml --group automation
+uv run --locked --group automation python -m citibike.automation versions
+uv run --locked --group automation python -m citibike.automation init
+```
+
+Перед запуском отредактируйте ignored `data/automation/config.json`: `data_dir`,
+явный immutable `model_bundle`/`fallback_bundle` (существующий Seasonal Naive),
+при необходимости station cohort, `risk_config` и `actuals_dataset`.
+Credentials берутся из env/локального `.env`, в config их нет. `inventory=null`
+означает официальный discovery; фиксированный inventory полезен для воспроизведения.
+Cold bootstrap 24 месяцев выполняется существующим F2 workflow, не scheduler:
+автоматический poll ограничен двумя изменившимися месяцами и 1 GB загрузок.
+Превышение бюджета блокирует публикацию и требует явного review конфигурации.
+
+Prefect 3.8.8 и MLflow 3.17.2 закреплены lockfile. Для Prefect нужен
+`fastapi<0.151`: новые версии изменили обработку null request parameters,
+а с 0.155 удалили `Body(min_items)`, который использует этот Prefect.
+Общий API проходит те же regression tests с закреплённой версией.
+Также закреплён `sqlalchemy<2.1`: scheduler Prefect падает на bulk DML в 2.1.
+
+В PowerShell задайте переменные **в каждом** из двух терминалов. Prefect сам не
+читает проектный `.env`. Сервер и scheduler явно запускаются отдельно:
+
+```powershell
+$env:PREFECT_HOME = "$PWD/data/automation/prefect-home"
+$env:PREFECT_API_URL = "http://127.0.0.1:4200/api"
+$env:PREFECT_SERVER_ANALYTICS_ENABLED = "false"
+$env:DO_NOT_TRACK = "true"
+# Терминал 1: локальная SQLite metadata Prefect; интерфейс только loopback.
+uv run --locked --group automation prefect server start --host 127.0.0.1 --port 4200
+# Терминал 2: runner/scheduler; Ctrl+C завершает runner и приостанавливает schedules.
+uv run --locked --group automation --group ml python -m citibike.automation serve
+```
+
+Расписания — archive poll каждые 6 h, GBFS каждые 60 s с дополнительной проверкой
+source TTL, batch каждые 24 h, risk каждые 5 min, retraining review каждые 7 days.
+GBFS и forecast после успешной проверки вызывают risk gate.
+GBFS также обновляет существующий availability mart/serving с повторным
+использованием trip partitions и проверенных geo aggregates, без нового Silver scan.
+Один общий OS lock на warehouse и Prefect runner/deployment limits=1
+исключают параллельных F7 writers.
+Transient source/DB ошибки имеют максимум 3 попытки с backoff 1/2 s; schema/PIT/
+parity ошибки не повторяются. Worker tree ограничен wall time/RSS/free disk;
+timeout убивает дочерние процессы. Defaults: 300 s, 2048 MiB, 512 MiB free.
+Full history/tuning/backtesting и автоматическое обучение по расписанию не запускаются.
+
+```sh
+# Ручной запуск: --operation trips|gbfs|forecast|risk|review.
+uv run --locked --group automation --group ml python -m citibike.automation run --operation forecast
+uv run --locked --group automation python -m citibike.automation status
+# Ускоренный тест настоящего расписания: отдельный config/warehouse, без обучения.
+uv run --locked --group automation python -m citibike.automation serve --config .cache/f7-schedule.json --only review --test-interval 2
+# Полный автоматизированный fixture/scheduler/Registry протокол (disposable DB):
+uv run --locked --group automation --group ml pytest -q tests/unit/test_automation.py tests/integration/test_automation.py
+# Real-official CLI protocol: существующий F4 обязателен; новая disposable DB,
+# реальные source requests, без full preprocessing и без изменений прежних active.
+uv run --locked --group automation --group ml python -m tests.integration.automation_protocol
+```
+
+Forecast origin сохраняется на UTC date/config, поэтому retry/restart в тот же
+день переиспользует ту же immutable публикацию. До готовых published/as-of inputs —
+`unavailable`; при ошибке ML допустим только явно заданный валидный Seasonal Naive.
+Schema/PIT/parity failure блокирует публикацию. Предыдущая версия остаётся доступной
+с исходными timestamps; её возраст не обнуляется и live readiness не обещается.
+
+Monitoring: immutable `data/automation/monitoring/events/*.json`, latest summaries
+и Prefect run/task states. Events содержат attempt/recovery, причины, freshness,
+quality, coverage, publication/model version, elapsed/RSS/budgets. Ошибки и recovery
+создают структурированные alert events; опциональный HTTPS `BIKEFLOW_ALERT_WEBHOOK`
+имеет 5 s timeout и не нужен для локальной работы. Raw third-party exceptions/DSN/
+webhook URL не пишутся в events. До actual — `pending_actuals` и null MAE/WAPE/bias.
+`review` с явно заданным `actuals_dataset` считает поздние ошибки только на
+проверенных F4 labels, опубликованных и доступных к review, с точным grain join;
+missing/inactive и ещё не наступившие часы не становятся нулями.
+
+Registry работает напрямую через database-backed SQLite metadata, без отдельного
+обязательного сервиса. Artifacts изолированы в `data/automation/registry/artifacts`;
+UI по желанию слушает только `127.0.0.1:5000`:
+
+```sh
+uv run --locked --group automation --group ml python -m citibike.automation registry
+uv run --locked --group automation python -m citibike.automation lineage --version 1
+uv run --locked --group automation python -m citibike.automation registry-ui
+```
+
+Регистрация копирует immutable custom F4 bundle и lineage (не `mlflow.pyfunc`
+flavor), сохраняет experiment/run/version IDs, dataset/checksums, feature schema,
+source/code/config/environment и прежние validation metrics. Повтор не создаёт
+новую model version. Ни один flow не устанавливает `champion` alias и не меняет
+active model. `registry.transition` — отдельный операторский интерфейс с двумя
+review records: gates/evidence checksums и явный owner approval, привязанный к
+candidate hash и действию. Реального approval/нового independent forward/shadow
+пока нет. Controlled promotion/rollback разрешён только в `f7-test-*` namespace;
+он проверяет механизм, не доказывает качество или разрешение на real promotion.
+Fallback остаётся Seasonal Naive. SQLite/model artifacts/secrets в Git не входят.
+Production deploy/security/load и обязательные restore gates остаются F8.
+
 ## Проверки и CI
 
 Быстрые проверки и полный локальный suite (PostgreSQL нужен для integration):
 
 ```sh
-uv sync --locked --group ml
+uv sync --locked --group ml --group automation
 uv run --locked ruff check .
 uv run --locked ruff format --check .
 uv run --locked mypy
@@ -379,7 +489,7 @@ forecast/analytics smoke и F1 outage/recovery. Полная история и r
 | Feature-group ablation, ML_SPEC §§3–5 | `VERIFIED`: полный и три ablation variants каждого bounded algorithm на одинаковых validation rows; [новый validation-only разбор](docs/evidence/f4-forecasting.md). Группы косвенно кодируют друг друга; это не причинная importance и не citywide качество |
 | Bounded search и все trials, ML_SPEC §4 | `VERIFIED`: immutable protocol до fits; 138/138 real outcomes (default/bounded, ablation, stress, repeats), worker timeout/RSS gates, durable failures на controlled negative tests. Frozen legacy evaluation сохранён; новые исследования запускаются отдельным `research --protocol`, без нового Optuna/MLflow |
 | Operational champion, ML_SPEC §5 | `NOT VERIFIED`: forward/shadow evaluation отсутствует. Local champion manifests выбирают baseline, это fallback без доказанного operational uplift; strict current input gate не заменяет forward evaluation |
-| MLflow lifecycle, ML_SPEC §7 | `PLANNED` для F7: local manifests не MLflow Registry; требование не отменено |
+| MLflow lifecycle, ML_SPEC §7 | `IMPLEMENTED` в F7: database-backed Registry, version/run lineage и guarded operator transition; автоматического promotion нет. [Проверки](docs/evidence/f7-automation.json) |
 | Risk/Optimization, ML_SPEC §6 | `VERIFIED` controlled и real-official recorded-as-of scenario3/64. Current live readiness/calibration `NOT VERIFIED`; no-action дешевле по loss+λcost этого малого replay. [F5 evidence](docs/evidence/f5-risk.md) |
 | Product/performance, PROJECT_SPEC / OPERATIONS | `PLANNED`: F6–F8 и часть целевого стека. Исторический F3 p95 monthly route с одним category filter **2413.46 ms** превышает цель 300 ms; изолированный cold cache, concurrent SLA, production restore `NOT VERIFIED` |
 
@@ -401,8 +511,9 @@ frozen selection/final-test/serving не переизбираются.
 Процесс по [AGENTS.md](AGENTS.md) и [bikeflow-step](.agents/skills/bikeflow-step/SKILL.md):
 **один промпт → один полный этап F0–F8 → реализация → проверки → отчёт → независимая
 приёмка**. Внутренние задачи Codex выполняет самостоятельно. Корректирующие промпты
-допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая приёмка F5 с явно указанным recorded-as-of scope
-и ограничениями current live inputs. F6–F8 автоматически не начинать.
+допустимы при PARTIAL/BLOCKED или дефектах приёмки. Ближайшая работа — независимая
+приёмка F7 с сохранёнными ограничениями current live inputs и operational promotion.
+F8 автоматически не начинать.
 
 [Citi Bike System Data](https://citibikenyc.com/system-data),
 [Data Sharing Policy](https://citibikenyc.com/data-sharing-policy).

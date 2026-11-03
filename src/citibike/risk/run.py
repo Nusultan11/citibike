@@ -69,6 +69,7 @@ def execute(
     config: Config,
     *,
     fail_after_events: bool = False,
+    activate: bool = True,
 ) -> Path:
     if (scenario is None) != (gate["status"] != "ok"):
         raise ValueError("Scenario/input gate inconsistency")
@@ -257,7 +258,7 @@ def execute(
         root / "f5/last_attempt.json",
         {"id": identifier, "path": str(destination), "status": result["status"]},
     )
-    if result["status"] == "ok":
+    if activate and result["status"] == "ok":
         pointer = (
             "active.json"
             if result["data_mode"] == "real_official"

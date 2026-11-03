@@ -137,6 +137,8 @@ def predict(
     bundle_path: Path,
     origin: datetime | None = None,
     stations: list[str] | None = None,
+    *,
+    activate: bool = True,
 ) -> Path:
     before = time.monotonic()
     bundle = checked(bundle_path)
@@ -303,4 +305,4 @@ def predict(
             },
         }
 
-    return create(root, "forecasts", identifier, calculate)
+    return create(root, "forecasts", identifier, calculate, activate=activate)

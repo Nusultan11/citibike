@@ -1,0 +1,1733 @@
+{
+  "phase": "F7 Automation",
+  "date": "2026-11-03",
+  "status": "PARTIAL_PENDING_CI_DELIVERY",
+  "independent_acceptance": "PENDING owner review; F6 authorization supplied in F7 request",
+  "base_sha": "14ea78c1bd910141bba95994d3feb2129c911faf",
+  "base_actual_ci": {
+    "id": 41596160053,
+    "conclusion": "success",
+    "url": "https://github.com/Nusultan11/citibike/actions/runs/41596160053"
+  },
+  "environment": {
+    "prefect": "3.8.8",
+    "mlflow": "3.17.2",
+    "fastapi": "0.150.0",
+    "sqlalchemy": "2.0.55",
+    "psutil": "7.2.2",
+    "filelock": "3.32.7",
+    "numpy": "2.5.4",
+    "pandas": "2.3.3",
+    "duckdb": "1.5.6"
+  },
+  "configuration": {
+    "warehouse": "local, explicit config; API never starts scheduler",
+    "schedules_seconds": {
+      "trips": 21600,
+      "gbfs": 60,
+      "forecast": 86400,
+      "risk": 300,
+      "review": 604800
+    },
+    "writer_concurrency": 1,
+    "runner_and_deployment_limits": 1,
+    "task_attempts_max": 3,
+    "retry_backoff_seconds": [
+      1,
+      2
+    ],
+    "worker_wall_seconds_default": 300,
+    "process_tree_rss_mb_default": 2048,
+    "min_free_disk_mb_default": 512,
+    "max_changed_months_default": 2,
+    "max_download_bytes_default": 1000000000,
+    "registry": "SQLite database-backed metadata; isolated copied F4 custom bundle artifacts; optional loopback UI",
+    "promotion": "NO flow/schedule calls transition; no real alias or F4 champion changed"
+  },
+  "real_official": {
+    "scope": "existing immutable F4 + fresh source requests; isolated DB/Registry; no model fit or full history transform",
+    "commands": [
+      {
+        "command": "python -m citibike.automation run --config <isolated-real-config> --operation forecast",
+        "returncode": 0,
+        "started_at": "2026-11-03T08:43:42.947966+00:00",
+        "status": "ok",
+        "id": "02fdea279e63dd3e6e7e6c23bb051e366cd9bacbe90f6e9667cbd08b0bae4a34",
+        "model_version": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
+        "coverage": 0.984375,
+        "forecast_origin_utc": "2026-11-03T08:43:47.630457+00:00",
+        "data_as_of": "2026-10-01T04:00:00+00:00",
+        "valid_until": "2026-11-04T09:00:00+00:00",
+        "model": "seasonal_naive",
+        "fallback_reason": null
+      },
+      {
+        "command": "python -m citibike.automation run --config <isolated-real-config> --operation forecast",
+        "returncode": 0,
+        "started_at": "2026-11-03T08:43:59.080313+00:00",
+        "status": "unchanged",
+        "id": "02fdea279e63dd3e6e7e6c23bb051e366cd9bacbe90f6e9667cbd08b0bae4a34",
+        "model_version": "7b2c9a85bf11c79cf1c4deb0a71cc292d43a0ad30af97d8f6f9a11273ad84515",
+        "coverage": 0.984375,
+        "forecast_origin_utc": "2026-11-03T08:43:47.630457+00:00",
+        "data_as_of": "2026-10-01T04:00:00+00:00",
+        "valid_until": "2026-11-04T09:00:00+00:00",
+        "model": "seasonal_naive",
+        "fallback_reason": null
+      },
+      {
+        "command": "python -m citibike.automation run --config <isolated-real-config> --operation review",
+        "returncode": 0,
+        "started_at": "2026-11-03T08:44:05.934528+00:00",
+        "status": "review_required"
+      },
+      {
+        "command": "python -m citibike.automation run --config <isolated-real-config> --operation gbfs",
+        "returncode": 2,
+        "started_at": "2026-11-03T08:44:20.750437+00:00",
+        "status": "unavailable",
+        "reason": "gbfs_stale_input"
+      },
+      {
+        "command": "python -m citibike.automation run --config <isolated-real-config> --operation trips",
+        "returncode": 2,
+        "started_at": "2026-11-03T08:44:31.788769+00:00",
+        "status": "unavailable",
+        "reason": "archive_change_budget_exceeded"
+      }
+    ],
+    "forecast_idempotent": true,
+    "forecast_publications": {
+      "n": 1
+    },
+    "forecast_active": {
+      "publication_id": "02fdea279e63dd3e6e7e6c23bb051e366cd9bacbe90f6e9667cbd08b0bae4a34"
+    },
+    "forecast_rows": 3072,
+    "valid_forecast_rows": 3024,
+    "unavailable_forecast_rows": 48,
+    "station_cohort": 64,
+    "registry_versions": [
+      {
+        "version": 1,
+        "run_id": "b4a7bab5b7a2415da91f909defa0e5ea"
+      }
+    ],
+    "registry_aliases": {},
+    "registry_experiment_id": "1",
+    "registry_model_manifest_sha256": "040d589e07b9b739c4dd7ac3cf522efee42c38da0de9d2610adf1b587f4c1341",
+    "registry_dataset_checksum": "394c02162b750705794a0c7e7953e2d21955cea174c8b157583d3c809179e03a",
+    "registry_feature_schema": "e03aa1e2cae7f11ce9b2f7abd5197f888b1b533540017bec4b31f4a11f87d5d3",
+    "registry_f7_recipe_sha256_at_run": "abb4e366499d9c27b84f5a25cb26efeacef235aa298b9d1bc0f3fce92f600a5b",
+    "registry_f7_working_tree_dirty_at_run": true,
+    "original_f4_model_code_checksum": "2151d7bb318cddc41f255be44d1abc5d47ee50e1dfa28e3f59e12b6891ba96ab",
+    "historical_validation_metric_count": 32,
+    "historical_accuracy_mode": "approximate retrospective",
+    "gbfs_feeds": {
+      "gbfs": {
+        "version": "2.3",
+        "last_updated": "2026-11-03T08:43:39+00:00",
+        "ttl": 60,
+        "source_age_seconds": 48.767273,
+        "stale": false,
+        "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+        "received_at_utc": "2026-11-03T08:44:27.767273+00:00",
+        "url": "https://gbfs.citibikenyc.com/gbfs/2.3/gbfs.json",
+        "checksum": "1096a3f02779c067d3c3c219124e878c66a3325f2d2e0c1e0fd6b1792f6243b6",
+        "bytes": 3589
+      },
+      "station_status": {
+        "version": "2.3",
+        "last_updated": "2026-11-03T08:42:41+00:00",
+        "ttl": 60,
+        "source_age_seconds": 107.574729,
+        "stale": true,
+        "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+        "received_at_utc": "2026-11-03T08:44:28.574729+00:00",
+        "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_status.json",
+        "checksum": "dc88faffc6899baf737836ac74e8c76890e3833eb04b0065153bbd4ae86da933",
+        "bytes": 1080859
+      },
+      "station_information": {
+        "version": "2.3",
+        "last_updated": "2026-11-03T08:42:40+00:00",
+        "ttl": 60,
+        "source_age_seconds": 108.829927,
+        "stale": true,
+        "freshness_policy": "Positive TTL: conservative expiry; ttl=0: refresh always, 300-second maximum source age per GBFS latency guidance.",
+        "received_at_utc": "2026-11-03T08:44:28.829927+00:00",
+        "url": "https://gbfs.lyft.com/gbfs/2.3/bkn/en/station_information.json",
+        "checksum": "380cbe56a7db4d5f35a9bc23f3605fa64513c78d9a7aa0f616006df94e25d680",
+        "bytes": 801063
+      }
+    },
+    "gbfs_publication": "REJECTED stale input; no numeric current risk published; received/source times unmodified",
+    "source_inventory": [
+      {
+        "path": "C:\\Users\\nurs\\citibike\\.cache\\f7-real-final\\inventory\\ce229c65f7df0a761e9f2a121a9ae8cbfe4d718b68edca881c9a2c8208c07152\\inventory.json",
+        "sha256": "ef3555afd3062eddbfd99782130d12603aec5031955fe6d4bdecda66dfe0e24c",
+        "checked_at": "2026-11-03T08:44:38.093791+00:00",
+        "window": [
+          "2024-10",
+          "2024-11",
+          "2024-12",
+          "2025-01",
+          "2025-02",
+          "2025-03",
+          "2025-04",
+          "2025-05",
+          "2025-06",
+          "2025-07",
+          "2025-08",
+          "2025-09",
+          "2025-10",
+          "2025-11",
+          "2025-12",
+          "2026-01",
+          "2026-02",
+          "2026-03",
+          "2026-04",
+          "2026-05",
+          "2026-06",
+          "2026-07",
+          "2026-08",
+          "2026-09"
+        ],
+        "source_url": "https://s3.amazonaws.com/tripdata",
+        "objects": 178
+      }
+    ],
+    "cold_history_bootstrap": "EXPECTED BLOCK: 24 missing sources exceed scheduled change budget; full historical preprocessing NOT RUN",
+    "forecast_worker_measurements": [
+      {
+        "returncode": 0,
+        "elapsed_seconds": 10.09299999999348,
+        "peak_tree_rss_bytes": 219598848,
+        "rss_sampling_seconds": 0.05
+      },
+      {
+        "returncode": 0,
+        "elapsed_seconds": 1.7809999999590218,
+        "peak_tree_rss_bytes": 140763136,
+        "rss_sampling_seconds": 0.05
+      }
+    ],
+    "all_events_count": 18,
+    "alert_events": 8,
+    "original_active_pointer_count": 25,
+    "original_active_pointers_unchanged": true,
+    "earlier_real_observation": {
+      "proof_sha256": "049343118d782aecfcaca57d72fc8d9b962b20541ec4267d937f2925ea07ba99",
+      "forecast_idempotent": true,
+      "gbfs": "stale; rejected"
+    },
+    "actual_accuracy": {
+      "status": "pending_actuals",
+      "mae": null,
+      "wape": null,
+      "bias": null
+    }
+  },
+  "controlled": {
+    "label": "Synthetic source/ML fixtures and controlled fault injections; NOT production quality evidence",
+    "full_regression": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "229",
+      "time": "627.733",
+      "timestamp": "2026-11-03T13:31:54.196976+05:00",
+      "hostname": "DESKTOP-9CGUR1M",
+      "cases": [
+        {
+          "name": "test_analytical_grains_boundaries_dst_unknown_and_independent_oracle",
+          "class": "tests.unit.test_analytics_gold",
+          "seconds": 3.284
+        },
+        {
+          "name": "test_unchanged_and_changed_source_invalidate_both_boundary_months",
+          "class": "tests.unit.test_analytics_incremental",
+          "seconds": 4.804
+        },
+        {
+          "name": "test_gbfs_ttl_next_receipt_gaps_disabled_zero_and_stale",
+          "class": "tests.unit.test_analytics_intervals",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_analytics_filters_and_aware_gbfs_instants",
+          "class": "tests.unit.test_analytics_intervals",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_transient_windows_atomic_rename_retry",
+          "class": "tests.unit.test_analytics_intervals",
+          "seconds": 0.006
+        },
+        {
+          "name": "test_health",
+          "class": "tests.unit.test_api",
+          "seconds": 0.027
+        },
+        {
+          "name": "test_openapi",
+          "class": "tests.unit.test_api",
+          "seconds": 0.33
+        },
+        {
+          "name": "test_http_error[GET-/missing-404-not_found]",
+          "class": "tests.unit.test_api",
+          "seconds": 0.041
+        },
+        {
+          "name": "test_http_error[POST-/health-405-method_not_allowed]",
+          "class": "tests.unit.test_api",
+          "seconds": 0.05
+        },
+        {
+          "name": "test_validation_error",
+          "class": "tests.unit.test_api",
+          "seconds": 0.048
+        },
+        {
+          "name": "test_unexpected_error_is_sanitized",
+          "class": "tests.unit.test_api",
+          "seconds": 0.052
+        },
+        {
+          "name": "test_settings_from_environment",
+          "class": "tests.unit.test_api",
+          "seconds": 0.006
+        },
+        {
+          "name": "test_invalid_settings[0]",
+          "class": "tests.unit.test_api",
+          "seconds": 0.004
+        },
+        {
+          "name": "test_invalid_settings[65536]",
+          "class": "tests.unit.test_api",
+          "seconds": 0.005
+        },
+        {
+          "name": "test_invalid_settings[not-a-number]",
+          "class": "tests.unit.test_api",
+          "seconds": 0.006
+        },
+        {
+          "name": "test_config_budget_and_unknown_fields",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_source_schema_drift_before_processing",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.036
+        },
+        {
+          "name": "test_gbfs_parity_freshness_and_no_activation",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.37
+        },
+        {
+          "name": "test_model_gates_fail_closed[feature_schema-feature_schema_drift]",
+          "class": "tests.unit.test_automation",
+          "seconds": 44.53
+        },
+        {
+          "name": "test_model_gates_fail_closed[feature_recipe-train_serve_parity]",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.016
+        },
+        {
+          "name": "test_model_gates_fail_closed[created_at-pit_unavailable_at_origin]",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.016
+        },
+        {
+          "name": "test_monitoring_alert_recovery_and_webhook_failure",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.036
+        },
+        {
+          "name": "test_late_accuracy_only_observed_and_available",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_timeout_kills_child_tree_before_late_publication",
+          "class": "tests.unit.test_automation",
+          "seconds": 2.575
+        },
+        {
+          "name": "test_rss_limit_and_disk_limit",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.12
+        },
+        {
+          "name": "test_gbfs_ttl_suppresses_early_network_poll",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.261
+        },
+        {
+          "name": "test_invalid_primary_never_hides_schema_drift",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.022
+        },
+        {
+          "name": "test_database_outage_does_not_break_liveness",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.047
+        },
+        {
+          "name": "test_invalid_filters_rejected_before_database[params0]",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.036
+        },
+        {
+          "name": "test_invalid_filters_rejected_before_database[params1]",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.033
+        },
+        {
+          "name": "test_invalid_filters_rejected_before_database[params2]",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.034
+        },
+        {
+          "name": "test_invalid_filters_rejected_before_database[params3]",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.031
+        },
+        {
+          "name": "test_invalid_filters_rejected_before_database[params4]",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.035
+        },
+        {
+          "name": "test_invalid_filters_rejected_before_database[params5]",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.028
+        },
+        {
+          "name": "test_database_env_uses_only_pg_aliases",
+          "class": "tests.unit.test_data_api",
+          "seconds": 0.007
+        },
+        {
+          "name": "test_utc_horizons_and_dst",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_point_in_time_rejects_future[availability]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_point_in_time_rejects_future[event]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_point_in_time_rejects_future[strict]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_calendar_and_dependent_source_availability",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_count_metrics_and_zero_denominator",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_weather_outcome_labels_dst_and_missing",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.003
+        },
+        {
+          "name": "test_weather_precipitation_is_hour_ending_with_exact_threshold",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.003
+        },
+        {
+          "name": "test_posthoc_weather_metrics_use_fixed_predictions",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.087
+        },
+        {
+          "name": "test_invalid_forecast_output[-1]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_forecast_output[inf]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_forecast_output[nan]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_invalid_forecast_output[None]",
+          "class": "tests.unit.test_forecast_contracts",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_versions_zero_unknown_stale_and_invalid_counts[2.3]",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_versions_zero_unknown_stale_and_invalid_counts[3.0]",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_missing_mismatch_duplicate_and_unknown_version",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_zero_ttl_means_refresh_always_not_automatically_stale",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_unknown_timestamp_does_not_become_zero_availability",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_real_collection_protocol_history_and_failure_rollback",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.496
+        },
+        {
+          "name": "test_station_history_gaps_alias_reuse_and_conflicting_observations",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.087
+        },
+        {
+          "name": "test_bounded_poll_respects_status_ttl_and_duration",
+          "class": "tests.unit.test_gbfs",
+          "seconds": 0.01
+        },
+        {
+          "name": "test_global_reconciliation_incremental_dependencies_and_rollback",
+          "class": "tests.unit.test_historical",
+          "seconds": 3.155
+        },
+        {
+          "name": "test_unknown_schema_and_incomplete_scope_block",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.005
+        },
+        {
+          "name": "test_modern_categories_are_preserved_without_legacy_guessing",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.691
+        },
+        {
+          "name": "test_station_join_cardinality_and_no_historical_backfill",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.081
+        },
+        {
+          "name": "test_research_zero_missing_source_gap_and_duplicate_join",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.092
+        },
+        {
+          "name": "test_research_dst_utc_exposure[2025-11-02T00:00:00-04:00-2025-11-03T00:00:00-05:00-25]",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.063
+        },
+        {
+          "name": "test_research_dst_utc_exposure[2025-03-09T00:00:00-05:00-2025-03-10T00:00:00-04:00-23]",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.043
+        },
+        {
+          "name": "test_research_seven_day_boundary_and_missing_station_hour",
+          "class": "tests.unit.test_historical",
+          "seconds": 0.056
+        },
+        {
+          "name": "test_stream_retry_and_immutable_cache",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.035
+        },
+        {
+          "name": "test_http_failure_never_publishes[404-1]",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.012
+        },
+        {
+          "name": "test_http_failure_never_publishes[429-3]",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.013
+        },
+        {
+          "name": "test_http_failure_never_publishes[500-3]",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.014
+        },
+        {
+          "name": "test_incomplete_object_never_publishes[-0]",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.012
+        },
+        {
+          "name": "test_incomplete_object_never_publishes[truncated-999]",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.012
+        },
+        {
+          "name": "test_zip_paths_and_current_month_are_rejected",
+          "class": "tests.unit.test_ingestion",
+          "seconds": 0.007
+        },
+        {
+          "name": "test_inventory_pagination_scope_completeness",
+          "class": "tests.unit.test_inventory",
+          "seconds": 0.018
+        },
+        {
+          "name": "test_unrecognized_or_ambiguous_inventory_does_not_choose_silently",
+          "class": "tests.unit.test_inventory",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_reissued_source_retains_both_immutable_versions",
+          "class": "tests.unit.test_inventory",
+          "seconds": 0.045
+        },
+        {
+          "name": "test_integer_optimizer_matches_independent_small_exhaustive_minimum",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.018
+        },
+        {
+          "name": "test_threshold_heuristic_is_independent_of_demand_target_surrogate",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[negative]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[stock]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[docks]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[fleet]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[time]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[closed]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_plans_are_blocked[duplicate]",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_solver_failure_is_explicit_and_keeps_other_policies",
+          "class": "tests.unit.test_optimization",
+          "seconds": 0.123
+        },
+        {
+          "name": "test_package_imports",
+          "class": "tests.unit.test_package",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_installed_package_metadata",
+          "class": "tests.unit.test_package",
+          "seconds": 0.006
+        },
+        {
+          "name": "test_all_files_reconciled_and_idempotent",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.446
+        },
+        {
+          "name": "test_dst_ambiguity_gap_and_normalization",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.333
+        },
+        {
+          "name": "test_empty_corrupt_and_unknown_schema_block",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.077
+        },
+        {
+          "name": "test_changed_bronze_and_artifacts_rejected",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.345
+        },
+        {
+          "name": "test_source_scope_is_not_quality_error[https://s3.amazonaws.com/tripdata/JC-202604-citibike-tripdata.csv.zip]",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.004
+        },
+        {
+          "name": "test_source_scope_is_not_quality_error[https://example.com/202604-citibike-tripdata.zip]",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.005
+        },
+        {
+          "name": "test_profile_preserves_null_and_does_not_drop_duration_peaks",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.488
+        },
+        {
+          "name": "test_independent_csv_baseline",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.062
+        },
+        {
+          "name": "test_all_invalid_retains_quarantine_without_publication",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.414
+        },
+        {
+          "name": "test_wrong_source_period_cannot_be_published",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.301
+        },
+        {
+          "name": "test_utf8_source_names_and_provenance",
+          "class": "tests.unit.test_processing",
+          "seconds": 0.345
+        },
+        {
+          "name": "test_id_split_flags_only_existing_dddd_d_and_d0_pairs",
+          "class": "tests.unit.test_product",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_scenario_is_current_only_inside_ttl_and_open_horizon",
+          "class": "tests.unit.test_product",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_product_filters_reject_unbounded_or_inconsistent_input",
+          "class": "tests.unit.test_product",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_ranges_resume_and_reject_source_change",
+          "class": "tests.unit.test_ranges",
+          "seconds": 0.102
+        },
+        {
+          "name": "test_order_capacity_blocked_slots_and_closed_attempts",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_dst_local_fold_is_normalized_before_lead_calculation",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_delivery_keeps_undeliverable_cargo_and_balance",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes0]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes1]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes2]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes3]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes4]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes5]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes6]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes7]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_invalid_scenario_parameters[changes8]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_zero_seed_repeatability_budget_and_invalid_attempt",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.004
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[stale]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.004
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[future_receipt]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.004
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[future_publication]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.004
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[missing]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.003
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[mixed_origin]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.003
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[ttl_zero]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_asof_gates_do_not_become_zero[expired]",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_station_coverage_unavailable_capacity_mapping_and_dst",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.009
+        },
+        {
+          "name": "test_immutable_repeat_partial_failure_and_independent_oracle",
+          "class": "tests.unit.test_risk",
+          "seconds": 0.297
+        },
+        {
+          "name": "test_public_metric_name_and_independent_v1_v2_schemas",
+          "class": "tests.data_contracts.test_analytics_contract",
+          "seconds": 0.185
+        },
+        {
+          "name": "test_unknown_and_confirmed_zero_have_distinct_serializations",
+          "class": "tests.data_contracts.test_analytics_contract",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_two_targets_24_hours_unique_grain",
+          "class": "tests.data_contracts.test_forecast_contract",
+          "seconds": 0.003
+        },
+        {
+          "name": "test_silver_types_raw_times_nullable_coordinates_and_lineage",
+          "class": "tests.data_contracts.test_trip_contract",
+          "seconds": 0.337
+        },
+        {
+          "name": "test_research_effective_silver_counts_geography_churn_and_oracle",
+          "class": "tests.data_contracts.test_trip_contract",
+          "seconds": 1.001
+        },
+        {
+          "name": "test_research_shift_is_normalised_and_reproducible",
+          "class": "tests.data_contracts.test_trip_contract",
+          "seconds": 1.271
+        },
+        {
+          "name": "test_catalog_records_formula_lineage_availability_and_nulls",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_missing_history_never_becomes_zero",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.301
+        },
+        {
+          "name": "test_true_zero_variation_stays_zero",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.386
+        },
+        {
+          "name": "test_cell_history_respects_publication_time",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.449
+        },
+        {
+          "name": "test_batch_and_reordered_single_origin_features_are_equal",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.396
+        },
+        {
+          "name": "test_d1_schema_models_are_readable_only_without_group_p",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_future_label_is_invisible_until_published",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.639
+        },
+        {
+          "name": "test_gate_rejects_future_availability_and_events[d_available_at]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.285
+        },
+        {
+          "name": "test_gate_rejects_future_availability_and_events[d_max_event_at]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.29
+        },
+        {
+          "name": "test_gate_rejects_future_availability_and_events[feature_available_at]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.358
+        },
+        {
+          "name": "test_preprocessing_flags_and_train_only_filter",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.751
+        },
+        {
+          "name": "test_anomalous_rule_keeps_real_id_formats",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_preprocessing_retains_extreme_values",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_dst_and_holiday_distance_are_calendar_only",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_adapters_accept_missing_unknown_and_keep_saved_parity[poisson]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 13.803
+        },
+        {
+          "name": "test_adapters_accept_missing_unknown_and_keep_saved_parity[lightgbm]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.365
+        },
+        {
+          "name": "test_adapters_accept_missing_unknown_and_keep_saved_parity[catboost]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 1.206
+        },
+        {
+          "name": "test_adapters_accept_missing_unknown_and_keep_saved_parity[hurdle]",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.188
+        },
+        {
+          "name": "test_hurdle_is_occurrence_times_conditional_intensity",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.174
+        },
+        {
+          "name": "test_baseline_rejects_features_and_invalid_outputs",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.082
+        },
+        {
+          "name": "test_search_is_seeded_bounded_and_inside_the_space",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_selection_rules_prefer_fewer_columns_and_reject_failures",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_protocol_binds_code_budgets_and_test_lock",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.173
+        },
+        {
+          "name": "test_run_requires_remote_proof_for_real_data",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.023
+        },
+        {
+          "name": "test_remote_proof_refuses_absent_protocol",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.006
+        },
+        {
+          "name": "test_worker_failures_are_durable_and_substitution_is_rejected",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.967
+        },
+        {
+          "name": "test_corrupted_artifact_and_trial_are_detected",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 86.618
+        },
+        {
+          "name": "test_complete_run_repeat_oracle_and_replay",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 3.099
+        },
+        {
+          "name": "test_feature_oracle_detects_missing_as_zero",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.44
+        },
+        {
+          "name": "test_feature_oracle_detects_shifted_value",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.641
+        },
+        {
+          "name": "test_paired_bootstrap_rejects_mismatched_rows_and_finds_a_real_gap",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.018
+        },
+        {
+          "name": "test_sign_flip_and_holm_are_exact",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_decision_needs_gate_and_familywise_interval",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.0
+        },
+        {
+          "name": "test_rank_correlation_matches_sql",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.02
+        },
+        {
+          "name": "test_analytics_keep_denominators_and_unknown_separate",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.214
+        },
+        {
+          "name": "test_full_analytics_sections_on_fixture_outcome",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.474
+        },
+        {
+          "name": "test_f5_oracle_recomputes_policy_means",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.01
+        },
+        {
+          "name": "test_readiness_never_summarises_holdout_actuals_and_finds_no_leak",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.444
+        },
+        {
+          "name": "test_lineage_rule_needs_every_piece_of_evidence",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.0
+        },
+        {
+          "name": "test_corrective_run_replays_p_free_trials_and_refits_p",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 70.527
+        },
+        {
+          "name": "test_replay_with_changed_hash_fails_durably",
+          "class": "tests.ml.test_decision_research",
+          "seconds": 0.115
+        },
+        {
+          "name": "test_feature_calendar_dst_and_numeric_formula",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.013
+        },
+        {
+          "name": "test_feature_published_history_missing_zero_and_fit_cutoff",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.152
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups0-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 7.317
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups0-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.169
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups0-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.199
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups1-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.143
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups1-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.194
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups1-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.167
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups2-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.126
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups2-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.188
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups2-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.199
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups3-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.114
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups3-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.151
+        },
+        {
+          "name": "test_feature_adapters_numeric_ablation_saved_compatibility[groups3-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.133
+        },
+        {
+          "name": "test_feature_protocol_population_test_isolation_and_durable_failures",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 2.025
+        },
+        {
+          "name": "test_feature_independent_oracle_and_crossed_cluster_comparisons",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.352
+        },
+        {
+          "name": "test_feature_recipe_binds_fit_code_and_excludes_weather_inputs",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.006
+        },
+        {
+          "name": "test_feature_rebuild_is_deterministic_and_batch_independent",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.497
+        },
+        {
+          "name": "test_feature_decision_needs_both_populations_and_group_needs_agreement",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_feature_complete_research_oracle_and_immutable_repeat",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 89.65
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[calendar-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.066
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[calendar-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.066
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[calendar-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.085
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[station_identity-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.084
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[station_identity-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.063
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[station_identity-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.083
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[demand_profile-poisson_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.079
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[demand_profile-lightgbm_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.083
+        },
+        {
+          "name": "test_group_ablation_removes_inputs_and_retains_saved_parity[demand_profile-catboost_bounded]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.103
+        },
+        {
+          "name": "test_baseline_group_removal_and_unknown_schema_are_rejected",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_research_protocol_trial_failure_durability_and_population",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 2.719
+        },
+        {
+          "name": "test_research_complete_repeat_preserves_frozen_selection",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 45.946
+        },
+        {
+          "name": "test_independent_diagnostic_oracle_detects_wrong_groups",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.133
+        },
+        {
+          "name": "test_real_transform_fixture_repeat_and_independent_audit",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 17.604
+        },
+        {
+          "name": "test_candidates_repeat_and_train_only_encoding[poisson_default]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.117
+        },
+        {
+          "name": "test_candidates_repeat_and_train_only_encoding[lightgbm_default]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.081
+        },
+        {
+          "name": "test_candidates_repeat_and_train_only_encoding[catboost_default]",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.125
+        },
+        {
+          "name": "test_validation_future_feature_is_rejected",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.089
+        },
+        {
+          "name": "test_independent_metric_oracle_detects_wrong_report",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.041
+        },
+        {
+          "name": "test_mixed_dataset_version_is_rejected",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.026
+        },
+        {
+          "name": "test_promotion_gate_and_untouched_test_lock",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.027
+        },
+        {
+          "name": "test_strict_inference_repeat_unknown_stale_and_schema",
+          "class": "tests.ml.test_forecasting",
+          "seconds": 0.346
+        },
+        {
+          "name": "test_comparable_period_change_and_dst_rejection",
+          "class": "tests.integration.test_analytics",
+          "seconds": 11.152
+        },
+        {
+          "name": "test_analytics_postgres_http_filters_metrics_and_rollback",
+          "class": "tests.integration.test_analytics",
+          "seconds": 14.165
+        },
+        {
+          "name": "test_availability_weighting_and_gaps",
+          "class": "tests.integration.test_analytics",
+          "seconds": 8.36
+        },
+        {
+          "name": "test_source_processing_validation_serving_and_partial_recovery",
+          "class": "tests.integration.test_automation",
+          "seconds": 62.469
+        },
+        {
+          "name": "test_forecast_repeat_fallback_risk_and_outage",
+          "class": "tests.integration.test_automation",
+          "seconds": 23.997
+        },
+        {
+          "name": "test_ml_failure_uses_only_verified_seasonal_bundle",
+          "class": "tests.integration.test_automation",
+          "seconds": 0.882
+        },
+        {
+          "name": "test_registry_lineage_promotion_rejection_and_isolated_rollback",
+          "class": "tests.integration.test_automation",
+          "seconds": 15.827
+        },
+        {
+          "name": "test_prefect_actual_bounded_retries_and_recovery",
+          "class": "tests.integration.test_automation",
+          "seconds": 4.146
+        },
+        {
+          "name": "test_concurrent_writer_is_rejected_before_start",
+          "class": "tests.integration.test_automation",
+          "seconds": 2.119
+        },
+        {
+          "name": "test_real_local_scheduler_trigger_and_repeated_run",
+          "class": "tests.integration.test_automation",
+          "seconds": 32.02
+        },
+        {
+          "name": "test_forecast_atomic_idempotent_rollback_and_http",
+          "class": "tests.integration.test_forecasting",
+          "seconds": 1.601
+        },
+        {
+          "name": "test_station_geo_publication_api_parity_and_states",
+          "class": "tests.integration.test_product",
+          "seconds": 11.521
+        },
+        {
+          "name": "test_risk_publication_currency_and_rollback",
+          "class": "tests.integration.test_product",
+          "seconds": 2.005
+        },
+        {
+          "name": "test_published_forecast_gbfs_to_risk_cli_and_stale_gate",
+          "class": "tests.integration.test_risk",
+          "seconds": 3.989
+        },
+        {
+          "name": "test_postgres_api_publication_and_filters",
+          "class": "tests.integration.test_serving",
+          "seconds": 1.174
+        },
+        {
+          "name": "test_failed_publish_retains_previous_version",
+          "class": "tests.integration.test_serving",
+          "seconds": 0.994
+        },
+        {
+          "name": "test_changed_migration_blocks_without_rewriting",
+          "class": "tests.integration.test_serving",
+          "seconds": 0.179
+        }
+      ]
+    },
+    "final_f7_regression": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "19",
+      "time": "168.867",
+      "timestamp": "2026-11-03T13:42:59.881819+05:00",
+      "hostname": "DESKTOP-9CGUR1M",
+      "cases": [
+        {
+          "name": "test_config_budget_and_unknown_fields",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.002
+        },
+        {
+          "name": "test_source_schema_drift_before_processing",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.021
+        },
+        {
+          "name": "test_gbfs_parity_freshness_and_no_activation",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.831
+        },
+        {
+          "name": "test_model_gates_fail_closed[feature_schema-feature_schema_drift]",
+          "class": "tests.unit.test_automation",
+          "seconds": 45.833
+        },
+        {
+          "name": "test_model_gates_fail_closed[feature_recipe-train_serve_parity]",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.018
+        },
+        {
+          "name": "test_model_gates_fail_closed[created_at-pit_unavailable_at_origin]",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.018
+        },
+        {
+          "name": "test_monitoring_alert_recovery_and_webhook_failure",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.044
+        },
+        {
+          "name": "test_late_accuracy_only_observed_and_available",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.001
+        },
+        {
+          "name": "test_timeout_kills_child_tree_before_late_publication",
+          "class": "tests.unit.test_automation",
+          "seconds": 2.521
+        },
+        {
+          "name": "test_rss_limit_and_disk_limit",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.183
+        },
+        {
+          "name": "test_gbfs_ttl_suppresses_early_network_poll",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.261
+        },
+        {
+          "name": "test_invalid_primary_never_hides_schema_drift",
+          "class": "tests.unit.test_automation",
+          "seconds": 0.027
+        },
+        {
+          "name": "test_source_processing_validation_serving_and_partial_recovery",
+          "class": "tests.integration.test_automation",
+          "seconds": 61.127
+        },
+        {
+          "name": "test_forecast_repeat_fallback_risk_and_outage",
+          "class": "tests.integration.test_automation",
+          "seconds": 25.136
+        },
+        {
+          "name": "test_ml_failure_uses_only_verified_seasonal_bundle",
+          "class": "tests.integration.test_automation",
+          "seconds": 0.76
+        },
+        {
+          "name": "test_registry_lineage_promotion_rejection_and_isolated_rollback",
+          "class": "tests.integration.test_automation",
+          "seconds": 6.751
+        },
+        {
+          "name": "test_prefect_actual_bounded_retries_and_recovery",
+          "class": "tests.integration.test_automation",
+          "seconds": 4.169
+        },
+        {
+          "name": "test_concurrent_writer_is_rejected_before_start",
+          "class": "tests.integration.test_automation",
+          "seconds": 2.223
+        },
+        {
+          "name": "test_real_local_scheduler_trigger_and_repeated_run",
+          "class": "tests.integration.test_automation",
+          "seconds": 16.191
+        }
+      ]
+    },
+    "additional_final_regression": "late_accuracy: 1 passed; excludes incomplete hour, future availability, missing labels and duplicate grain",
+    "scheduler": {
+      "mode": "controlled_scheduler",
+      "scheduled_run_ids": [
+        "01a1a095-da4f-7cb5-a83e-923ce6cf709a",
+        "01a1a095-da4f-7570-8935-d81c0b194d9f"
+      ],
+      "automatic_training": false,
+      "publication_changes": 0
+    },
+    "registry": {
+      "version_count": 2,
+      "versions": [
+        "2",
+        "1"
+      ],
+      "restored_champion_version": "1",
+      "scope": "isolated f7-test-* namespace; fabricated review records explicitly marked CONTROLLED TEST OPERATOR, never real approval"
+    },
+    "retry_recovery": {
+      "event_id": "460616d4c2784517b417815cf3f8bf14",
+      "created_at": "2026-11-03T08:45:29.414465+00:00",
+      "operation": "review",
+      "status": "ok",
+      "last_terminal_status": "ok",
+      "recovery": "recovered",
+      "accuracy": {
+        "status": "pending_actuals",
+        "mae": null,
+        "wape": null,
+        "bias": null
+      },
+      "flow_run_id": "67398cc0-aca7-4ec0-9eda-7b4fc8452409",
+      "attempt": 3,
+      "resources": {
+        "returncode": 0
+      },
+      "result": {
+        "status": "ok",
+        "reason": "controlled_source_unavailable"
+      },
+      "alert": true
+    },
+    "coverage": [
+      "ZIP/Bronze -> Silver reconciliation -> Gold -> transactional serving -> existing API; independent generated ride count 2 then 3",
+      "unchanged archives skip historical preprocessing; GBFS refresh reuses geo bytes and yields 2 serving intervals",
+      "schema drift, stale GBFS, future/PIT, parity; active pointers retained",
+      "partial geo failure retains old analytics active; later recovery activates complete new version",
+      "actual unavailable DB through Prefect: exactly 3 bounded attempts then recovery",
+      "hard timeout kills child tree before late write; RSS/disk limits; conflicting writer rejected before start",
+      "Seasonal Naive from valid inputs; injected primary ML failure -> verified explicit fallback",
+      "forecast and risk repeat without duplicate publications",
+      "real MLflow version/lineage payload checks, rejected unapproved promotion and isolated approved-version rollback",
+      "structured failure/recovery alert events; optional invalid webhook config handled without leaking URL"
+    ]
+  },
+  "checks": [
+    {
+      "command": "uv sync --locked --group ml",
+      "result": "PASS"
+    },
+    {
+      "command": "uv sync --locked --group ml --group automation",
+      "result": "PASS"
+    },
+    {
+      "command": "uv run --locked ruff check .",
+      "result": "PASS"
+    },
+    {
+      "command": "uv run --locked ruff format --check .",
+      "result": "PASS"
+    },
+    {
+      "command": "uv run --locked mypy",
+      "result": "PASS",
+      "files": 135
+    },
+    {
+      "command": "uv run --locked --group ml pytest -q tests/unit tests/data_contracts tests/ml tests/integration --basetemp .cache/f7-suite --junitxml=.cache/f7-suite.xml",
+      "result": "PASS",
+      "tests": 229,
+      "warnings": 31
+    },
+    {
+      "command": "uv run --locked --group automation --group ml pytest -q tests/unit/test_automation.py tests/integration/test_automation.py --basetemp .cache/f7-final --junitxml=.cache/f7-final.xml",
+      "result": "PASS",
+      "tests": 19
+    },
+    {
+      "command": "npm --prefix apps/web test",
+      "result": "PASS",
+      "tests": 6
+    },
+    {
+      "command": "npm --prefix apps/web run build",
+      "result": "PASS after resolving existing process file lock; host3001 restored"
+    },
+    {
+      "command": "uv build",
+      "result": "PASS wheel/sdist"
+    },
+    {
+      "command": "docker compose config --quiet",
+      "result": "PASS"
+    },
+    {
+      "command": "docker compose build",
+      "result": "PASS; final commit build also gated by CI"
+    },
+    {
+      "command": "docker compose run --rm --no-deps api python -c <import/exclusion check>",
+      "result": "PASS: API imports; mlflow/prefect not installed"
+    },
+    {
+      "command": "python -m tests.integration.automation_protocol --work-dir .cache/f7-real-final --output .cache/f7-real-final-proof.json",
+      "result": "PASS local real protocol; GBFS/cold history intentionally blocked"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "preservation": {
+    "http": {
+      "http://127.0.0.1:8000/health": 200,
+      "http://127.0.0.1:3000/health": 200,
+      "http://127.0.0.1:3001/health": 200
+    },
+    "original_data_file_count": 13769,
+    "original_json_count": 4932,
+    "changed_data_stats": [],
+    "changed_original_json": [],
+    "changed_old_evidence": []
+  },
+  "dod": [
+    {
+      "criterion": "manual Prefect and actual schedules",
+      "status": "VERIFIED",
+      "evidence": "real CLI commands; two full-server auto_scheduled Completed run IDs"
+    },
+    {
+      "criterion": "dependency order and idempotency",
+      "status": "VERIFIED",
+      "evidence": "controlled source chain/availability; real forecast repeat; fixture risk repeat"
+    },
+    {
+      "criterion": "database-backed versioned Registry and lineage",
+      "status": "VERIFIED",
+      "evidence": "real immutable F4 candidate version/run, copied bundle, checksums/schema/config/metrics/code/environment"
+    },
+    {
+      "criterion": "independent promotion approval gate",
+      "status": "VERIFIED mechanism; real promotion NOT APPROVED",
+      "evidence": "separate checksum-bound evidence/owner record; no scheduler transition; rejected missing gates; isolated rollback only"
+    },
+    {
+      "criterion": "freshness/quality/PIT/parity reject invalid publication",
+      "status": "VERIFIED",
+      "evidence": "controlled fault tests and actual stale official GBFS rejection"
+    },
+    {
+      "criterion": "monitoring/alerts/fallback/recovery",
+      "status": "VERIFIED local",
+      "evidence": "structured events, resource/attempt metrics, actual DB retry/recovery, controlled valid baseline fallback"
+    },
+    {
+      "criterion": "API/web and prior publications preserved",
+      "status": "VERIFIED",
+      "evidence": "229 regressions, web6/build, runtime import, 25 pointers and original data hashes/stat parity"
+    },
+    {
+      "criterion": "CI final SHA",
+      "status": "PENDING DELIVERY",
+      "evidence": "to be updated after actual push-triggered GitHub Actions"
+    }
+  ],
+  "observed_failures_and_repairs": [
+    {
+      "failure": "Prefect 3.8.8 + FastAPI 0.162: Body(min_items) TypeError; intermediate0.154: explicit null sort yields422",
+      "resolution": "automation fastapi<0.151, locked0.150.0; real full-server scheduler passed"
+    },
+    {
+      "failure": "Prefect full scheduler + SQLAlchemy2.1.6: InvalidRequestError bulk DML; no runs created",
+      "resolution": "automation sqlalchemy<2.1, locked2.0.55; two actual scheduled runs completed"
+    },
+    {
+      "failure": "prefect_test_harness ephemeral server does not run scheduler service",
+      "resolution": "integration uses explicit full loopback Prefect server; no manual trigger substituted"
+    },
+    {
+      "failure": "one Windows F2 controlled preparation attempt: WinError5 renaming audit directory",
+      "resolution": "later isolated reruns and complete229 suite passed; original F2 formulas untouched"
+    },
+    {
+      "failure": "npm build EBUSY .next/standalone held by existing start.mjs process on3001",
+      "resolution": "verified project process briefly stopped, exact build passed, production endpoint3001 restored healthy"
+    }
+  ],
+  "limitations": [
+    "No independent forward/shadow or operational uplift evidence; original F4 accuracy is approximate retrospective; no model/champion/real alias promotion.",
+    "Official GBFS was stale in both real observations. Current live risk unavailable; positive chain/recovery is controlled evidence, not manufactured live readiness.",
+    "24-month cold bootstrap is deliberately outside scheduled poll budgets; real full history transformation/tuning/backtesting NOT RUN.",
+    "SQLite Registry/local filesystem lock are single-host F7 facilities, not HA or a production access-control/backup claim.",
+    "Webhook network delivery to a third-party endpoint NOT RUN; durable structured alert channel verified without account or secret.",
+    "Production load/security/deploy and mandatory PostgreSQL/model-artifact restore gates remain F8; target latency figures are not SLA.",
+    "Existing Starlette httpx deprecation and NumPy zero-variance correlation warnings remain visible."
+  ],
+  "references": {
+    "prefect": "https://reference.prefect.io/prefect/flows/",
+    "mlflow": "https://mlflow.org/docs/latest/ml/model-registry/workflow/",
+    "fastapi_breaking_changes": "https://fastapi.tiangolo.com/release-notes/"
+  },
+  "delivery": {
+    "branch": "main",
+    "code_sha": null,
+    "final_sha": null,
+    "ci": "PENDING",
+    "checkpoint": "PENDING",
+    "backup": "PENDING verified Git-only bundle; no database/model backup claim"
+  },
+  "audit": {
+    "tracked_and_new_files": 230,
+    "history_objects": 868,
+    "history_blobs": 428,
+    "signature_or_current_db_secret_findings": [],
+    "history_secret_findings": [],
+    "forbidden_tracked_paths": [],
+    "large_files_over_5mb": [],
+    "roadmap_append_only": true,
+    "old_data_stat_changes": [],
+    "old_json_hash_changes": [],
+    "old_evidence_changes": [],
+    "broken_readme_local_links": [],
+    "scope": "known token/private-key signatures and current DB secret only; not a proof of detecting every unknown secret"
+  }
+}

@@ -7,6 +7,7 @@ read these tables; simulations, Silver scans and verification run here, offline.
 import argparse
 import hashlib
 import json
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -278,6 +279,7 @@ def publish_risk(
     settings: DatabaseSettings | None = None,
     *,
     fail_before_activate: bool = False,
+    pre_activate: Callable[[], Any] | None = None,
 ) -> str:
     records = risk_records(path)
     public = records["manifest"]
@@ -374,6 +376,8 @@ def publish_risk(
                 raise ValueError("PostgreSQL risk reconciliation failed")
         if fail_before_activate:
             raise RuntimeError("Injected failure before risk activation")
+        if pre_activate:
+            pre_activate()
         activate_risk(db, identifier)
     return identifier
 

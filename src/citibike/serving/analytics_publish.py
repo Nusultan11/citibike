@@ -185,6 +185,7 @@ def publish(
     settings: DatabaseSettings | None = None,
     *,
     fail_before_activate: bool = False,
+    activate_publication: bool = True,
 ) -> str:
     import tempfile
 
@@ -271,7 +272,8 @@ def publish(
                     copier.write_row((identifier, *row))
         if fail_before_activate:
             raise RuntimeError("Injected failure before analytics activation")
-        activate(db, identifier)
+        if activate_publication:
+            activate(db, identifier)
     print(
         f"Serving publication {identifier}: {time.monotonic() - before:.3f}s",
         flush=True,

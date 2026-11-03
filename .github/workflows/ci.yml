@@ -11,12 +11,16 @@ permissions:
 jobs:
   python:
     runs-on: ubuntu-24.04
+    env:
+      PREFECT_HOME: .cache/f7-prefect
+      PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+      DO_NOT_TRACK: "true"
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
         with:
           version: "0.12.1"
-      - run: uv sync --locked --group ml
+      - run: uv sync --locked --group ml --group automation
       - run: uv run --locked ruff check .
       - run: uv run --locked ruff format --check .
       - run: uv run --locked mypy
@@ -57,12 +61,16 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: [python, frontend]
     runs-on: ubuntu-24.04
+    env:
+      PREFECT_HOME: .cache/f7-prefect
+      PREFECT_SERVER_ANALYTICS_ENABLED: "false"
+      DO_NOT_TRACK: "true"
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
         with:
           version: "0.12.1"
-      - run: uv sync --locked --group ml
+      - run: uv sync --locked --group ml --group automation
       - name: Generate ephemeral database password
         run: |
           password=$(uv run --locked python -c 'import secrets; print(secrets.token_hex(24))')
@@ -78,6 +86,9 @@ jobs:
       - run: uv run --locked --group ml python -m tests.integration.forecast_smoke
       - run: uv run --locked python -m tests.integration.analytics_smoke
       - run: uv run --locked --group ml pytest -q tests/integration/test_product.py
+      - run: uv run --locked --group ml --group automation pytest -q tests/integration/test_automation.py
+      - name: API image excludes optional F7 runtime
+        run: docker compose run --rm --no-deps api python -c "import importlib.util; assert all(importlib.util.find_spec(p) is None for p in ('mlflow','prefect'))"
       - run: uv run --locked --group ml python -m tests.integration.product_smoke --mode fixture
       - run: uv run --locked python -m tests.fixtures --output .cache/f1-fixture.zip
       - run: uv run --locked python -m citibike.pipeline --period 2026-04 --fixture .cache/f1-fixture.zip --data-dir .cache/f1

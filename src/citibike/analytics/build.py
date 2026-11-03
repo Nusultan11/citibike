@@ -218,7 +218,11 @@ def activate(root: Path, report: dict[str, Any]) -> None:
 
 
 def build(
-    root: Path, snapshot: Path | None = None, *, prepare_only: bool = False
+    root: Path,
+    snapshot: Path | None = None,
+    *,
+    prepare_only: bool = False,
+    activate_publication: bool = True,
 ) -> Path:
     before = time.monotonic()
     snapshot = snapshot or Path(read_json(root / "f2/active.json")["path"])
@@ -262,6 +266,28 @@ def build(
         identifier = identity([VERSION, GEO_VERSION, month, sorted(selected)])
         path = root / "f3/months" / identifier
         partitions.append({"path": str(path), **checked(path)})
+    return assemble(
+        root,
+        snapshot,
+        upstream,
+        partitions,
+        contribution_reports=[read_json(p / "manifest.json") for p in contributions],
+        before=before,
+        activate_publication=activate_publication,
+    )
+
+
+def assemble(
+    root: Path,
+    snapshot: Path,
+    upstream: dict[str, Any],
+    partitions: list[dict[str, Any]],
+    contribution_reports: list[dict[str, Any]],
+    before: float,
+    *,
+    activate_publication: bool = True,
+) -> Path:
+    """Compose immutable references after reconciliation; also used for GBFS refresh."""
     from citibike.analytics.availability import build_availability
 
     if sum(p["metrics"]["n"] for p in partitions) != upstream["canonical_rows"]:
@@ -284,7 +310,8 @@ def build(
     target = root / "f3/publications" / identifier
     if target.exists():
         checked(target)
-        activate(root, {"publication_id": identifier, "path": str(target)})
+        if activate_publication:
+            activate(root, {"publication_id": identifier, "path": str(target)})
         write_json(
             root / "f3/runs" / f"{time.time_ns()}.json",
             {
@@ -368,7 +395,8 @@ def build(
         stage.mkdir()
         write_json(stage / "manifest.json", report)
         publish_directory(stage, target)
-    activate(root, {"publication_id": identifier, "path": str(target)})
+    if activate_publication:
+        activate(root, {"publication_id": identifier, "path": str(target)})
     write_json(
         root / "f3/runs" / f"{time.time_ns()}.json",
         {
@@ -378,6 +406,24 @@ def build(
         },
     )
     return target
+
+
+def refresh_availability(root: Path, gold: Path) -> Path:
+    """Reuse verified trip partitions; rebuild only the existing GBFS interval mart."""
+    from citibike.serving.analytics_publish import validate_gold
+
+    before = time.monotonic()
+    report = validate_gold(gold)
+    snapshot = Path(report["source_snapshot"])
+    return assemble(
+        root,
+        snapshot,
+        read_json(snapshot / "manifest.json"),
+        report["months"],
+        [],
+        before,
+        activate_publication=False,
+    )
 
 
 def main() -> None:

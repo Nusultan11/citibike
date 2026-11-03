@@ -33,6 +33,12 @@ htmlcov/
 /models/
 /mlruns/
 /mlartifacts/
+# F7 local metadata (normal location is already covered by /data/).
+/.prefect/
+/registry/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 /CitiBike_Project_Architecture_Knowledge_Base_FINAL.zip
 
 # OS metadata

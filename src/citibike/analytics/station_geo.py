@@ -7,6 +7,7 @@ for one station ID, NYC event month and side. IDs are never merged or inferred.
 
 import argparse
 import json
+import shutil
 import tempfile
 import time
 from datetime import UTC, datetime
@@ -82,7 +83,12 @@ FINAL = """WITH pairs AS (
     ORDER BY 1, 2, 3"""
 
 
-def build(data_dir: Path = Path("data"), publication: Path | None = None) -> Path:
+def build(
+    data_dir: Path = Path("data"),
+    publication: Path | None = None,
+    *,
+    reuse_from: Path | None = None,
+) -> Path:
     before = time.monotonic()
     if publication is None:
         pointer = read_json(data_dir / "f3/active.json")
@@ -92,7 +98,17 @@ def build(data_dir: Path = Path("data"), publication: Path | None = None) -> Pat
     manifest, partitions = publication_silver(publication)
     if manifest["publication_id"] != publication.name:
         raise ValueError("F3 publication identity mismatch")
-    references = [silver_reference(p) for p in partitions]
+    reusable = checked(reuse_from) if reuse_from else None
+    if reusable and (
+        reusable["source_snapshot_id"] != manifest["source_snapshot_id"]
+        or reusable["accepted_silver_rows"] != manifest["accepted_silver_rows"]
+        or sorted(str(p.resolve()) for p in partitions)
+        != sorted(str(Path(r["path"]).resolve()) for r in reusable["silver"])
+    ):
+        reusable = None
+    references = (
+        reusable["silver"] if reusable else [silver_reference(p) for p in partitions]
+    )
     identifier = identity(
         [
             VERSION,
@@ -106,6 +122,29 @@ def build(data_dir: Path = Path("data"), publication: Path | None = None) -> Pat
         checked(target)
         return target
     target.parent.mkdir(parents=True, exist_ok=True)
+    if reusable and reuse_from:
+        # An availability-only publication has identical verified trip partitions.
+        # Rebind the immutable coordinate aggregate; never rescan trip history.
+        with tempfile.TemporaryDirectory(dir=target.parent) as temporary:
+            stage = Path(temporary) / "result"
+            stage.mkdir()
+            for name in reusable["checksums"]:
+                shutil.copy2(reuse_from / name, stage / name)
+            write_json(
+                stage / "manifest.json",
+                {
+                    **reusable,
+                    "id": identifier,
+                    "analytics_publication_id": manifest["publication_id"],
+                    "created_at": datetime.now(UTC).isoformat(),
+                    "measurements": {
+                        "elapsed_seconds": time.monotonic() - before,
+                        "peak_rss_bytes": peak_rss_bytes(),
+                    },
+                },
+            )
+            publish_directory(stage, target)
+        return target
     with tempfile.TemporaryDirectory(dir=target.parent) as temporary:
         work = Path(temporary)
         stage = work / "result"
