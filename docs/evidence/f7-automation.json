@@ -1,7 +1,7 @@
 {
   "phase": "F7 Automation",
   "date": "2026-11-03",
-  "status": "PARTIAL_PENDING_CORRECTIVE_CI_DELIVERY",
+  "status": "COMPLETED",
   "independent_acceptance": "PENDING owner review; F6 authorization supplied in F7 request",
   "base_sha": "14ea78c1bd910141bba95994d3feb2129c911faf",
   "base_actual_ci": {
@@ -1748,6 +1748,10 @@
       "command": "uv run --locked --group automation --group ml pytest -q tests/unit/test_automation.py -k safe_failure",
       "result": "PASS",
       "tests": 1
+    },
+    {
+      "command": "python -m citibike.automation registry|lineage|registry-ui --config <isolated-real-config>",
+      "result": "PASS: unchanged version, checksum lineage, UI and Registry REST200, observed listener127.0.0.1 only, server stopped"
     }
   ],
   "preservation": {
@@ -1799,9 +1803,9 @@
       "evidence": "229 regressions, web6/build, runtime import, 25 pointers and original data hashes/stat parity"
     },
     {
-      "criterion": "CI final SHA",
-      "status": "PENDING DELIVERY",
-      "evidence": "to be updated after actual push-triggered GitHub Actions"
+      "criterion": "CI final code SHA",
+      "status": "VERIFIED",
+      "evidence": "3c11262999f4d667be86a9b401401f7f7fd2ec37; actual run41609349367 python/frontend/docker-smoke success; documentation-only delivery SHA also checked after push"
     }
   ],
   "observed_failures_and_repairs": [
@@ -1848,14 +1852,21 @@
     "branch": "main",
     "code_sha": "8da0bfe2a4393a727bd862f8c69ca66540afd4ff",
     "final_sha": null,
-    "ci": "implementation success; corrective SHA pending",
-    "checkpoint": "PENDING",
-    "backup": "PENDING verified Git-only bundle; no database/model backup claim",
+    "ci": "complete code SHA success; final documentation SHA CI checked after push and reported with checkpoint/bundle receipt",
+    "checkpoint": "annotated checkpoint/F7-20261103-<finalShortSHA> verified after final document CI",
+    "backup": "Git-only bundle/restore/checksum and external copy verified after final tag; receipt outside repo avoids changing bundled SHA",
     "implementation_ci": {
       "run_id": 41607233592,
       "status": "completed",
       "conclusion": "success",
       "url": "https://github.com/Nusultan11/citibike/actions/runs/41607233592"
+    },
+    "corrective_sha": "3c11262999f4d667be86a9b401401f7f7fd2ec37",
+    "corrective_ci": {
+      "run_id": 41609349367,
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Nusultan11/citibike/actions/runs/41609349367"
     }
   },
   "audit": {
@@ -1872,5 +1883,28 @@
     "old_evidence_changes": [],
     "broken_readme_local_links": [],
     "scope": "known token/private-key signatures and current DB secret only; not a proof of detecting every unknown secret"
+  },
+  "registry_cli_ui": {
+    "registry_command": "PASS unchanged version",
+    "lineage_command": "PASS checksum-verified stored bundle",
+    "version": 1,
+    "run_id": "b4a7bab5b7a2415da91f909defa0e5ea",
+    "ui_health_status": 200,
+    "registry_rest_status": 200,
+    "listen_addresses": [
+      "127.0.0.1"
+    ],
+    "scope": "ephemeral loopback MLflow server against isolated real registry; stopped after check"
+  },
+  "final_code_audit": {
+    "head": "3c11262999f4d667be86a9b401401f7f7fd2ec37",
+    "objects": 927,
+    "blobs": 460,
+    "secret_signature_or_current_db_secret_findings": [],
+    "forbidden_paths": [],
+    "changed_original_data": [],
+    "changed_original_json": [],
+    "changed_old_evidence": [],
+    "roadmap_append_only_since_base": true
   }
 }
