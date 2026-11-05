@@ -3,9 +3,11 @@
 import importlib
 import runpy
 import subprocess
+import sys
 from copy import deepcopy
 from datetime import datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -17,6 +19,33 @@ from citibike.ingestion.archive import checksum
 from citibike.kaggle_research import models, study
 from citibike.kaggle_research.verify import metric, quantiles
 from citibike.storage import identity, read_json, write_json
+
+
+def test_modal_remote_import_never_resolves_client_repository(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class RemoteApp:
+        def __init__(self, _name: str) -> None:
+            pass
+
+        def function(self, **_kwargs: Any) -> Any:
+            return lambda function: function
+
+        def local_entrypoint(self) -> Any:
+            return lambda function: function
+
+    monkeypatch.setitem(
+        sys.modules, "modal", SimpleNamespace(App=RemoteApp, is_local=lambda: False)
+    )
+    source = Path("research/modal/verify.py").read_text(encoding="utf-8")
+    namespace: dict[str, Any] = {
+        "__file__": "/root/verify.py",
+        "__name__": "modal_remote_import",
+    }
+    exec(compile(source, "/root/verify.py", "exec"), namespace)
+    assert callable(namespace["verify_remote"])
+    assert "ROOT" not in namespace
+    assert "PAYLOAD" not in namespace
 
 
 def frame(origin: str) -> Any:
