@@ -10,6 +10,57 @@ import zipfile
 from pathlib import Path
 
 
+def prepare_runtime(
+    requirements: Path, version: str, root: Path = Path("/tmp/bikeflow-runtime")
+) -> Path:
+    if tuple(map(int, version.split(".")[:2])) != (3, 12):
+        raise ValueError("Unsupported project Python; expected frozen Python 3.12")
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "--quiet", "uv==0.12.1"],
+        check=True,
+        timeout=180,
+    )
+    runtime_env = {
+        **os.environ,
+        "UV_PYTHON_INSTALL_DIR": str(root / "python"),
+        "UV_CACHE_DIR": str(root / "cache"),
+    }
+    uv = [sys.executable, "-m", "uv"]
+    for command in (
+        ["python", "install", version, "--no-bin"],
+        ["venv", "--no-project", "--python", version, str(root / "venv")],
+    ):
+        subprocess.run(uv + command, check=True, env=runtime_env, timeout=240)
+    python = root / "venv/bin/python"
+    subprocess.run(
+        uv + ["pip", "install", "--python", str(python), "-r", str(requirements)],
+        check=True,
+        env=runtime_env,
+        timeout=300,
+    )
+    subprocess.run(
+        [
+            str(python),
+            "-c",
+            f"import platform; assert platform.python_version()=={version!r}",
+        ],
+        check=True,
+        timeout=30,
+    )
+    frozen = subprocess.run(
+        uv + ["pip", "freeze", "--python", str(python)],
+        check=True,
+        env=runtime_env,
+        timeout=30,
+        capture_output=True,
+        text=True,
+    )
+    (requirements.parent.parent / "runtime-freeze.txt").write_text(
+        frozen.stdout, encoding="utf-8"
+    )
+    return python
+
+
 def main() -> None:
     bundles = list(Path("/kaggle/input").rglob("protocol.json"))
     if len(bundles) != 1:
@@ -40,18 +91,8 @@ def main() -> None:
             raise ValueError("Payload checksum mismatch")
         shutil.copyfile(received / remote_name, bundle / name)
     shutil.copyfile(bundles[0], bundle / "protocol.json")
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--quiet",
-            "--disable-pip-version-check",
-            "-r",
-            str(bundle / "requirements.txt"),
-        ],
-        check=True,
+    python = prepare_runtime(
+        bundle / "requirements.txt", protocol["environment"]["python"]
     )
     source = Path("/kaggle/working/bikeflow-source")
     source.mkdir()
@@ -63,7 +104,7 @@ def main() -> None:
     destination = Path("/kaggle/working/bikeflow-result")
     subprocess.run(
         [
-            sys.executable,
+            str(python),
             "-m",
             "citibike.kaggle_research",
             "run",

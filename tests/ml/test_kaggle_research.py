@@ -1,6 +1,7 @@
 """Controlled tests validate research mechanics, never real model quality."""
 
 import importlib
+import runpy
 import subprocess
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -213,3 +214,27 @@ def test_kaggle_failure_attempts_are_retained(
     assert len(list(output.glob("*/trial.json"))) == 2
     with pytest.raises(ValueError, match="immutable"):
         study.run(tmp_path, output)
+
+
+def test_kaggle_image_python_does_not_select_fit_runtime(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    runtime = runpy.run_path("research/kaggle/kernel.py")["prepare_runtime"]
+    calls = []
+
+    def capture(command: list[str], **kwargs: Any) -> Any:
+        calls.append((command, kwargs))
+        return subprocess.CompletedProcess(command, 0, stdout="controlled freeze\n")
+
+    monkeypatch.setattr(subprocess, "run", capture)
+    python = runtime(tmp_path / "requirements.txt", "3.12.13", tmp_path)
+    assert python == tmp_path / "venv/bin/python"
+    probe = next(c for c, _ in calls if c[0] == str(python))
+    assert "platform.python_version()=='3.12.13'" in probe[-1]
+    assert all("--system-site-packages" not in c for c, _ in calls)
+
+
+def test_kaggle_rejects_unsupported_python_before_install(tmp_path: Path) -> None:
+    runtime = runpy.run_path("research/kaggle/kernel.py")["prepare_runtime"]
+    with pytest.raises(ValueError, match="Unsupported project Python"):
+        runtime(tmp_path / "requirements.txt", "3.13.0", tmp_path)
