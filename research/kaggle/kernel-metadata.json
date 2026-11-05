@@ -1,0 +1,15 @@
+{
+  "id": "nurs2005/bikeflow-f4-validation-research",
+  "title": "BikeFlow F4 Validation Research",
+  "code_file": "kernel.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "dataset_sources": ["nurs2005/bikeflow-f4-validation-payload"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}
