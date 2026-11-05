@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -13,7 +14,7 @@ def main() -> None:
     bundles = list(Path("/kaggle/input").rglob("protocol.json"))
     if len(bundles) != 1:
         raise ValueError("Exactly one frozen BikeFlow payload required")
-    bundle = bundles[0].parent
+    received = bundles[0].parent
     protocol = json.loads(bundles[0].read_text())
     identity = hashlib.sha256(
         json.dumps(
@@ -25,12 +26,20 @@ def main() -> None:
     ).hexdigest()
     if identity != protocol["id"]:
         raise ValueError("Protocol checksum mismatch")
+    # Kaggle expands .zip dataset files. Transport the same bytes as .bin and
+    # restore the original frozen filename in an isolated working directory.
+    bundle = Path("/kaggle/working/bikeflow-payload")
+    bundle.mkdir()
     for name, expected in protocol["checksums"].items():
+        remote_name = "source-archive.bin" if name == "source.zip" else name
         if (
             Path(name).name != name
-            or hashlib.sha256((bundle / name).read_bytes()).hexdigest() != expected
+            or hashlib.sha256((received / remote_name).read_bytes()).hexdigest()
+            != expected
         ):
             raise ValueError("Payload checksum mismatch")
+        shutil.copyfile(received / remote_name, bundle / name)
+    shutil.copyfile(bundles[0], bundle / "protocol.json")
     subprocess.run(
         [
             sys.executable,
