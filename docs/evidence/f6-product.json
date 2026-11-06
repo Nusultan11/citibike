@@ -4264,5 +4264,275 @@
     "final_documentation_commit": "Only this delivery addition and ROADMAP6 append; its exact SHA/CI and annotated checkpoint plus verified Git-only bundle are confirmed after commit in final response and external bundle manifest, avoiding self-reference",
     "independent_external_copy": "NOT VERIFIED - no new F6 bundle uploaded to Drive",
     "next_step": "Independent owner acceptance of F6; no F7"
+  },
+  "dark_redesign_20261106": {
+    "recorded_at": "2026-11-06",
+    "scope": "F6 Product corrective work: full dark-theme UI/UX redesign of the five product pages; not a new ROADMAP phase; F8 not closed",
+    "status": "COMPLETED for the requested UI scope; independent owner acceptance separate",
+    "implementation_sha": "4ffa0d7fa4e015f7a9b5a11279eb93888414b1c0",
+    "base_head": "f680aec38753b5728d2c9a587ad0773c635132b8",
+    "branch": "main",
+    "design_sources": [
+      "Carbon Design System: dashboards (F-pattern, exploration vs presentation, linked charts, consistent legends) and colour palettes",
+      "Fluent 2: 4px spacing ramp, type ramp 12/14/16/20/24/32/40, elevation and touch targets",
+      "Atlassian Design: semantic colour roles, 4.5:1 text / 3:1 UI contrast, data-vis not by colour alone",
+      "Power BI accessibility guidance: contrast, markers per series, alt text, consistent slicer placement",
+      "dataviz skill validator: categorical #3987e5/#d95926/#199e70 on surface #141821 dark, all checks PASS (worst all-pairs CVD dE 9.4)"
+    ],
+    "changes": {
+      "design_system": "globals.css tokens: neutral dark surfaces, one blue accent family, reserved success/warning/danger/info, kind colours for fact/forecast/simulation/GBFS always with icon+label; cards, KPI, chips, status, callouts, fields, segmented controls, tables, disclosure, skeletons, reduced-motion",
+      "shared_components": "ui.tsx: topbar navigation with icons and skip link, PageHead, Kind (full/compact), Status, Callout, StatePanel, Delta, Sparkline, AppliedFilters, RiskBar, Icon; footer",
+      "charts": "chart.tsx dark ECharts theme mirroring tokens, legends, peak markers, compact drill-down (day->hour, month->days), Ctrl+wheel zoom (no scroll hijack), map zoom/pan, brighter diverging map palette, HTML map legend",
+      "pages": {
+        "overview": "hero KPI zone with change chip and sparkline, share bars, GBFS card separated, clickable comparable trend, risk queue with Wilson bars, forecast status card, source/freshness grid, de-emphasised F1 slice",
+        "analytics": "sticky filter bar with presets and advanced drawer, removable filter chips, 4 KPI, summary cues, linked trend/seasonality drill-down, heatmap, tables with in-cell bars, research findings block",
+        "stations": "map with legend and zoom hint, side panel (search results or station summary), ID-split side-by-side comparison, GBFS/scenario/forecast cards, routes in/out, coordinate history",
+        "forecasts": "status hero with validity timeline, lineage chain, model/coverage card, hidden-values empty state when not valid",
+        "scenarios": "replay status and verdict banners, scale x order segmented controls, three policy cards, objective chart across cells, transfers, station risk bars, exclusions, assumptions"
+      },
+      "findings_block": "apps/web/lib/findings.ts: 10 recorded findings (F2 data, decision analytics, F4 forecasts/research/diagnostics, F5 replay) with value, takeaway, limitation, status VERIFIED/LIMITED/NOT VERIFIED, evidence source and date; CSS-only area filter; not recomputed in UI and independent of filters",
+      "states": "loading skeletons for all routes, app error boundary, not-found page, empty/error/unavailable/expired callouts",
+      "unchanged": "API calls, data contracts, formulas, provenance, publication pinning, backend/serving/DB, migrations, models, all smoke-test data-* markers"
+    },
+    "visual_defects_found_and_fixed": [
+      "kind chips crowded KPI labels -> compact chips",
+      "departures/arrivals pair wrapped in quarter card -> stacked pair",
+      "decline shown in danger red although not an error -> neutral change chip",
+      "mouse wheel over long trend chart zoomed instead of scrolling -> Ctrl+wheel",
+      "map midpoint grey nearly equal to card surface -> visible neutral #7a8294",
+      "hidden tooltips widened page to 1570px (stations) -> display:none until hover/focus",
+      ".stat span rule broke tooltip marks in stat tiles -> direct-child selectors",
+      "mobile filters one per row -> two per row down to 360px, presets full row",
+      "analytics HTML 1070586B with per-day drill URLs -> 855789B with client-built drill links and table-level numeric class"
+    ],
+    "checks": {
+      "web": {
+        "npm --prefix apps/web ci": "PASS",
+        "npm --prefix apps/web run lint": "PASS (biome --error-on-warnings, 30 files)",
+        "npm --prefix apps/web run typecheck": "PASS",
+        "npm --prefix apps/web test": "PASS 8/8 (7 prior + findings evidence test)",
+        "npm --prefix apps/web run build": "PASS"
+      },
+      "python": {
+        "uv run --locked ruff check .": "PASS",
+        "uv run --locked ruff format --check .": "PASS (151 files)",
+        "uv run --locked mypy": "PASS (151 source files)",
+        "uv run --locked --group ml pytest -q tests/integration/test_product.py": "2 passed, 59.84s"
+      },
+      "git diff --check": "PASS"
+    },
+    "real_e2e_new_ui": {
+      "command": "uv run --locked --group ml python -m tests.integration.product_smoke --mode real --web-url http://127.0.0.1:3005 --api-url http://127.0.0.1:8000",
+      "result": "PASS",
+      "overview": {
+        "silver": 4697240,
+        "api": 4697240,
+        "html": 4697240,
+        "baseline_silver": 4975250,
+        "baseline_api": 4975250,
+        "change_independent": -0.055878599065373596,
+        "change_api": -0.055878599065373596,
+        "change_html": -0.055878599065373596,
+        "publication_html": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+      },
+      "stations": {
+        "6611.07": {
+          "html": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "split_html": null
+        },
+        "5980.1": {
+          "html": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "split_html": "5980.10"
+        },
+        "5980.10": {
+          "html": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "split_html": "5980.1"
+        },
+        "3138.03": {
+          "html": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "split_html": null
+        }
+      },
+      "dst_hours": {
+        "2025-11-02": 25,
+        "2026-03-08": 23
+      },
+      "forecast": {
+        "api_status": "stale",
+        "valid_until": "2026-10-30T12:00:00+00:00",
+        "expired_now": true,
+        "html_state": "expired",
+        "html_values_shown": false
+      },
+      "scenario": {
+        "artifact_cells": 27,
+        "served_cells": 27,
+        "objective_mismatches": 0,
+        "status": "archival_replay",
+        "html_state": "archival_replay",
+        "html_coverage": "3/64",
+        "action_verdict": "no_action",
+        "rendered_cells": 9,
+        "no_action_best_cells": 9
+      },
+      "filter_states": {
+        "reversed": "error",
+        "half": "error",
+        "unknown_station": "empty",
+        "invalid_vehicle": "error"
+      },
+      "html_render_p95_ms": {
+        "overview": 222.91,
+        "analytics_default": 1380.26,
+        "analytics_28d_station": 824.21,
+        "stations": 375.57,
+        "station_detail": 386.18,
+        "forecasts": 32.69,
+        "scenarios": 52.67
+      },
+      "html_bytes_before": {
+        "overview": 113125,
+        "analytics_default": 704286,
+        "analytics_28d_station": 158470,
+        "stations": 566188,
+        "station_detail": 592328,
+        "forecasts": 15959,
+        "scenarios": 77507
+      },
+      "html_bytes_after": {
+        "overview": 138148,
+        "analytics_default": 855789,
+        "analytics_28d_station": 225622,
+        "stations": 639757,
+        "station_detail": 639234,
+        "forecasts": 35776,
+        "scenarios": 138243
+      },
+      "note": "HTTP timings on shared host, warm; not browser first-screen and not SLA. HTML grew (analytics_default 704286 -> 855789 bytes) because of richer markup; recorded as regression in payload size, not hidden."
+    },
+    "controlled_fixture_new_ui": {
+      "command": "uv run --locked --group ml python .cache/f6-dark/run_fixture.py (ignored harness: disposable bikeflow_test_<uuid> DB, own API/web ports; runs product_smoke --mode fixture, analytics_smoke, smoke.py --expect-data empty)",
+      "status": "PASS",
+      "states": {
+        "empty": {
+          "/": "empty",
+          "/analytics": "empty",
+          "/stations": "empty",
+          "/forecasts": "empty",
+          "/scenarios": "empty"
+        },
+        "valid": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "current_scenario"
+        },
+        "api_down": {
+          "/": "unavailable",
+          "/analytics": "error",
+          "/stations": "unavailable",
+          "/forecasts": "unavailable",
+          "/scenarios": "unavailable"
+        },
+        "recovered": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "current_scenario"
+        }
+      },
+      "grid_count": {
+        "api_cells": 2,
+        "html_cells": 2
+      },
+      "f1_smoke_empty": "PASS",
+      "analytics_smoke": "PASS",
+      "real_publications_unchanged": true,
+      "disposable_database_removed": true,
+      "note": "With API down /analytics reports error (not unavailable); behaviour unchanged from before, no numbers shown."
+    },
+    "visible_browser": {
+      "environment": "Claude desktop in-app browser, http://localhost:3005 (new standalone build) against compose db+api with real publications",
+      "desktop_1440x900": "all 5 pages + station detail; scrollWidth 1425 <= 1440 on all pages after fix",
+      "mobile_390x844": "all 5 pages + station detail; scrollWidth 390 = viewport, no page-level horizontal overflow (wide tables scroll locally)",
+      "interactions": [
+        "seasonality bar click -> /analytics 2026-03-01..2026-04-01 grain=day, 2945320 rides",
+        "trend day click -> 2026-03-10..2026-03-11 grain=hour, 152807 rides, grain select shows hour",
+        "map point click -> station card 8566.05 (departures 1213 / arrivals 1210)",
+        "findings filter 'Прогнозы F4' -> exactly 3 forecast findings visible",
+        "keyboard: first Tab focuses skip link; nav/segmented/buttons show solid accent outline"
+      ],
+      "console_errors": "0 app errors; one CSP frame-ancestors error caused by my own iframe probe (expected protection)",
+      "pane_hidden_limitation": "Browser pane was hidden: requestAnimationFrame did not fire, so React reveal of streamed content waited until screenshots forced paint; browser first-screen and chart-ready timings NOT VERIFIED",
+      "screenshots": {
+        "dark-desktop-analytics.jpg": {
+          "bytes": 42815,
+          "sha256": "ee7abb2e714eb1919a455d2af12f318ea8dc4cba09aefd58e34785e97d246ec9"
+        },
+        "dark-desktop-findings.jpg": {
+          "bytes": 57687,
+          "sha256": "c56c94f4ac6a5c94653ea7a9f69254eb5c142d0422c76427d481a36d72b9e6a7"
+        },
+        "dark-desktop-forecast-expired.jpg": {
+          "bytes": 45652,
+          "sha256": "3665d7ba2eea7e3d2e25d5ff4d502127d18950ed489bb028a9d4decff1d51bf4"
+        },
+        "dark-desktop-overview.jpg": {
+          "bytes": 41641,
+          "sha256": "83fa7ad4ca45dfe92cdd23dc2de7c188b9e9bd35da8e302ae0d2f1ad28c009a8"
+        },
+        "dark-desktop-scenarios.jpg": {
+          "bytes": 43047,
+          "sha256": "b44fe9b2cd24ccb1ea6024fd938d6ed470a58428f5935fdcc31de5f8eaac6387"
+        },
+        "dark-desktop-station-idsplit.jpg": {
+          "bytes": 40979,
+          "sha256": "6c10f3688aae3fe5ae0d48f6873ca9e50e721b47f761eb1b4aac8f1c7855af55"
+        },
+        "dark-mobile-findings.jpg": {
+          "bytes": 62119,
+          "sha256": "34ec6525a8cd74f4bc8afff9a784fec4b7cfe277bff40787a873fb64bd435ac5"
+        },
+        "dark-mobile-overview.jpg": {
+          "bytes": 54324,
+          "sha256": "f8c651f4697ec8c3ea029188283bc3b524bad4d18073e7514b7f8104ff8869d1"
+        }
+      }
+    },
+    "dod": {
+      "visual_redesign_not_cosmetic": "PASS",
+      "dark_design_system": "PASS",
+      "five_pages_consistent": "PASS",
+      "controls_kpi_charts_tables_tooltips_drilldown": "PASS",
+      "copywriting": "PASS",
+      "states_loading_empty_error_unavailable_stale": "PASS (fixture empty/valid/API down/recovered, real expired/archival, filter errors)",
+      "mobile_desktop": "PASS (390 and 1440 viewports; not a physical phone)",
+      "tests_build_lint_typecheck": "PASS",
+      "evidence_updated": "PASS",
+      "research_findings_block": "PASS (10 findings with source/status; numbers copied from committed evidence)",
+      "browser_timings": "NOT VERIFIED",
+      "actual_ci": "NOT VERIFIED at record time; confirmed in final report"
+    },
+    "limitations": [
+      "No street basemap (no approved tile provider); coordinate scatter only",
+      "Findings are static recorded evidence; they do not update when new research is published and must be edited with the evidence",
+      "Analytics HTML payload +21.6% vs previous F6 record",
+      "Visual check in emulated viewports of the in-app browser, not physical devices; contrast tokens chosen per guidance, no automated contrast audit tool run",
+      "F4 operational promotion, live GBFS and F8 production gates unchanged and not addressed"
+    ]
   }
 }
