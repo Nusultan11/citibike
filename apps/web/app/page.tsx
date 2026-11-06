@@ -3,6 +3,7 @@ import { type AnalyticsData, analytics } from "../lib/analytics";
 import { type DashboardData, getDashboard } from "../lib/data";
 import { getApiStatus } from "../lib/health";
 import {
+  addDays,
   comparisonWindow,
   defaultWindow,
   forecastState,
@@ -14,9 +15,27 @@ import {
   readFilters,
   withParams,
 } from "../lib/operations";
-import Chart from "./chart";
+import Chart, { SERIES } from "./chart";
 import Trend from "./trend";
-import { Kind, nyTime, percent, SiteHeader, short, show, Term } from "./ui";
+import {
+  AppliedFilters,
+  Delta,
+  Icon,
+  Kind,
+  nyTime,
+  PageHead,
+  percent,
+  RiskBar,
+  range,
+  SiteFooter,
+  SiteHeader,
+  Sparkline,
+  Status,
+  short,
+  show,
+  Term,
+  type Tone,
+} from "./ui";
 
 export const dynamic = "force-dynamic";
 const numbers = new Intl.NumberFormat("ru-RU");
@@ -35,6 +54,7 @@ type Overview = {
   categories: AnalyticsData;
   window: { start: string; end: string };
   baseWindow: { start: string; end: string; rule: string } | null;
+  lastDay: string;
 };
 
 async function overview(params: URLSearchParams): Promise<Overview | null> {
@@ -67,7 +87,16 @@ async function overview(params: URLSearchParams): Promise<Overview | null> {
     previous ? analytics("timeseries", previous) : Promise.resolve(null),
     analytics("categories", scoped),
   ]);
-  return { kpi, compare, current, baseline, categories, window, baseWindow };
+  return {
+    kpi,
+    compare,
+    current,
+    baseline,
+    categories,
+    window,
+    baseWindow,
+    lastDay: nyDate(pub.period_end),
+  };
 }
 
 function settle<T>(promise: Promise<T>) {
@@ -76,6 +105,31 @@ function settle<T>(promise: Promise<T>) {
     (cause: unknown) => ({ ok: false as const, ...message(cause) }),
   );
 }
+
+const FORECAST_TONE: Record<string, Tone> = {
+  valid: "success",
+  expired: "warning",
+  empty: "neutral",
+  unavailable: "warning",
+};
+const RISK_TONE: Record<string, Tone> = {
+  current_scenario: "success",
+  archival_replay: "warning",
+  empty: "neutral",
+  unavailable: "warning",
+};
+const RISK_LABEL: Record<string, string> = {
+  current_scenario: "текущий сценарий",
+  archival_replay: "архивный replay",
+  empty: "не опубликован",
+  unavailable: "недоступен",
+};
+const FORECAST_LABEL: Record<string, string> = {
+  valid: "действителен",
+  expired: "истёк",
+  empty: "не опубликован",
+  unavailable: "недоступен",
+};
 
 export default async function Home({
   searchParams,
@@ -116,416 +170,648 @@ export default async function Home({
       )
     : "unavailable";
   const queue = risk.ok ? riskQueue(risk.value) : [];
+  const riskStatus = risk.ok ? risk.value.status : "unavailable";
+  const availability = gbfs.ok ? gbfs.value.availability : null;
+  const gbfsFreshness = availability ? String(availability.freshness_status ?? "N/A") : "N/A";
+  const currentValues = f3?.current.rows.map((r) => r.metrics?.completed_published_rides ?? null);
+  const best = (f3?.current.rows ?? []).reduce<{ key: string; n: number } | null>((acc, r) => {
+    const n = r.metrics?.completed_published_rides;
+    return n != null && (!acc || n > acc.n) ? { key: r.key, n } : acc;
+  }, null);
+  const presets = f3
+    ? [7, 28, 91].map((days) => ({
+        days,
+        href: withParams("/", params, {
+          start_date: addDays(f3.lastDay, -days),
+          end_date: f3.lastDay,
+        }),
+        active: f3.window.end === f3.lastDay && f3.window.start === addDays(f3.lastDay, -days),
+      }))
+    : [];
 
   return (
-    <main className="product-page">
+    <>
       <SiteHeader current="/" params={params} />
-      <section className="intro compact">
-        <p className="eyebrow">ОБЗОР · NYC</p>
-        <h1>Сеть, которую можно проверить.</h1>
-        <p className="lead">
-          Факты опубликованных поездок, отдельно — наблюдения GBFS, прогнозы и сценарные симуляции.
-          Каждый блок несёт свой источник, период и свежесть.
-        </p>
-      </section>
-
-      <form className="filters panel" action="/" method="get" aria-label="Период обзора">
-        <label>
-          С даты (Нью-Йорк)
-          <input type="date" name="start_date" defaultValue={f3?.window.start ?? start} />
-        </label>
-        <label>
-          До даты, не включая
-          <input type="date" name="end_date" defaultValue={f3?.window.end ?? end} />
-        </label>
-        <label>
-          Велосипед
-          <select name="vehicle" defaultValue={params.get("vehicle") ?? ""}>
-            <option value="">Все</option>
-            <option>classic_bike</option>
-            <option>electric_bike</option>
-          </select>
-        </label>
-        <label>
-          Пользователь
-          <select name="membership" defaultValue={params.get("membership") ?? ""}>
-            <option value="">Все</option>
-            <option>member</option>
-            <option>casual</option>
-          </select>
-        </label>
-        <button className="refresh" type="submit">
-          Применить
-        </button>
-        <Link href="/">Сбросить</Link>
-      </form>
-
-      {!summary.ok ? (
-        <section className="panel state-error" role="alert" data-overview-state={summary.state}>
-          <h2>{summary.state === "unavailable" ? "Аналитика недоступна" : "Ошибка фильтров"}</h2>
-          <p>{summary.text}</p>
-          <Link href="/">Сбросить фильтры</Link>
-        </section>
-      ) : !f3 ? (
-        <section className="panel" data-overview-state="empty">
-          <h2>Аналитика ещё не опубликована</h2>
-          <p>Нет активной F3 публикации; показатели не заменяются нулями.</p>
-        </section>
-      ) : (
-        <>
-          <section
-            className="kpi-grid"
-            aria-label="Основные показатели"
-            data-overview-state={metrics ? "ok" : "empty"}
-            data-overview-publication={f3?.kpi.publication?.publication_id}
-          >
-            <article className="panel kpi-card">
-              <Kind kind="fact" />
-              <h2>
-                <Term name="completed_published_rides">Допустимые поездки</Term>
-              </h2>
-              <strong className="kpi" data-overview-rides={metrics?.completed_published_rides}>
-                {show(metrics?.completed_published_rides)}
-              </strong>
-              <p>
-                <Term name="period_change">Изменение</Term>:{" "}
-                <b data-overview-change={comparison?.relative_change ?? "NA"}>
-                  {comparison?.relative_change == null
-                    ? "N/A"
-                    : `${comparison.relative_change > 0 ? "+" : ""}${percent(comparison.relative_change)}`}
-                </b>{" "}
-                к {f3?.baseWindow ? `${f3.baseWindow.start} → ${f3.baseWindow.end}` : "—"} (
-                {f3?.baseWindow?.rule ?? "нет сопоставимого периода"})
-                {comparison?.reason ? `. ${comparison.reason}` : ""}
-              </p>
-            </article>
-            <article className="panel kpi-card">
-              <Kind kind="fact" />
-              <h2>
-                <Term name="average_duration">Средняя длительность</Term>
-              </h2>
-              <strong className="kpi">
-                {metrics?.average_duration_seconds == null
-                  ? "N/A"
-                  : `${show(metrics.average_duration_seconds / 60)} мин`}
-              </strong>
-              <p>Знаменатель: поездки с допустимой длительностью в том же периоде.</p>
-            </article>
-            <article className="panel kpi-card">
-              <Kind kind="fact" />
-              <h2>
-                <Term name="trip_category_share">Доля e-bike / member</Term>
-              </h2>
-              <strong className="kpi">
-                {percent(electric?.known_share)} / {percent(member?.known_share)}
-              </strong>
-              <p>
-                Знаменатель — известные категории; unknown: {show(electric?.unknown_count)} /{" "}
-                {show(member?.unknown_count)}.
-              </p>
-            </article>
-            <article
-              className="panel kpi-card realtime"
-              data-network-state={gbfs.ok ? gbfs.value.status : "unavailable"}
-            >
-              <Kind kind="realtime" />
-              <h2>
-                <Term name="active_stations">Работающие станции</Term>
-              </h2>
-              <strong className="kpi">
-                {show(gbfs.ok ? (gbfs.value.availability.active_stations as number | null) : null)}
-              </strong>
-              <p>
-                {gbfs.ok
-                  ? `GBFS ${String(gbfs.value.availability.freshness_status ?? "N/A")}: покрытие ${percent(gbfs.value.availability.observed_coverage as number | null, 3)}; ${gbfs.value.message ?? ""}`
-                  : gbfs.text}
-              </p>
-            </article>
-          </section>
-
-          <section className="panel">
-            <Kind kind="fact" />
-            <h2>Сопоставимый тренд: поездки по дням</h2>
-            <p>
-              {f3?.window.start} → {f3?.window.end} против{" "}
-              {f3?.baseWindow ? `${f3.baseWindow.start} → ${f3.baseWindow.end}` : "N/A"}: одинаковое
-              число NY-дней, день N сопоставлен дню N. Пропуски не равны нулю.
-            </p>
-            {f3 && (
-              <Chart
-                label="Поездки по NY-дням текущего и базового периода"
-                spec={{
-                  kind: "line",
-                  unit: "поездок",
-                  categories: f3.current.rows.map((r, i) => `${i + 1}: ${r.key.slice(5)}`),
-                  series: [
-                    {
-                      name: "Текущий период",
-                      values: f3.current.rows.map(
-                        (r) => r.metrics?.completed_published_rides ?? null,
-                      ),
-                    },
-                    ...(f3.baseline
-                      ? [
-                          {
-                            name: `Базовый (${f3.baseWindow?.rule})`,
-                            values: f3.baseline.rows.map(
-                              (r) => r.metrics?.completed_published_rides ?? null,
-                            ),
-                          },
-                        ]
-                      : []),
-                  ],
-                }}
-              />
-            )}
-            <details>
-              <summary>Значения по дням</summary>
-              <div className="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>День</th>
-                      <th>Текущий</th>
-                      <th>Базовый день</th>
-                      <th>Базовый</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {f3?.current.rows.map((r, i) => (
-                      <tr key={r.key}>
-                        <td>
-                          <Link
-                            href={withParams("/analytics", params, {
-                              start_date: r.key,
-                              end_date: f3.current.rows[i + 1]?.key ?? f3.window.end,
-                              grain: "hour",
-                            })}
-                          >
-                            {r.key}
-                          </Link>
-                        </td>
-                        <td>{show(r.metrics?.completed_published_rides)}</td>
-                        <td>{f3.baseline?.rows[i]?.key ?? "—"}</td>
-                        <td>{show(f3.baseline?.rows[i]?.metrics?.completed_published_rides)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </details>
-          </section>
-        </>
-      )}
-
-      <section className="panels">
-        <article className="panel" data-risk-queue={risk.ok ? risk.value.status : "unavailable"}>
-          <Kind kind="simulation" />
-          <h2>
-            <Term name="empty_full_risk">Очередь сценарных рисков</Term>
-          </h2>
-          {!risk.ok ? (
-            <p>{risk.text}</p>
-          ) : risk.value.status === "empty" ? (
-            <p>Сценарии F5 не опубликованы.</p>
-          ) : (
+      <main id="content" className="product-page">
+        <PageHead
+          eyebrow={
             <>
-              <p className={risk.value.status === "archival_replay" ? "warning-text" : ""}>
-                {risk.value.status === "archival_replay"
-                  ? "Архивный recorded-as-of replay — не текущая операционная рекомендация."
-                  : "Сценарий в пределах TTL начального GBFS состояния."}{" "}
-                As-of {nyTime(risk.value.publication?.data_as_of)}; покрытие{" "}
-                {String((risk.value.publication?.coverage as Coverage)?.eligible)}/
-                {String((risk.value.publication?.coverage as Coverage)?.requested)} станций.
-              </p>
-              <ol className="queue">
-                {queue.map((q) => (
-                  <li key={q.station_id}>
-                    <Link href={`/stations?station_id=${encodeURIComponent(q.station_id)}`}>
-                      {q.station_id}
-                    </Link>{" "}
-                    — {q.label} {percent(q.fraction, 0)} (no-action, scale 1, uniform; Wilson 95%{" "}
-                    {percent(q.low, 0)}–{percent(q.high, 0)})
-                  </li>
-                ))}
-              </ol>
-              <Link href="/scenarios">Все сценарии и политики ↗</Link>
+              <Icon name="overview" size={13} /> Обзор · NYC
             </>
+          }
+          title="Сеть и спрос — в одном экране"
+          lead="Опубликованные поездки, наблюдения GBFS, прогноз и сценарии — с источником, периодом и свежестью у каждого числа."
+        >
+          {f3 && (
+            <span className="chip">
+              <Icon name="clock" size={13} /> {range(f3.window.start, f3.window.end)}
+            </span>
           )}
-        </article>
-        <article className="panel" data-forecast-state={forecastStatus}>
-          <Kind kind="forecast" />
-          <h2>
-            <Term name="forecast">Прогноз F4</Term>
-          </h2>
-          <p>
-            {forecastStatus === "valid"
-              ? `Действительный прогноз до ${nyTime(forecast.ok ? forecast.value.publication?.valid_until : null)}.`
-              : forecastStatus === "expired"
-                ? `Недоступен: опубликованный прогноз истёк ${nyTime(forecast.ok ? forecast.value.publication?.valid_until : null)}. Значения не показываются как свежие.`
-                : forecastStatus === "empty"
-                  ? "Прогноз не опубликован."
-                  : forecast.ok
-                    ? "Прогноз недоступен."
-                    : forecast.text}
-          </p>
-          <Link href="/forecasts">Статус и версия прогноза ↗</Link>
-        </article>
-      </section>
+          {f3?.kpi.publication && (
+            <span className="chip">
+              <Icon name="database" size={13} /> F3{" "}
+              <span className="mono">{short(f3.kpi.publication.publication_id)}</span>
+            </span>
+          )}
+        </PageHead>
 
-      <section className="panel provenance" aria-label="Источники и свежесть">
-        <p className="eyebrow">ИСТОЧНИКИ И СВЕЖЕСТЬ</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Слой</th>
-              <th>Версия</th>
-              <th>Актуальность</th>
-              <th>Статус</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>F3 Gold · история поездок</td>
-              <td>{short(f3?.kpi.publication?.publication_id)}</td>
-              <td>Silver as-of {nyTime(f3?.kpi.publication?.data_as_of)}</td>
-              <td>{f3?.kpi.publication?.quality_status ?? "N/A"}</td>
-            </tr>
-            <tr>
-              <td>GBFS наблюдения (F2/F3)</td>
-              <td>{String(gbfs.ok ? gbfs.value.availability.availability_version : "N/A")}</td>
-              <td>
-                source{" "}
-                {nyTime(gbfs.ok ? gbfs.value.availability.last_captured_status_updated : null)}
-              </td>
-              <td>{gbfs.ok ? String(gbfs.value.availability.freshness_status) : "unavailable"}</td>
-            </tr>
-            <tr>
-              <td>F4 прогноз</td>
-              <td>{short(forecast.ok ? forecast.value.publication?.publication_id : null)}</td>
-              <td>
-                valid_until {nyTime(forecast.ok ? forecast.value.publication?.valid_until : null)}
-              </td>
-              <td>{forecastStatus}</td>
-            </tr>
-            <tr>
-              <td>F5 сценарии</td>
-              <td>{short(risk.ok ? risk.value.publication?.publication_id : null)}</td>
-              <td>as-of {nyTime(risk.ok ? risk.value.publication?.data_as_of : null)}</td>
-              <td>{risk.ok ? risk.value.status : "unavailable"}</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section className="f1-slice" aria-label="Первый вертикальный срез F1">
-        <p className="eyebrow">ПЕРВЫЙ ВЕРТИКАЛЬНЫЙ СРЕЗ F1 · ОТДЕЛЬНАЯ ПУБЛИКАЦИЯ</p>
-        <p className="lead">
-          Отдельная публикация одного архива (апрель 2026). Фильтр периода применяется и здесь; даты
-          вне окна F1 дают ошибку периода, а не ноль.
-        </p>
-        <section className="panels" aria-label="Состояние и опубликованные данные">
-          <article className="panel" data-api-status={status}>
-            <p className="eyebrow">СВЯЗЬ С ПЛАТФОРМОЙ</p>
-            <h2>
-              <span className={`dot ${healthy ? "online" : "offline"}`} />
-              {healthy ? "API доступен" : "API недоступен"}
-            </h2>
-            <p>
-              {healthy
-                ? "Сервис отвечает. Готовность бизнес-данных проверяется отдельно."
-                : "Не удалось связаться с API. Показатели не подменяются нулём."}
-            </p>
-            <form action="/" method="get">
-              <button className="refresh" type="submit">
-                Проверить снова ↗
+        <form className="filterbar static" action="/" method="get" aria-label="Период обзора">
+          <div className="filter-row">
+            <label className="field">
+              С даты (NY)
+              <input type="date" name="start_date" defaultValue={f3?.window.start ?? start} />
+            </label>
+            <label className="field">
+              До даты, не включая
+              <input type="date" name="end_date" defaultValue={f3?.window.end ?? end} />
+            </label>
+            <label className="field">
+              Велосипед
+              <select name="vehicle" defaultValue={params.get("vehicle") ?? ""}>
+                <option value="">Все</option>
+                <option value="classic_bike">Классический</option>
+                <option value="electric_bike">Электро</option>
+              </select>
+            </label>
+            <label className="field">
+              Пользователь
+              <select name="membership" defaultValue={params.get("membership") ?? ""}>
+                <option value="">Все</option>
+                <option value="member">Подписчик</option>
+                <option value="casual">Разовый</option>
+              </select>
+            </label>
+            {presets.length > 0 && (
+              <div className="field">
+                Быстрый период
+                <nav className="segmented" aria-label="Быстрый выбор периода">
+                  {presets.map((p) => (
+                    <Link key={p.days} href={p.href} aria-current={p.active ? "true" : undefined}>
+                      {p.days} дн.
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            )}
+            <div className="filter-actions">
+              <Link className="btn btn-ghost" href="/">
+                Сбросить
+              </Link>
+              <button className="btn btn-primary" type="submit">
+                Применить
               </button>
-            </form>
-            <small>Состояние проверяется при открытии страницы.</small>
-          </article>
-          <article className="panel data-panel" data-data-state={data.state}>
-            <p className="eyebrow">NYC · ОПУБЛИКОВАННЫЕ ПОЕЗДКИ F1</p>
-            {data.state === "ok" ? (
-              <>
-                <h2>Допустимые поездки за период</h2>
-                <strong
-                  className="kpi"
-                  data-completed-rides={data.count}
-                  data-publication-id={data.publication.publication_id}
-                >
-                  {numbers.format(data.count)}
+            </div>
+          </div>
+          <AppliedFilters
+            path="/"
+            params={params}
+            keys={{ vehicle: "Велосипед", membership: "Пользователь" }}
+          />
+        </form>
+
+        {!summary.ok ? (
+          <section className="callout tone-danger" role="alert" data-overview-state={summary.state}>
+            <span className="callout-icon">
+              <Icon name={summary.state === "unavailable" ? "off" : "alert"} size={17} />
+            </span>
+            <div>
+              <h2>
+                {summary.state === "unavailable"
+                  ? "Аналитика сейчас недоступна"
+                  : "Фильтры не подходят"}
+              </h2>
+              <p>{summary.text}</p>
+              <p className="actions">
+                <Link className="btn btn-secondary btn-sm" href="/">
+                  Сбросить фильтры
+                </Link>
+              </p>
+            </div>
+          </section>
+        ) : !f3 ? (
+          <section className="callout tone-neutral" data-overview-state="empty">
+            <span className="callout-icon">
+              <Icon name="database" size={17} />
+            </span>
+            <div>
+              <h2>Аналитика ещё не опубликована</h2>
+              <p>Нет активной F3 публикации — показатели не заменяются нулями.</p>
+            </div>
+          </section>
+        ) : (
+          <>
+            <section
+              className="kpi-row"
+              aria-label="Основные показатели"
+              data-overview-state={metrics ? "ok" : "empty"}
+              data-overview-publication={f3.kpi.publication?.publication_id}
+            >
+              <article className="card kpi-card hero">
+                <div className="kpi-label">
+                  <Term name="completed_published_rides">Поездки за период</Term>
+                  <Kind kind="fact" compact />
+                </div>
+                <strong className="kpi" data-overview-rides={metrics?.completed_published_rides}>
+                  {show(metrics?.completed_published_rides)}
                 </strong>
-                <p>
-                  {formatDate(data.filters.start)} → {formatDate(data.filters.end)}
-                  <br />
-                  America/New_York · конец интервала не включён.
+                <div className="kpi-split">
+                  <span data-overview-change={comparison?.relative_change ?? "NA"}>
+                    <Delta value={comparison?.relative_change} />
+                  </span>
+                  <span className="kpi-desc">
+                    к{" "}
+                    {f3.baseWindow
+                      ? `${range(f3.baseWindow.start, f3.baseWindow.end)} (${f3.baseWindow.rule})`
+                      : "— нет сопоставимого периода"}
+                  </span>
+                </div>
+                {comparison?.reason && <p className="kpi-desc">{comparison.reason}</p>}
+                {currentValues && (
+                  <Sparkline values={currentValues} label="Поездки по дням текущего периода" />
+                )}
+              </article>
+              <article className="card kpi-card">
+                <div className="kpi-label">
+                  <Term name="average_duration">Средняя длительность</Term>
+                  <Kind kind="fact" compact />
+                </div>
+                <strong className="kpi">
+                  {metrics?.average_duration_seconds == null ? (
+                    "N/A"
+                  ) : (
+                    <>
+                      {show(metrics.average_duration_seconds / 60)}
+                      <span className="kpi-unit">мин</span>
+                    </>
+                  )}
+                </strong>
+                <p className="kpi-desc">
+                  Знаменатель — поездки с допустимой длительностью в том же периоде.
                 </p>
-              </>
-            ) : (
-              <>
-                <h2>
-                  {data.state === "empty"
-                    ? "Нет опубликованных данных"
-                    : data.state === "error"
-                      ? "Ошибка запроса"
-                      : "Данные недоступны"}
-                </h2>
-                <p>{data.message}</p>
-                {data.state === "error" && <Link href="/">Сбросить фильтры</Link>}
-              </>
-            )}
-          </article>
+              </article>
+              <article className="card kpi-card">
+                <div className="kpi-label">
+                  <Term name="trip_category_share">Электро · подписчики</Term>
+                  <Kind kind="fact" compact />
+                </div>
+                <div className="kpi-split">
+                  <strong className="kpi">{percent(electric?.known_share)}</strong>
+                  <span className="sep">/</span>
+                  <strong className="kpi">{percent(member?.known_share)}</strong>
+                </div>
+                <div className="stack" style={{ gap: 8 }}>
+                  <ShareBar label="Электро" share={electric?.known_share} color={SERIES[0]} />
+                  <ShareBar label="Подписчики" share={member?.known_share} color={SERIES[2]} />
+                </div>
+                <p className="kpi-desc">
+                  Доля среди известных категорий; unknown: {show(electric?.unknown_count)} /{" "}
+                  {show(member?.unknown_count)}.
+                </p>
+              </article>
+              <article
+                className="card kpi-card card-dashed"
+                data-network-state={gbfs.ok ? gbfs.value.status : "unavailable"}
+              >
+                <div className="kpi-label">
+                  <Term name="active_stations">Работающие станции</Term>
+                  <Kind kind="realtime" compact />
+                </div>
+                <strong className="kpi">
+                  {show(availability ? (availability.active_stations as number | null) : null)}
+                </strong>
+                <div className="kpi-split">
+                  <Status tone={freshTone(gbfsFreshness)}>GBFS {gbfsFreshness}</Status>
+                  {availability && (
+                    <span className="kpi-desc">
+                      покрытие {percent(availability.observed_coverage as number | null, 3)}
+                    </span>
+                  )}
+                </div>
+                <p className="kpi-desc">
+                  {gbfs.ok
+                    ? (gbfs.value.message ??
+                      "Отдельно от истории поездок: наблюдение состояния, не факт спроса.")
+                    : gbfs.text}
+                </p>
+              </article>
+            </section>
+
+            <div className="grid" style={{ marginTop: 16 }}>
+              <section className="card span-8">
+                <div className="card-head">
+                  <div>
+                    <h2>Поездки по дням: текущий vs базовый период</h2>
+                    <p className="card-sub">
+                      День N сопоставлен дню N, одинаковое число NY-дней. Пропуски не равны нулю.
+                      Нажмите на день — откроется почасовая аналитика.
+                    </p>
+                  </div>
+                  <Kind kind="fact" />
+                </div>
+                <Chart
+                  label="Поездки по NY-дням текущего и базового периода"
+                  spec={{
+                    kind: "line",
+                    unit: "поездок",
+                    peak: true,
+                    categories: f3.current.rows.map((r) => r.key),
+                    drill: { base: withParams("/analytics", params), to: "hour" },
+                    series: [
+                      {
+                        name: "Текущий период",
+                        values: currentValues ?? [],
+                      },
+                      ...(f3.baseline
+                        ? [
+                            {
+                              name: `Базовый (${f3.baseWindow?.rule})`,
+                              values: f3.baseline.rows.map(
+                                (r) => r.metrics?.completed_published_rides ?? null,
+                              ),
+                            },
+                          ]
+                        : []),
+                    ],
+                  }}
+                />
+                <div className="card-foot">
+                  <span>
+                    {best ? (
+                      <>
+                        Пиковый день периода: <b>{best.key}</b> — {show(best.n)} поездок
+                      </>
+                    ) : (
+                      "Нет наблюдённых дней"
+                    )}
+                  </span>
+                  <Link
+                    className="link-arrow"
+                    href={withParams("/analytics", params, {
+                      start_date: f3.window.start,
+                      end_date: f3.window.end,
+                    })}
+                  >
+                    Глубокая аналитика периода <Icon name="arrow" size={14} />
+                  </Link>
+                </div>
+                <details className="disclosure">
+                  <summary>Таблица значений по дням</summary>
+                  <div className="table-scroll">
+                    <table className="num-cols">
+                      <thead>
+                        <tr>
+                          <th>День</th>
+                          <th>Текущий</th>
+                          <th>Базовый день</th>
+                          <th>Базовый</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {f3.current.rows.map((r, i) => (
+                          <tr key={r.key}>
+                            <td>
+                              <Link
+                                href={withParams("/analytics", params, {
+                                  start_date: r.key,
+                                  end_date: f3.current.rows[i + 1]?.key ?? f3.window.end,
+                                  grain: "hour",
+                                })}
+                              >
+                                {r.key}
+                              </Link>
+                            </td>
+                            <td>{show(r.metrics?.completed_published_rides)}</td>
+                            <td>{f3.baseline?.rows[i]?.key ?? "—"}</td>
+                            <td>
+                              {show(f3.baseline?.rows[i]?.metrics?.completed_published_rides)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </details>
+              </section>
+
+              <div className="span-4 stack">
+                <RiskQueue
+                  risk={risk.ok ? risk.value : null}
+                  text={risk.ok ? "" : risk.text}
+                  queue={queue}
+                />
+                <section className="card" data-forecast-state={forecastStatus}>
+                  <div className="card-head">
+                    <h2>
+                      <Term name="forecast">Прогноз F4</Term>
+                    </h2>
+                    <Kind kind="forecast" />
+                  </div>
+                  <Status tone={FORECAST_TONE[forecastStatus]}>
+                    {FORECAST_LABEL[forecastStatus]}
+                  </Status>
+                  <p className="body-text" style={{ marginTop: 10 }}>
+                    {forecastStatus === "valid"
+                      ? `Действует до ${nyTime(forecast.ok ? forecast.value.publication?.valid_until : null)}.`
+                      : forecastStatus === "expired"
+                        ? `Окно закрылось ${nyTime(forecast.ok ? forecast.value.publication?.valid_until : null)} — значения не показываются как свежие.`
+                        : forecastStatus === "empty"
+                          ? "Прогноз ещё не опубликован."
+                          : forecast.ok
+                            ? "Прогноз недоступен."
+                            : forecast.text}
+                  </p>
+                  <div className="card-foot">
+                    <span>Модель: Seasonal Naive</span>
+                    <Link className="link-arrow" href="/forecasts">
+                      Версия и provenance <Icon name="arrow" size={14} />
+                    </Link>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="section-title">
+          <h2>Источники и свежесть</h2>
+          <p>Каждый слой обновляется отдельно — статус показан для каждого.</p>
+        </div>
+        <section className="source-grid" aria-label="Источники и свежесть">
+          <SourceCell
+            label="F3 Gold · поездки"
+            tone={f3?.kpi.publication?.quality_status === "pass" ? "success" : "warning"}
+            status={f3?.kpi.publication?.quality_status ?? "N/A"}
+            version={short(f3?.kpi.publication?.publication_id)}
+            when={`Silver as-of ${nyTime(f3?.kpi.publication?.data_as_of)}`}
+          />
+          <SourceCell
+            label="GBFS · наблюдения"
+            tone={gbfs.ok ? freshTone(gbfsFreshness) : "warning"}
+            status={gbfs.ok ? gbfsFreshness : "unavailable"}
+            version={String(availability?.availability_version ?? "N/A")}
+            when={`source ${nyTime(availability?.last_captured_status_updated)}`}
+          />
+          <SourceCell
+            label="F4 · прогноз"
+            tone={FORECAST_TONE[forecastStatus]}
+            status={forecastStatus}
+            version={short(forecast.ok ? forecast.value.publication?.publication_id : null)}
+            when={`valid_until ${nyTime(forecast.ok ? forecast.value.publication?.valid_until : null)}`}
+          />
+          <SourceCell
+            label="F5 · сценарии"
+            tone={RISK_TONE[riskStatus]}
+            status={riskStatus}
+            version={short(risk.ok ? risk.value.publication?.publication_id : null)}
+            when={`as-of ${nyTime(risk.ok ? risk.value.publication?.data_as_of : null)}`}
+          />
         </section>
-        {data.state === "ok" && (
-          <section className="panel trend-panel">
-            <p className="eyebrow">ВРЕМЕННОЙ ТРЕНД F1</p>
-            <h2>Поездки по часу начала</h2>
+
+        <section className="f1-slice" aria-label="Первый вертикальный срез F1">
+          <div className="section-title">
+            <h2>Первый вертикальный срез F1</h2>
             <p>
-              Ключи часов — UTC, подписи календаря — America/New_York. Пропуск наблюдения не
-              обозначается нулевым спросом.
+              Отдельная публикация одного архива (апрель 2026); даты вне окна дают ошибку, а не
+              ноль.
             </p>
-            <Trend points={data.points} filters={data.filters} />
-          </section>
-        )}
-        {pub && (
-          <section className="panel provenance">
-            <p className="eyebrow">ИСТОЧНИК И КАЧЕСТВО F1</p>
-            <h2>
-              {pub.quality_status === "pass"
-                ? "Проверенный архив"
-                : "Опубликовано с ограничениями качества"}
-            </h2>
-            <p>{pub.source} · NYC · America/New_York</p>
-            {pub.source_url.startsWith("https://") ? (
-              <a href={pub.source_url}>Официальный исходный архив ↗</a>
-            ) : (
-              <p>Контролируемый тестовый источник, не реальные поездки.</p>
+          </div>
+          <div className="grid">
+            <article className="card span-4" data-api-status={status}>
+              <div className="card-head">
+                <h3>Связь с платформой</h3>
+              </div>
+              <h2 style={{ fontSize: 18 }}>
+                <span className={`dot ${healthy ? "online" : "offline"}`} />
+                {healthy ? "API доступен" : "API недоступен"}
+              </h2>
+              <p className="body-text" style={{ marginTop: 8 }}>
+                {healthy
+                  ? "Сервис отвечает. Готовность бизнес-данных проверяется отдельно."
+                  : "Не удалось связаться с API. Показатели не подменяются нулём."}
+              </p>
+              <form action="/" method="get" style={{ marginTop: 14 }}>
+                <button className="btn btn-secondary btn-sm" type="submit">
+                  Проверить снова
+                </button>
+              </form>
+            </article>
+            <article className="card span-8" data-data-state={data.state}>
+              <div className="card-head">
+                <h3>Опубликованные поездки F1 · NYC</h3>
+                <Kind kind="fact" />
+              </div>
+              {data.state === "ok" ? (
+                <>
+                  <strong
+                    className="kpi"
+                    data-completed-rides={data.count}
+                    data-publication-id={data.publication.publication_id}
+                  >
+                    {numbers.format(data.count)}
+                  </strong>
+                  <p className="kpi-desc">
+                    {formatDate(data.filters.start)} → {formatDate(data.filters.end)} ·
+                    America/New_York · конец интервала не включён.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 style={{ fontSize: 18 }}>
+                    {data.state === "empty"
+                      ? "Нет опубликованных данных"
+                      : data.state === "error"
+                        ? "Ошибка запроса"
+                        : "Данные недоступны"}
+                  </h2>
+                  <p className="body-text" style={{ marginTop: 6 }}>
+                    {data.message}
+                  </p>
+                  {data.state === "error" && (
+                    <p style={{ marginTop: 10 }}>
+                      <Link className="btn btn-secondary btn-sm" href="/">
+                        Сбросить фильтры
+                      </Link>
+                    </p>
+                  )}
+                </>
+              )}
+            </article>
+            {data.state === "ok" && (
+              <section className="card span-12">
+                <div className="card-head">
+                  <div>
+                    <h3>Поездки по часу начала</h3>
+                    <p className="card-sub">
+                      Ключи часов — UTC, подписи — America/New_York. Пропуск наблюдения не равен
+                      нулевому спросу.
+                    </p>
+                  </div>
+                </div>
+                <Trend points={data.points} filters={data.filters} />
+              </section>
             )}
-            <dl>
-              <dt>Доступный период</dt>
-              <dd>
-                {formatDate(pub.period_start)} → {formatDate(pub.period_end)}
-              </dd>
-              <dt>Входных / канонических строк</dt>
-              <dd>
-                {numbers.format(pub.input_rows)} / {numbers.format(pub.canonical_rows)}
-              </dd>
-              <dt>Publication</dt>
-              <dd className="hash">{pub.publication_id}</dd>
-            </dl>
-          </section>
-        )}
-      </section>
-      <footer>
-        Независимый исследовательский проект на публичных данных Citi Bike, не связан с оператором.
-        Факты, GBFS-наблюдения, прогнозы и симуляции помечены отдельно.
-      </footer>
-    </main>
+            {pub && (
+              <section className="card span-12">
+                <div className="card-head">
+                  <h3>
+                    {pub.quality_status === "pass"
+                      ? "Проверенный архив"
+                      : "Опубликовано с ограничениями качества"}
+                  </h3>
+                  <Status tone={pub.quality_status === "pass" ? "success" : "warning"}>
+                    {pub.quality_status}
+                  </Status>
+                </div>
+                <dl className="facts">
+                  <dt>Источник</dt>
+                  <dd>
+                    {pub.source} · NYC · America/New_York ·{" "}
+                    {pub.source_url.startsWith("https://") ? (
+                      <a href={pub.source_url}>официальный архив ↗</a>
+                    ) : (
+                      "контролируемый тестовый источник, не реальные поездки"
+                    )}
+                  </dd>
+                  <dt>Доступный период</dt>
+                  <dd>
+                    {formatDate(pub.period_start)} → {formatDate(pub.period_end)}
+                  </dd>
+                  <dt>Входных / канонических строк</dt>
+                  <dd>
+                    {numbers.format(pub.input_rows)} / {numbers.format(pub.canonical_rows)}
+                  </dd>
+                  <dt>Publication</dt>
+                  <dd className="hash">{pub.publication_id}</dd>
+                </dl>
+              </section>
+            )}
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }
 
 type Comparison = { relative_change: number | null; reason: string | null };
 type Coverage = { eligible: number; requested: number };
+
+function freshTone(value: string): Tone {
+  if (value === "fresh" || value === "ok") return "success";
+  if (value === "stale") return "warning";
+  return "neutral";
+}
+
+function ShareBar({
+  label,
+  share,
+  color,
+}: {
+  label: string;
+  share: number | null | undefined;
+  color: string;
+}) {
+  return (
+    <div>
+      <div className="share-legend">
+        <span>{label}</span>
+        <span>{percent(share)}</span>
+      </div>
+      <div className="share-bar" aria-hidden="true">
+        {share != null && <span style={{ width: `${share * 100}%`, background: color }} />}
+      </div>
+    </div>
+  );
+}
+
+function SourceCell({
+  label,
+  tone,
+  status,
+  version,
+  when,
+}: {
+  label: string;
+  tone: Tone;
+  status: string;
+  version: string;
+  when: string;
+}) {
+  return (
+    <div className="source-cell">
+      <span className="label">{label}</span>
+      <Status tone={tone}>{status}</Status>
+      <span className="value mono">{version}</span>
+      <span className="note">{when}</span>
+    </div>
+  );
+}
+
+function RiskQueue({
+  risk,
+  text,
+  queue,
+}: {
+  risk: RiskData | null;
+  text: string;
+  queue: ReturnType<typeof riskQueue>;
+}) {
+  const coverage = risk?.publication?.coverage as Coverage | undefined;
+  return (
+    <section className="card" data-risk-queue={risk ? risk.status : "unavailable"}>
+      <div className="card-head">
+        <div>
+          <h2>
+            <Term name="empty_full_risk">Очередь сценарных рисков</Term>
+          </h2>
+          <p className="card-sub">No-action · масштаб 1 · uniform; Wilson 95%</p>
+        </div>
+        <Kind kind="simulation" />
+      </div>
+      {!risk ? (
+        <p className="body-text">{text}</p>
+      ) : risk.status === "empty" ? (
+        <p className="body-text">Сценарии F5 не опубликованы.</p>
+      ) : (
+        <>
+          <Status tone={RISK_TONE[risk.status]}>{RISK_LABEL[risk.status]}</Status>
+          <p className="note" style={{ marginTop: 8 }}>
+            {risk.status === "archival_replay"
+              ? "Архивный recorded-as-of replay — не текущая операционная рекомендация."
+              : "Сценарий в пределах TTL начального GBFS состояния."}{" "}
+            As-of {nyTime(risk.publication?.data_as_of)}; покрытие {String(coverage?.eligible)}/
+            {String(coverage?.requested)} станций.
+          </p>
+          <ol className="list-clean" style={{ marginTop: 10 }}>
+            {queue.map((q) => (
+              <li key={q.station_id}>
+                <Link
+                  className="row-link"
+                  href={`/stations?station_id=${encodeURIComponent(q.station_id)}`}
+                >
+                  <span>
+                    <span className="mono">{q.station_id}</span>
+                    <span className="cell-sub">{q.label}</span>
+                  </span>
+                  <span style={{ display: "grid", gap: 4, justifyItems: "end" }}>
+                    <b>{percent(q.fraction, 0)}</b>
+                    <RiskBar value={q.fraction} low={q.low} high={q.high} />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+          <div className="card-foot">
+            <span>Wilson — точность Монте-Карло, не калибровка</span>
+            <Link className="link-arrow" href="/scenarios">
+              Все сценарии <Icon name="arrow" size={14} />
+            </Link>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
 
 function riskQueue(risk: RiskData) {
   return risk.station_outcomes

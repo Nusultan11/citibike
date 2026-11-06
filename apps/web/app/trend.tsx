@@ -50,17 +50,30 @@ export default function Trend({
         description:
           "Число допустимых опубликованных поездок по часу начала. Не показатель текущей доступности велосипедов.",
       },
+      backgroundColor: "transparent",
+      textStyle: { color: "#b6bdcb" },
       grid: { left: 55, right: 15, top: 20, bottom: 65 },
       xAxis: {
         type: "time",
+        axisLine: { lineStyle: { color: "#323947" } },
         axisLabel: {
+          color: "#8b93a5",
           formatter: (value: number) => date.format(new Date(value)),
           hideOverlap: true,
         },
       },
-      yAxis: { type: "value", min: 0 },
+      yAxis: {
+        type: "value",
+        min: 0,
+        axisLabel: { color: "#8b93a5" },
+        splitLine: { lineStyle: { color: "#232937" } },
+      },
       tooltip: {
         trigger: "axis",
+        renderMode: "richText",
+        backgroundColor: "#232a39",
+        borderColor: "rgba(255,255,255,0.14)",
+        textStyle: { color: "#eef1f6" },
         formatter: (params: unknown) => {
           const point = Array.isArray(params) ? params[0] : params;
           if (!point || typeof point !== "object" || !("value" in point)) return "";
@@ -68,10 +81,21 @@ export default function Trend({
           if (!Array.isArray(value) || typeof value[0] !== "number") return "";
           const rides =
             typeof value[1] === "number" ? value[1].toLocaleString("ru-RU") : "Нет наблюдений";
-          return `${detail.format(value[0])} (America/New_York)<br/>Поездки: ${rides}`;
+          return `${detail.format(value[0])} (America/New_York)\nПоездки: ${rides}`;
         },
       },
-      dataZoom: [{ type: "inside" }, { type: "slider", height: 18, bottom: 5 }],
+      dataZoom: [
+        { type: "inside", zoomOnMouseWheel: "ctrl", moveOnMouseWheel: false },
+        {
+          type: "slider",
+          height: 16,
+          bottom: 6,
+          borderColor: "transparent",
+          backgroundColor: "#1a1f2a",
+          fillerColor: "rgba(91,141,239,0.18)",
+          textStyle: { color: "#8b93a5" },
+        },
+      ],
       series: [
         {
           type: "line",
@@ -79,8 +103,9 @@ export default function Trend({
           data,
           showSymbol: false,
           connectNulls: false,
-          lineStyle: { color: "#16725c", width: 2 },
-          itemStyle: { color: "#16725c" },
+          lineStyle: { color: "#3987e5", width: 2 },
+          itemStyle: { color: "#3987e5" },
+          areaStyle: { color: "rgba(57,135,229,0.16)" },
         },
       ],
     });

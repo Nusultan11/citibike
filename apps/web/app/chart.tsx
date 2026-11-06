@@ -6,6 +6,7 @@ import {
   DataZoomComponent,
   GridComponent,
   LegendComponent,
+  MarkPointComponent,
   TooltipComponent,
   VisualMapComponent,
 } from "echarts/components";
@@ -22,17 +23,34 @@ use([
   DataZoomComponent,
   GridComponent,
   LegendComponent,
+  MarkPointComponent,
   TooltipComponent,
   VisualMapComponent,
   CanvasRenderer,
 ]);
 
-// Validated categorical order (blue, orange, aqua); identity is never color alone:
-// legends, direct table views and labels accompany every chart.
-const SERIES = ["#2a78d6", "#eb6834", "#1baf7a"];
-const DIVERGING = ["#e34948", "#b5b3ac", "#2a78d6"];
-const AXIS = { axisLine: { lineStyle: { color: "#9aa8a2" } }, axisLabel: { color: "#526b65" } };
-const GRID_LINE = { splitLine: { lineStyle: { color: "#e3ece3" } } };
+// Canvas cannot read CSS variables: these mirror the tokens in globals.css.
+// Categorical order (blue, orange, aqua) validated for the dark surface #141821
+// (CVD ΔE ≥ 9.4, ≥ 3:1 contrast); identity is never colour alone — legends,
+// direct table views and labels accompany every chart.
+export const SERIES = ["#3987e5", "#d95926", "#199e70"];
+const DIVERGING = ["#f2706b", "#7a8294", "#5b9cf0"];
+const SEQUENTIAL = ["#18243a", "#1c5cab", "#3987e5", "#86b6ef", "#cde2fb"];
+const INK = { primary: "#eef1f6", secondary: "#b6bdcb", muted: "#8b93a5" };
+const AXIS = {
+  axisLine: { lineStyle: { color: "#323947" } },
+  axisTick: { show: false },
+  axisLabel: { color: INK.muted, fontSize: 11 },
+};
+const GRID_LINE = { splitLine: { lineStyle: { color: "#232937" } } };
+const TOOLTIP = {
+  renderMode: "richText",
+  backgroundColor: "#232a39",
+  borderColor: "rgba(255,255,255,0.14)",
+  borderWidth: 1,
+  padding: [8, 10],
+  textStyle: { color: INK.primary, fontSize: 12 },
+};
 
 export type Series = { name: string; values: (number | null)[] };
 export type MapPoint = {
@@ -44,27 +62,93 @@ export type MapPoint = {
   flagged: boolean;
 };
 export type ChartSpec =
-  | { kind: "line" | "bar"; categories: string[]; series: Series[]; unit: string }
+  | {
+      kind: "line" | "bar";
+      categories: string[];
+      series: Series[];
+      unit: string;
+      /** Optional per-category drill-down targets (same length as categories). */
+      links?: (string | null)[];
+      /** Compact drill-down: categories are NY day / month keys; URLs are built here. */
+      drill?: { base: string; to: "hour" | "day" };
+      /** Mark the maximum of the first series. */
+      peak?: boolean;
+    }
   | { kind: "heatmap"; x: string[]; y: string[]; cells: [number, number, number][]; unit: string }
   | { kind: "map"; points: MapPoint[]; href: string; selected?: string | null };
 
 function option(spec: ChartSpec, width: number, height: number): Record<string, unknown> {
-  const base = { animation: false, aria: { enabled: true }, textStyle: { fontFamily: "Arial" } };
+  const base = {
+    animation: false,
+    aria: { enabled: true },
+    backgroundColor: "transparent",
+    textStyle: { fontFamily: "Inter, Segoe UI, system-ui, sans-serif", color: INK.secondary },
+  };
   if (spec.kind === "line" || spec.kind === "bar") {
+    const many = spec.series.length > 1;
+    const narrow = width < 480;
     return {
       ...base,
       color: SERIES,
-      legend: spec.series.length > 1 ? { top: 0, textStyle: { color: "#163e38" } } : undefined,
-      grid: { left: 62, right: 16, top: spec.series.length > 1 ? 36 : 16, bottom: 58 },
-      tooltip: { trigger: "axis", renderMode: "richText", valueFormatter: format(spec.unit) },
+      legend: many
+        ? {
+            top: 0,
+            left: 0,
+            icon: spec.kind === "line" ? "roundRect" : "rect",
+            itemWidth: 14,
+            itemHeight: spec.kind === "line" ? 4 : 10,
+            textStyle: { color: INK.secondary, fontSize: 12 },
+          }
+        : undefined,
+      grid: {
+        left: narrow ? 44 : 56,
+        right: 12,
+        top: many ? 40 : 18,
+        bottom: spec.categories.length > 40 ? 64 : 44,
+      },
+      tooltip: {
+        ...TOOLTIP,
+        trigger: "axis",
+        axisPointer: {
+          type: spec.kind === "bar" ? "shadow" : "line",
+          lineStyle: { color: "#4a5263" },
+        },
+        valueFormatter: format(spec.unit),
+      },
       xAxis: {
         type: "category",
         data: spec.categories,
+        boundaryGap: spec.kind === "bar",
         ...AXIS,
-        axisLabel: { ...AXIS.axisLabel, hideOverlap: true, rotate: 25 },
+        axisLabel: { ...AXIS.axisLabel, hideOverlap: true },
       },
-      yAxis: { type: "value", min: 0, ...AXIS, ...GRID_LINE },
-      dataZoom: spec.categories.length > 40 ? [{ type: "inside" }] : undefined,
+      yAxis: {
+        type: "value",
+        min: 0,
+        ...AXIS,
+        ...GRID_LINE,
+        axisLabel: { ...AXIS.axisLabel, formatter: compact },
+      },
+      dataZoom:
+        spec.categories.length > 40
+          ? [
+              { type: "inside", zoomOnMouseWheel: "ctrl", moveOnMouseWheel: false },
+              {
+                type: "slider",
+                height: 16,
+                bottom: 6,
+                borderColor: "transparent",
+                backgroundColor: "#1a1f2a",
+                fillerColor: "rgba(91,141,239,0.18)",
+                handleStyle: { color: "#8db1ff" },
+                dataBackground: {
+                  lineStyle: { color: "#3a4252" },
+                  areaStyle: { color: "#232937" },
+                },
+                textStyle: { color: INK.muted },
+              },
+            ]
+          : undefined,
       series: spec.series.map((s, i) =>
         spec.kind === "line"
           ? {
@@ -72,17 +156,41 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
               name: s.name,
               data: s.values,
               connectNulls: false,
-              showSymbol: spec.categories.length <= 40,
-              symbolSize: 8,
-              lineStyle: { width: 2, color: SERIES[i] },
-              itemStyle: { color: SERIES[i], borderColor: "#fff", borderWidth: 2 },
+              showSymbol: spec.categories.length <= 31,
+              symbol: ["circle", "rect", "triangle"][i] ?? "circle",
+              symbolSize: 7,
+              lineStyle: { width: 2, color: SERIES[i], type: i === 1 && many ? "dashed" : "solid" },
+              itemStyle: { color: SERIES[i], borderColor: "#141821", borderWidth: 2 },
+              emphasis: { focus: "series" },
+              areaStyle:
+                !many && i === 0
+                  ? {
+                      color: {
+                        type: "linear",
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [
+                          { offset: 0, color: "rgba(57,135,229,0.28)" },
+                          { offset: 1, color: "rgba(57,135,229,0)" },
+                        ],
+                      },
+                    }
+                  : undefined,
+              markPoint: spec.peak && i === 0 ? peakMark(spec.unit) : undefined,
+              cursor: spec.links || spec.drill ? "pointer" : "default",
             }
           : {
               type: "bar",
               name: s.name,
               data: s.values,
-              barGap: "12%",
+              barGap: "18%",
+              barMaxWidth: 34,
               itemStyle: { color: SERIES[i], borderRadius: [4, 4, 0, 0] },
+              emphasis: { focus: "series" },
+              markPoint: spec.peak && i === 0 ? peakMark(spec.unit) : undefined,
+              cursor: spec.links || spec.drill ? "pointer" : "default",
             },
       ),
     };
@@ -91,30 +199,39 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
     const values = spec.cells.map((c) => c[2]);
     return {
       ...base,
-      grid: { left: 52, right: 16, top: 10, bottom: 70 },
+      grid: { left: 40, right: 8, top: 8, bottom: 62 },
       tooltip: {
-        renderMode: "richText",
+        ...TOOLTIP,
         formatter: (p: { value: [number, number, number] }) =>
-          `${spec.y[p.value[1]]} ${spec.x[p.value[0]]}: ${format(spec.unit)(p.value[2])}`,
+          `${spec.y[p.value[1]]}, ${spec.x[p.value[0]]}:00 NY\n${format(spec.unit)(p.value[2])}`,
       },
-      xAxis: { type: "category", data: spec.x, ...AXIS, splitArea: { show: false } },
-      yAxis: { type: "category", data: spec.y, ...AXIS },
+      xAxis: {
+        type: "category",
+        data: spec.x,
+        ...AXIS,
+        axisLabel: { ...AXIS.axisLabel, interval: width < 520 ? 3 : 1 },
+        splitArea: { show: false },
+      },
+      yAxis: { type: "category", data: spec.y, inverse: true, ...AXIS },
       visualMap: {
         min: 0,
         max: Math.max(1, ...values),
         orient: "horizontal",
         left: "center",
         bottom: 0,
-        itemHeight: 120,
+        itemHeight: 140,
+        itemWidth: 10,
         calculable: false,
-        inRange: { color: ["#cde2fb", "#2a78d6", "#0d366b"] },
-        textStyle: { color: "#526b65" },
+        text: ["больше", "меньше"],
+        inRange: { color: SEQUENTIAL },
+        textStyle: { color: INK.muted, fontSize: 11 },
       },
       series: [
         {
           type: "heatmap",
           data: spec.cells,
-          itemStyle: { borderColor: "#fff", borderWidth: 2 },
+          itemStyle: { borderColor: "#10131a", borderWidth: 2, borderRadius: 3 },
+          emphasis: { itemStyle: { borderColor: INK.primary, borderWidth: 1 } },
         },
       ],
     };
@@ -141,21 +258,25 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
   const flows = map.points.map((p) => Math.abs(p.value ?? 0)).sort((a, b) => a - b);
   const limit = Math.max(1, flows[Math.floor(flows.length * 0.95)] ?? 1);
   const row = (p: MapPoint) => [p.lon, p.lat, p.value, p.id, p.name, p.flagged];
+  const zoom = { type: "inside", filterMode: "none", zoomOnMouseWheel: "ctrl" };
   return {
     ...base,
-    grid: { left: 52, right: 14, top: 10, bottom: 50 },
+    grid: { left: 48, right: 12, top: 10, bottom: 48 },
     tooltip: {
-      renderMode: "richText",
+      ...TOOLTIP,
       formatter: (p: { value: [number, number, number | null, string, string | null, boolean] }) =>
-        `${p.value[3]} ${p.value[4] ?? ""}\nnet flow: ${
+        `${p.value[3]} · ${p.value[4] ?? "название N/A"}\nnet flow: ${
           p.value[2] === null ? "N/A" : p.value[2].toLocaleString("ru-RU")
-        }${p.value[5] ? "\nвозможный ID-split" : ""}`,
+        }${p.value[5] ? "\n◇ возможный ID-split" : ""}\nнажмите, чтобы открыть карточку`,
     },
+    dataZoom: [
+      { ...zoom, xAxisIndex: 0 },
+      { ...zoom, yAxisIndex: 0 },
+    ],
     xAxis: {
       type: "value",
       min: west,
       max: east,
-      name: "lon",
       splitNumber: width < 480 ? 2 : 5,
       ...AXIS,
       axisLabel: {
@@ -171,7 +292,6 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
       type: "value",
       min: south,
       max: north,
-      name: "lat",
       ...AXIS,
       axisLabel: {
         ...AXIS.axisLabel,
@@ -186,14 +306,9 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
       dimension: 2,
       min: -limit,
       max: limit,
-      orient: "horizontal",
-      left: "center",
-      bottom: 0,
-      itemHeight: 140,
-      text: width < 480 ? ["+ net", "− net"] : ["прибытий больше", "отправлений больше"],
+      show: false,
       inRange: { color: DIVERGING },
-      outOfRange: { color: "#b5b3ac" },
-      textStyle: { color: "#526b65" },
+      outOfRange: { color: "#7a8294" },
       seriesIndex: 0,
     },
     series: [
@@ -201,23 +316,27 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
         type: "scatter",
         name: "Станции",
         data: map.points.filter((p) => !p.flagged && p.id !== map.selected).map(row),
-        symbolSize: 8,
-        itemStyle: { borderColor: "#fff", borderWidth: 1 },
+        symbolSize: width < 480 ? 6 : 7,
+        itemStyle: { borderColor: "#0b0e14", borderWidth: 0.6, opacity: 0.92 },
+        emphasis: { scale: 1.8, itemStyle: { borderColor: INK.primary, borderWidth: 1.5 } },
+        cursor: "pointer",
       },
       {
         type: "scatter",
         name: "Возможный ID-split",
         data: map.points.filter((p) => p.flagged && p.id !== map.selected).map(row),
         symbol: "diamond",
-        symbolSize: 10,
-        itemStyle: { color: "transparent", borderColor: "#163e38", borderWidth: 1.5 },
+        symbolSize: 11,
+        itemStyle: { color: "transparent", borderColor: "#e5b84a", borderWidth: 1.5 },
+        emphasis: { scale: 1.6 },
+        cursor: "pointer",
       },
       {
         type: "scatter",
         name: "Выбранная станция",
         data: map.points.filter((p) => p.id === map.selected).map(row),
-        symbolSize: 16,
-        itemStyle: { color: "#eb6834", borderColor: "#163e38", borderWidth: 2 },
+        symbolSize: 18,
+        itemStyle: { color: SERIES[1], borderColor: INK.primary, borderWidth: 2.5 },
         z: 5,
       },
     ],
@@ -225,6 +344,41 @@ function option(spec: ChartSpec, width: number, height: number): Record<string, 
 }
 
 const degrees = (value: number) => `${value.toFixed(2)}°`;
+const compactFormat = new Intl.NumberFormat("ru-RU", { notation: "compact" });
+const compact = (value: number) => compactFormat.format(value);
+
+function peakMark(unit: string) {
+  return {
+    symbol: "pin",
+    symbolSize: 38,
+    data: [{ type: "max", name: "пик" }],
+    itemStyle: { color: "#2b3446", borderColor: "#8db1ff", borderWidth: 1 },
+    label: {
+      color: INK.primary,
+      fontSize: 10,
+      formatter: (p: { value: number }) => compact(p.value),
+    },
+    tooltip: { valueFormatter: format(unit) },
+  };
+}
+
+/** Day → that day by UTC hour; month → that month by NY day. Unknown keys do not drill. */
+function drillHref(drill: { base: string; to: "hour" | "day" }, key: string | undefined) {
+  if (!key) return null;
+  const day = /^\d{4}-\d{2}-\d{2}$/.test(key);
+  const month = /^\d{4}-\d{2}(-01)?$/.test(key);
+  if (drill.to === "hour" && !day) return null;
+  if (drill.to === "day" && !month) return null;
+  const start = drill.to === "hour" ? key : `${key.slice(0, 7)}-01`;
+  const end = new Date(`${start}T00:00:00Z`);
+  if (drill.to === "hour") end.setUTCDate(end.getUTCDate() + 1);
+  else end.setUTCMonth(end.getUTCMonth() + 1);
+  const url = new URL(drill.base, window.location.origin);
+  url.searchParams.set("start_date", start);
+  url.searchParams.set("end_date", end.toISOString().slice(0, 10));
+  url.searchParams.set("grain", drill.to);
+  return `${url.pathname}${url.search}`;
+}
 
 function format(unit: string) {
   return (value: unknown) =>
@@ -233,12 +387,20 @@ function format(unit: string) {
       : "Нет наблюдений";
 }
 
-export default function Chart({ spec, label }: { spec: ChartSpec; label: string }) {
+export default function Chart({
+  spec,
+  label,
+  size,
+}: {
+  spec: ChartSpec;
+  label: string;
+  size?: "tall" | "short" | "heat";
+}) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-    const chart = init(element);
+    const chart = init(element, undefined, { renderer: "canvas" });
     const render = () =>
       chart.setOption(option(spec, element.clientWidth, element.clientHeight), true);
     render();
@@ -248,9 +410,28 @@ export default function Chart({ spec, label }: { spec: ChartSpec; label: string 
         if (Array.isArray(value) && typeof value[3] === "string")
           window.location.assign(spec.href + encodeURIComponent(value[3]));
       });
+    else if ((spec.kind === "line" || spec.kind === "bar") && (spec.links || spec.drill)) {
+      const { links, drill, categories } = spec;
+      const go = (index: number) => {
+        const target = links ? links[index] : drill ? drillHref(drill, categories[index]) : null;
+        if (target) window.location.assign(target);
+      };
+      chart.on("click", (event) => {
+        if (typeof event.dataIndex === "number" && event.componentType === "series")
+          go(event.dataIndex);
+      });
+      // Clicking anywhere in the plot column drills into that category, not only on the mark.
+      chart.getZr().on("click", (event) => {
+        if (event.target) return;
+        const point = [event.offsetX, event.offsetY];
+        if (!chart.containPixel("grid", point)) return;
+        const index = chart.convertFromPixel({ seriesIndex: 0 }, point)?.[0];
+        if (typeof index === "number") go(Math.round(index));
+      });
+    }
     const observer = new ResizeObserver(() => {
       chart.resize();
-      if (spec.kind === "map") render();
+      if (spec.kind === "map" || spec.kind === "heatmap") render();
     });
     observer.observe(element);
     return () => {
@@ -258,13 +439,20 @@ export default function Chart({ spec, label }: { spec: ChartSpec; label: string 
       chart.dispose();
     };
   }, [spec]);
+  const className =
+    spec.kind === "map" ? "chart chart-map" : `chart${size ? ` chart-${size}` : ""}`;
   return (
     <div
       ref={ref}
-      className={spec.kind === "map" ? "chart chart-map" : "chart"}
+      className={className}
       role="img"
       aria-label={label}
       data-chart={spec.kind}
+      data-drilldown={
+        (spec.kind === "line" || spec.kind === "bar") && (spec.links || spec.drill)
+          ? "category"
+          : undefined
+      }
     />
   );
 }
