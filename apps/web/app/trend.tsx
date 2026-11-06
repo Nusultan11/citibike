@@ -9,7 +9,7 @@ import {
 } from "echarts/components";
 import { init, use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { AppliedFilters, HourPoint } from "../lib/data";
 
 use([LineChart, GridComponent, TooltipComponent, DataZoomComponent, AriaComponent, CanvasRenderer]);
@@ -22,20 +22,33 @@ export default function Trend({
   filters: AppliedFilters;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!ref.current) return;
-    const chart = init(ref.current);
+  const [inspect, setInspect] = useState(false);
+  const [index, setIndex] = useState(0);
+  const data = useMemo(() => {
     const values = new Map(
       points.map((p) => [Date.parse(p.hour_utc), p.completed_published_rides]),
     );
     const data: [number, number | null][] = [];
     for (let t = Date.parse(filters.start); t < Date.parse(filters.end); t += 3600000)
       data.push([t, values.get(t) ?? null]);
+    return data;
+  }, [points, filters]);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const chart = init(element);
     const date = new Intl.DateTimeFormat("ru-RU", {
       timeZone: "America/New_York",
       month: "short",
       day: "numeric",
       hour: "2-digit",
+    });
+    let painted = 0;
+    const frame = requestAnimationFrame(() => {
+      painted = requestAnimationFrame(() => {
+        element.dataset.readyMs = performance.now().toFixed(1);
+        element.dataset.visibility = document.visibilityState;
+      });
     });
     const detail = new Intl.DateTimeFormat("ru-RU", {
       timeZone: "America/New_York",
@@ -110,18 +123,46 @@ export default function Trend({
       ],
     });
     const observer = new ResizeObserver(() => chart.resize());
-    observer.observe(ref.current);
+    observer.observe(element);
     return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(painted);
       observer.disconnect();
       chart.dispose();
     };
-  }, [points, filters]);
+  }, [data]);
   return (
-    <div
-      className="trend"
-      ref={ref}
-      role="img"
-      aria-label="Почасовой тренд опубликованных поездок; численные значения доступны в таблице ниже"
-    />
+    <>
+      <div
+        className="trend"
+        ref={ref}
+        role="img"
+        data-chart="f1-line"
+        aria-label="Почасовой тренд опубликованных поездок; значения доступны в блоке выбора часа ниже"
+      />
+      <details className="chart-access" onToggle={(event) => setInspect(event.currentTarget.open)}>
+        <summary>Почасовые значения с клавиатуры</summary>
+        {inspect && (
+          <div className="stack">
+            <label className="field">
+              Час UTC · с сохранением пропусков
+              <select value={index} onChange={(event) => setIndex(Number(event.target.value))}>
+                {data.map(([t], i) => (
+                  <option key={t} value={i}>
+                    {new Date(t).toISOString()}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p aria-live="polite">
+              Поездки: {data[index]?.[1]?.toLocaleString("ru-RU") ?? "Нет наблюдений"}
+            </p>
+            <button className="btn btn-ghost" type="button" onClick={() => setIndex(0)}>
+              К первому часу
+            </button>
+          </div>
+        )}
+      </details>
+    </>
   );
 }

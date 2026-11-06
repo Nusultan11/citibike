@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { type AnalyticsData, type AnalyticsRow, analytics } from "../../lib/analytics";
-import { FINDING_AREAS, FINDINGS, type FindingStatus } from "../../lib/findings";
+import { evidenceHref, FINDING_AREAS, FINDINGS, type FindingStatus } from "../../lib/findings";
 import {
   addDays,
   comparisonWindow,
@@ -1127,8 +1127,13 @@ function Findings() {
               <summary>Ограничение и источник</summary>
               <p>{f.limitation}</p>
               <p>
-                <code>{f.source}</code> · {f.recorded}
+                <a href={evidenceHref(f.source)}>{f.source} ↗</a> · {f.recorded}
               </p>
+              {f.relatedSources?.map((source) => (
+                <p key={source}>
+                  <a href={evidenceHref(source)}>{source} ↗</a>
+                </p>
+              ))}
             </details>
           </article>
         ))}

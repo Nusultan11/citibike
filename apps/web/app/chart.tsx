@@ -12,7 +12,8 @@ import {
 } from "echarts/components";
 import { init, use } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { drillHref } from "../lib/chart-navigation";
 
 use([
   BarChart,
@@ -80,7 +81,7 @@ export type ChartSpec =
 function option(spec: ChartSpec, width: number, height: number): Record<string, unknown> {
   const base = {
     animation: false,
-    aria: { enabled: true },
+    aria: { enabled: false },
     backgroundColor: "transparent",
     textStyle: { fontFamily: "Inter, Segoe UI, system-ui, sans-serif", color: INK.secondary },
   };
@@ -362,24 +363,6 @@ function peakMark(unit: string) {
   };
 }
 
-/** Day → that day by UTC hour; month → that month by NY day. Unknown keys do not drill. */
-function drillHref(drill: { base: string; to: "hour" | "day" }, key: string | undefined) {
-  if (!key) return null;
-  const day = /^\d{4}-\d{2}-\d{2}$/.test(key);
-  const month = /^\d{4}-\d{2}(-01)?$/.test(key);
-  if (drill.to === "hour" && !day) return null;
-  if (drill.to === "day" && !month) return null;
-  const start = drill.to === "hour" ? key : `${key.slice(0, 7)}-01`;
-  const end = new Date(`${start}T00:00:00Z`);
-  if (drill.to === "hour") end.setUTCDate(end.getUTCDate() + 1);
-  else end.setUTCMonth(end.getUTCMonth() + 1);
-  const url = new URL(drill.base, window.location.origin);
-  url.searchParams.set("start_date", start);
-  url.searchParams.set("end_date", end.toISOString().slice(0, 10));
-  url.searchParams.set("grain", drill.to);
-  return `${url.pathname}${url.search}`;
-}
-
 function format(unit: string) {
   return (value: unknown) =>
     typeof value === "number"
@@ -397,6 +380,8 @@ export default function Chart({
   size?: "tall" | "short" | "heat";
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [inspect, setInspect] = useState(false);
+  const [index, setIndex] = useState(0);
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
@@ -404,6 +389,13 @@ export default function Chart({
     const render = () =>
       chart.setOption(option(spec, element.clientWidth, element.clientHeight), true);
     render();
+    let painted = 0;
+    const frame = requestAnimationFrame(() => {
+      painted = requestAnimationFrame(() => {
+        element.dataset.readyMs = performance.now().toFixed(1);
+        element.dataset.visibility = document.visibilityState;
+      });
+    });
     if (spec.kind === "map")
       chart.on("click", (event) => {
         const value = event.value as unknown[];
@@ -435,6 +427,8 @@ export default function Chart({
     });
     observer.observe(element);
     return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(painted);
       observer.disconnect();
       chart.dispose();
     };
@@ -442,17 +436,88 @@ export default function Chart({
   const className =
     spec.kind === "map" ? "chart chart-map" : `chart${size ? ` chart-${size}` : ""}`;
   return (
-    <div
-      ref={ref}
-      className={className}
-      role="img"
-      aria-label={label}
-      data-chart={spec.kind}
-      data-drilldown={
-        (spec.kind === "line" || spec.kind === "bar") && (spec.links || spec.drill)
-          ? "category"
-          : undefined
-      }
-    />
+    <>
+      <div
+        ref={ref}
+        className={className}
+        role="img"
+        aria-label={label}
+        data-chart={spec.kind}
+        data-drilldown={
+          (spec.kind === "line" || spec.kind === "bar") && (spec.links || spec.drill)
+            ? "category"
+            : undefined
+        }
+      />
+      <details className="chart-access" onToggle={(event) => setInspect(event.currentTarget.open)}>
+        <summary>Данные и переходы с клавиатуры</summary>
+        {inspect && <ChartInspector spec={spec} label={label} index={index} onIndex={setIndex} />}
+      </details>
+    </>
+  );
+}
+
+function ChartInspector({
+  spec,
+  label,
+  index,
+  onIndex,
+}: {
+  spec: ChartSpec;
+  label: string;
+  index: number;
+  onIndex: (value: number) => void;
+}) {
+  const categories =
+    spec.kind === "map"
+      ? spec.points.map((p) => `${p.id} · ${p.name ?? "название N/A"}`)
+      : spec.kind === "heatmap"
+        ? spec.cells.map(([x, y]) => `${spec.y[y]}, ${spec.x[x]}:00 NY`)
+        : spec.categories;
+  const current = Math.min(index, Math.max(0, categories.length - 1));
+  const target =
+    spec.kind === "map" && spec.points[current]
+      ? spec.href + encodeURIComponent(spec.points[current].id)
+      : spec.kind === "line" || spec.kind === "bar"
+        ? (spec.links?.[current] ??
+          (spec.drill ? drillHref(spec.drill, categories[current]) : null))
+        : null;
+  return (
+    <fieldset className="stack chart-controls">
+      <legend>{label}</legend>
+      <label className="field">
+        {spec.kind === "map" ? "Станция на карте" : "Точка графика"}
+        <select value={current} onChange={(event) => onIndex(Number(event.target.value))}>
+          {categories.map((category, i) => (
+            <option key={category} value={i}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div aria-live="polite" className="chart-values">
+        {(spec.kind === "line" || spec.kind === "bar") &&
+          spec.series.map((s) => (
+            <p key={s.name}>
+              {s.name}: {format(spec.unit)(s.values[current])}
+            </p>
+          ))}
+        {spec.kind === "heatmap" && <p>{format(spec.unit)(spec.cells[current]?.[2])}</p>}
+        {spec.kind === "map" && (
+          <p>
+            net flow: {format("")(spec.points[current]?.value)}
+            {spec.points[current]?.flagged ? " · возможный ID-split" : ""}
+          </p>
+        )}
+      </div>
+      {target && (
+        <a className="btn btn-secondary" href={target}>
+          {spec.kind === "map" ? "Открыть станцию" : "Открыть подробный период"}
+        </a>
+      )}
+      <button className="btn btn-ghost" type="button" onClick={() => onIndex(0)}>
+        К первой точке
+      </button>
+    </fieldset>
   );
 }

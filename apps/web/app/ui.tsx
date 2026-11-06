@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { withParams } from "../lib/operations";
+import RenderTiming from "./render-timing";
+import TermTooltip from "./term-tooltip";
 
 // Short definitions from METRICS.md; tooltips never replace the normative text.
 export const DEFINITIONS = {
@@ -33,15 +35,9 @@ export type Definition = keyof typeof DEFINITIONS;
 
 export function Term({ name, children }: { name: Definition; children: ReactNode }) {
   return (
-    <button type="button" className="term" title={DEFINITIONS[name]} data-term={name}>
+    <TermTooltip name={name} description={DEFINITIONS[name]}>
       {children}
-      <span className="term-mark" aria-hidden="true">
-        ?
-      </span>
-      <span className="term-tip" role="tooltip">
-        {DEFINITIONS[name]}
-      </span>
-    </button>
+    </TermTooltip>
   );
 }
 
@@ -111,6 +107,7 @@ export function SiteHeader({ current, params }: { current: string; params: URLSe
   const station = params.get("station_id");
   return (
     <header className="topbar">
+      <RenderTiming />
       <a className="skip-link" href="#content">
         К содержимому
       </a>

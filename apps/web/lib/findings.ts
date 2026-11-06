@@ -16,6 +16,8 @@ export type Finding = {
   takeaway: string;
   limitation: string;
   source: string;
+  /** Additional evidence when the statement spans more than one study. */
+  relatedSources?: readonly string[];
   recorded: string;
 };
 
@@ -25,6 +27,12 @@ export const FINDING_AREAS: Record<FindingArea, string> = {
   forecast: "Прогнозы F4",
   scenario: "Сценарии F5",
 };
+
+// Pin recorded claims to the reviewed evidence, independent of future main updates.
+export const EVIDENCE_REVISION = "107be3ca7221801f8f14bdf2dc1e56465a94b013";
+export function evidenceHref(source: string) {
+  return `https://github.com/Nusultan11/citibike/blob/${EVIDENCE_REVISION}/${source}`;
+}
 
 export const FINDINGS: readonly Finding[] = [
   {
@@ -82,7 +90,7 @@ export const FINDINGS: readonly Finding[] = [
     value: "−2,8%",
     title: "Год к году поездок немного меньше",
     takeaway:
-      "2024-10…2025-09: 46 697 958 поездок → 2025-10…2026-09: 45 378 096. Доля электровелосипедов выросла с 69,6% до 72,3%; концентрация по станциям стабильна (Gini 0,60–0,61).",
+      "2024-10…2025-09: 46 697 958 поездок → 2025-10…2026-09: 45 378 096. Доля электровелосипедов выросла с 69,6% до 72,3%; месячный Gini по наблюдаемым ID — 0,58–0,62.",
     limitation: "Факт опубликованных поездок; причины изменения не исследовались.",
     source: "docs/evidence/f4-decision-research.json",
     recorded: "2026-11-02",
@@ -123,6 +131,7 @@ export const FINDINGS: readonly Finding[] = [
     limitation:
       "Exploratory validation-only; слепой пре-регистрации и нового независимого теста нет.",
     source: "docs/evidence/f4-feature-research.json",
+    relatedSources: ["docs/evidence/f4-decision-research.json"],
     recorded: "2026-11-02",
   },
   {
@@ -132,7 +141,7 @@ export const FINDINGS: readonly Finding[] = [
     value: "593",
     title: "Аномалии найдены, но не подтверждены",
     takeaway:
-      "Контекстная диагностика station-hour дала 593 дедуплицированных события (spike / long zero / CUSUM); на контрольных инъекциях 12/12 PASS. Гипотеза о контекстном признаке — inconclusive.",
+      "Контекстная диагностика station-hour дала 593 дедуплицированных события (spike / long zero / CUSUM); на контрольных сценариях (инъекции и отрицательные контроли) 12/12 PASS. Гипотеза о контекстном признаке — inconclusive.",
     limitation: "Независимой разметки нет: Precision@K и реальная доля ложных тревог NOT VERIFIED.",
     source: "docs/evidence/f4-ml-diagnostics.json",
     recorded: "2026-11-03",
