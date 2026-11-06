@@ -4534,5 +4534,2408 @@
       "Visual check in emulated viewports of the in-app browser, not physical devices; contrast tokens chosen per guidance, no automated contrast audit tool run",
       "F4 operational promotion, live GBFS and F8 production gates unchanged and not addressed"
     ]
+  },
+  "acceptance_corrections_20261106": {
+    "recorded_at": "2026-11-06T05:55:29.349877+00:00",
+    "scope": "F6 corrective remainder after dark redesign 4ffa0d7 / 107be3c; F8 remains PARTIAL; no research branch merge",
+    "status": "COMPLETED in requested corrective product scope; independent owner acceptance separate",
+    "base_head": "107be3ca7221801f8f14bdf2dc1e56465a94b013",
+    "implementation_sha": "cc74b009f26fd2af77ef39903a20ef1fed99688d",
+    "branch": "main",
+    "initial_tree": "clean; origin/main matched after git fetch origin",
+    "initial_ci": {
+      "run_id": 42164435535,
+      "sha": "107be3ca7221801f8f14bdf2dc1e56465a94b013",
+      "conclusion": "success",
+      "url": "https://github.com/Nusultan11/citibike/actions/runs/42164435535"
+    },
+    "findings_audit": {
+      "status": "PASS; ten recorded findings, eleven clickable anchors, six distinct pinned evidence files; historical statuses unchanged",
+      "sources": {
+        "f2-analysis.md": {
+          "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f2-analysis.md",
+          "git_blob": "ab15c99da0fc522a43dea64d23ca6cf6ea86272e",
+          "remote_blob_matches": "PASS - gh api contents pinned ref SHA compared with git rev-parse"
+        },
+        "f4-decision-research.json": {
+          "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-decision-research.json",
+          "git_blob": "5ecb1478950f103f2113d8c4dd0a353b07c4023d",
+          "remote_blob_matches": "PASS - gh api contents pinned ref SHA compared with git rev-parse"
+        },
+        "f4-forecasting.md": {
+          "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-forecasting.md",
+          "git_blob": "7e7c1697328022279b6909d3e9a99096f2898a51",
+          "remote_blob_matches": "PASS - gh api contents pinned ref SHA compared with git rev-parse"
+        },
+        "f4-feature-research.json": {
+          "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-feature-research.json",
+          "git_blob": "0b7d5e108dc6a423904eecb5fa707504efcc0504",
+          "remote_blob_matches": "PASS - gh api contents pinned ref SHA compared with git rev-parse"
+        },
+        "f4-ml-diagnostics.json": {
+          "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-ml-diagnostics.json",
+          "git_blob": "7f6efe28e29b690abfb78693010c1ef3c99c023f",
+          "remote_blob_matches": "PASS - gh api contents pinned ref SHA compared with git rev-parse"
+        },
+        "f6-product.json": {
+          "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f6-product.json",
+          "git_blob": "eb3fa1feed8b62a3710fa4e456aaa812d4af6971",
+          "remote_blob_matches": "PASS - gh api contents pinned ref SHA compared with git rev-parse"
+        }
+      },
+      "checked_claims": {
+        "f2-reconciliation": "24 rows: input 92085994, accepted 92076567, invalid 8886, duplicate_exact 483, conflicting_id 58; independent mismatches 0",
+        "f2-gaps": "54 source UTC hours; Jan2026 18, Feb2026 32; cause unknown, gaps not zero",
+        "f2-sparsity": "departures: zero 19189766/38602207=49.71%, single 6557047/38602207=16.99%; maxima 216/221; eligibility and unknown operation retained",
+        "f2-weekly": "eligible station-hour means: Tuesday17 departures 6.219084650141898, Tuesday18 arrivals 5.99729401724796; Feb2026 minimum; association only, two cycles",
+        "da-annual": "46697958 -> 45378096 (-2.8%); annual electric shares round to 69.6/72.3%; monthly Gini min0.5841749558316083 max0.6197339395664481",
+        "da-id-split": "lineage summary105/105 supported; first40 excluded net-flow rows all id_split; operator identity unconfirmed; no Silver merge",
+        "f4-final": "frozen Sep2026, n44773 each target/config: LightGBM bounded MAE1.5778/1.5988 vs SN1.9903/1.9610; validation degradation gate failed; approximate retrospective, cohort64, promotion NOT VERIFIED",
+        "f4-research": "feature study176 successful trials,44 group comparisons:40 inconclusive/3 degrades/1 improves; decision research872 successful, every gate has degraded segments and promote=false; validation-only",
+        "f4-diagnostics": "593 events from1126 signals;12 controlled cases include null/negative controls and injections; all PASS; study inconclusive; Precision@K and real false alerts remain NOT VERIFIED",
+        "f5-replay": "27 artifact/served objectives,0 mismatch,9/9 no_action best cells,coverage3/64,archival_replay; not live risk or actual savings"
+      },
+      "corrections": [
+        "Gini text 0.60-0.61 -> observed monthly range0.58-0.62; historical evidence unchanged",
+        "12 injections -> 12 controlled cases (injections plus negative controls)",
+        "Added decision-research link to the cross-study feature finding"
+      ]
+    },
+    "defects_reproduced_fixed_verified": [
+      {
+        "defect": "320px navigation visible width157 vs content373; scrollbar hidden",
+        "fix": "Wrapped, always-visible navigation on separate row <=960px; links44px high",
+        "verification": "5 links visible, sequential Tab with visible focus; all widths; before screenshot retained"
+      },
+      {
+        "defect": "Canvas-only category/station selection and inaccessible point tooltips; F1 falsely promised a nonexistent table",
+        "fix": "Lazy native category/station selector, all series values incl null, same drill helper/link, first-point reset; F1 hourly selector preserves missing hours",
+        "verification": "Keyboard month->day->hour; map selected1964.01; pointer canvas selected6313.10; F1 next UTC hour value716; existing real smoke and DST gates"
+      },
+      {
+        "defect": "Primary white text on accent contrast3.23:1; low-contrast control borders; translucent focus",
+        "fix": "Inverse dark primary text5.98:1; strong border token and opaque focus; 44px mobile controls",
+        "verification": "AA palette tests; actual DOM text audit zero failing samples on5 pages, minimum4.78; keyboard/touch geometry evidence"
+      },
+      {
+        "defect": "Metric tooltip not hoverable/dismissible; visible tooltip changed accessible button name",
+        "fix": "Hoverable tooltip without gap, Escape dismissal, stable labelledby/describedby",
+        "verification": "Button name remains singular and stable while open/closed; focus reveals, Escape hides; focus screenshot"
+      }
+    ],
+    "interactions": {
+      "keyboard_drill": "PASS: 2026-03 month -> 2026-03-01..04-01 grain=day,2945320; then2026-03-10..03-11 grain=hour,152807; publication pin preserved",
+      "pointer_drill": "PASS: seasonal canvas click -> 2025-08-01..09-01 grain=day,5122174; day->hour verified via keyboard, not claimed as a separate pointer timing",
+      "map": "PASS: canvas click ->6313.10; Home/ArrowDown native select ->1964.01; card data-station-detail matches; reset returns /stations",
+      "scenarios": "PASS: keyboard scale1.5 + arrivals_first, no_action verdict retained; reset1/uniform",
+      "filters": "PASS: electric_bike apply, remove chip, reset /analytics; source pin retained; findings forecast3 -> all10",
+      "keyboard_navigation": [
+        {
+          "height": 44,
+          "outline": "rgb(141, 177, 255) solid 1.6px",
+          "text": "Обзор"
+        },
+        {
+          "height": 44,
+          "outline": "rgb(141, 177, 255) solid 1.6px",
+          "text": "Аналитика"
+        },
+        {
+          "height": 44,
+          "outline": "rgb(141, 177, 255) solid 1.6px",
+          "text": "Станции"
+        },
+        {
+          "height": 44,
+          "outline": "rgb(141, 177, 255) solid 1.6px",
+          "text": "Прогнозы"
+        },
+        {
+          "height": 44,
+          "outline": "rgb(141, 177, 255) solid 1.6px",
+          "text": "Сценарии"
+        }
+      ],
+      "console": "No app warning/error entries in final browser log check; expected server outage errors separate"
+    },
+    "accessibility": {
+      "status": "PASS targeted WCAG AA checks; no claim of full assistive-technology certification",
+      "palette": {
+        "body_text_min_on_token_surfaces": 4.783,
+        "control_boundary_min": 3.603,
+        "primary_text_before": 3.23,
+        "primary_text_after": 5.98,
+        "focus": "solid accent-strong; measured visible on all nav links"
+      },
+      "dom_text_contrast": [
+        {
+          "page": "/",
+          "count": 246,
+          "fail": [],
+          "min": 4.78
+        },
+        {
+          "page": "/analytics",
+          "count": 4065,
+          "fail": [],
+          "min": 4.78
+        },
+        {
+          "page": "/stations",
+          "count": 1421,
+          "fail": [],
+          "min": 4.78
+        },
+        {
+          "page": "/forecasts",
+          "count": 66,
+          "fail": [],
+          "min": 5.76
+        },
+        {
+          "page": "/scenarios",
+          "count": 523,
+          "fail": [],
+          "min": 4.78
+        }
+      ],
+      "contrast_method": "WCAG sRGB relative luminance; per text element computed CSS colour composited with ancestor background colours/opacity; body dark base; decorative gradients and canvas separately reviewed by tokens/values, not a full automated accessibility audit",
+      "reduced_motion": "PASS source + loaded browser CSSOM: reduced skeleton animation none and transitions none; ECharts animation=false; OS preference was not changed/emulated",
+      "semantics": "labelled native selects, fieldset/legend, aria-live values, stable tooltip labelledby/describedby, labelled charts, explicit status labels",
+      "physical_device_and_screen_reader": "NOT VERIFIED; viewport emulation and keyboard browser checks only"
+    },
+    "visible_browser": {
+      "environment": "Codex desktop in-app browser; visible pane/document.visibilityState=visible; final standalone production build on localhost:3005; fixture isolated3016/8016",
+      "widths": [
+        320,
+        360,
+        390,
+        768,
+        1440
+      ],
+      "real_cases": [
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "335.7",
+              "visibility": "visible"
+            },
+            {
+              "kind": "f1-line",
+              "ready": "338.1",
+              "visibility": "visible"
+            }
+          ],
+          "client": 320,
+          "firstScreen": {
+            "firstScreenMs": "333.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 320,
+          "url": "/",
+          "width": 320
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "1815.6",
+              "visibility": "visible"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "1815.7",
+              "visibility": "visible"
+            },
+            {
+              "kind": "bar",
+              "ready": "1816.7",
+              "visibility": "visible"
+            }
+          ],
+          "client": 320,
+          "firstScreen": {
+            "fcpMs": "152.0",
+            "firstScreenMs": "1811.4",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 320,
+          "url": "/analytics",
+          "width": 320
+        },
+        {
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "787.3",
+              "visibility": "visible"
+            }
+          ],
+          "client": 320,
+          "firstScreen": {
+            "fcpMs": "184.0",
+            "firstScreenMs": "787.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 320,
+          "url": "/stations",
+          "width": 320
+        },
+        {
+          "charts": [],
+          "client": 320,
+          "firstScreen": {
+            "firstScreenMs": "154.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 320,
+          "url": "/forecasts",
+          "width": 320
+        },
+        {
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "286.8",
+              "visibility": "visible"
+            }
+          ],
+          "client": 320,
+          "firstScreen": {
+            "fcpMs": "220.0",
+            "firstScreenMs": "284.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 320,
+          "url": "/scenarios",
+          "width": 320
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "723.3",
+              "visibility": "visible"
+            },
+            {
+              "kind": "f1-line",
+              "ready": "729.0",
+              "visibility": "visible"
+            }
+          ],
+          "client": 360,
+          "firstScreen": {
+            "fcpMs": "256.0",
+            "firstScreenMs": "720.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 360,
+          "url": "/",
+          "width": 360
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "1967.1",
+              "visibility": "visible"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "1967.2",
+              "visibility": "visible"
+            },
+            {
+              "kind": "bar",
+              "ready": "1968.4",
+              "visibility": "visible"
+            }
+          ],
+          "client": 360,
+          "firstScreen": {
+            "fcpMs": "536.0",
+            "firstScreenMs": "1962.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 360,
+          "url": "/analytics",
+          "width": 360
+        },
+        {
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "733.6",
+              "visibility": "visible"
+            }
+          ],
+          "client": 360,
+          "firstScreen": {
+            "fcpMs": "176.0",
+            "firstScreenMs": "733.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 360,
+          "url": "/stations",
+          "width": 360
+        },
+        {
+          "charts": [],
+          "client": 360,
+          "firstScreen": {
+            "firstScreenMs": "153.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 360,
+          "url": "/forecasts",
+          "width": 360
+        },
+        {
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "271.2",
+              "visibility": "visible"
+            }
+          ],
+          "client": 360,
+          "firstScreen": {
+            "fcpMs": "196.0",
+            "firstScreenMs": "269.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 360,
+          "url": "/scenarios",
+          "width": 360
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "584.3",
+              "visibility": "visible"
+            },
+            {
+              "kind": "f1-line",
+              "ready": "586.4",
+              "visibility": "visible"
+            }
+          ],
+          "client": 390,
+          "firstScreen": {
+            "fcpMs": "208.0",
+            "firstScreenMs": "582.2",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 390,
+          "url": "/",
+          "width": 390
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "1982.6",
+              "visibility": "visible"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "1982.6",
+              "visibility": "visible"
+            },
+            {
+              "kind": "bar",
+              "ready": "1983.6",
+              "visibility": "visible"
+            }
+          ],
+          "client": 390,
+          "firstScreen": {
+            "fcpMs": "216.0",
+            "firstScreenMs": "1979.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 390,
+          "url": "/analytics",
+          "width": 390
+        },
+        {
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "806.9",
+              "visibility": "visible"
+            }
+          ],
+          "client": 390,
+          "firstScreen": {
+            "fcpMs": "180.0",
+            "firstScreenMs": "806.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 390,
+          "url": "/stations",
+          "width": 390
+        },
+        {
+          "charts": [],
+          "client": 390,
+          "firstScreen": {
+            "firstScreenMs": "143.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 390,
+          "url": "/forecasts",
+          "width": 390
+        },
+        {
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "321.0",
+              "visibility": "visible"
+            }
+          ],
+          "client": 390,
+          "firstScreen": {
+            "fcpMs": "240.0",
+            "firstScreenMs": "317.2",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 390,
+          "url": "/scenarios",
+          "width": 390
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "537.1",
+              "visibility": "visible"
+            },
+            {
+              "kind": "f1-line",
+              "ready": "539.7",
+              "visibility": "visible"
+            }
+          ],
+          "client": 768,
+          "firstScreen": {
+            "fcpMs": "188.0",
+            "firstScreenMs": "533.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 768,
+          "url": "/",
+          "width": 768
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "1857.6",
+              "visibility": "visible"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "1857.6",
+              "visibility": "visible"
+            },
+            {
+              "kind": "bar",
+              "ready": "1859.2",
+              "visibility": "visible"
+            }
+          ],
+          "client": 768,
+          "firstScreen": {
+            "fcpMs": "196.0",
+            "firstScreenMs": "1851.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 768,
+          "url": "/analytics",
+          "width": 768
+        },
+        {
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "789.5",
+              "visibility": "visible"
+            }
+          ],
+          "client": 768,
+          "firstScreen": {
+            "fcpMs": "180.0",
+            "firstScreenMs": "789.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 768,
+          "url": "/stations",
+          "width": 768
+        },
+        {
+          "charts": [],
+          "client": 768,
+          "firstScreen": {
+            "firstScreenMs": "144.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 768,
+          "url": "/forecasts",
+          "width": 768
+        },
+        {
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "249.7",
+              "visibility": "visible"
+            }
+          ],
+          "client": 768,
+          "firstScreen": {
+            "firstScreenMs": "247.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 768,
+          "url": "/scenarios",
+          "width": 768
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "367.5",
+              "visibility": "visible"
+            },
+            {
+              "kind": "f1-line",
+              "ready": "370.1",
+              "visibility": "visible"
+            }
+          ],
+          "client": 1440,
+          "firstScreen": {
+            "firstScreenMs": "363.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 1440,
+          "url": "/",
+          "width": 1440
+        },
+        {
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "2000.0",
+              "visibility": "visible"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "2000.0",
+              "visibility": "visible"
+            },
+            {
+              "kind": "bar",
+              "ready": "2002.2",
+              "visibility": "visible"
+            }
+          ],
+          "client": 1440,
+          "firstScreen": {
+            "fcpMs": "180.0",
+            "firstScreenMs": "1993.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 1440,
+          "url": "/analytics",
+          "width": 1440
+        },
+        {
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "779.7",
+              "visibility": "visible"
+            }
+          ],
+          "client": 1440,
+          "firstScreen": {
+            "fcpMs": "180.0",
+            "firstScreenMs": "779.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 1440,
+          "url": "/stations",
+          "width": 1440
+        },
+        {
+          "charts": [],
+          "client": 1440,
+          "firstScreen": {
+            "firstScreenMs": "203.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 1440,
+          "url": "/forecasts",
+          "width": 1440
+        },
+        {
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "263.7",
+              "visibility": "visible"
+            }
+          ],
+          "client": 1440,
+          "firstScreen": {
+            "firstScreenMs": "261.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "navCount": 5,
+          "scrollWidth": 1440,
+          "url": "/scenarios",
+          "width": 1440
+        }
+      ],
+      "fixture_cases": [
+        {
+          "case": "empty",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "overviewState": "empty"
+            }
+          ],
+          "url": "/",
+          "width": 320
+        },
+        {
+          "case": "empty",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "analyticsState": "empty"
+            }
+          ],
+          "url": "/analytics",
+          "width": 320
+        },
+        {
+          "case": "empty",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "stationsState": "empty",
+              "stationsTotal": "0"
+            }
+          ],
+          "url": "/stations",
+          "width": 320
+        },
+        {
+          "case": "empty",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "forecastPage": "empty"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 320
+        },
+        {
+          "case": "empty",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "scenarioState": "empty"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 320
+        },
+        {
+          "case": "empty",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "overviewState": "empty"
+            }
+          ],
+          "url": "/",
+          "width": 360
+        },
+        {
+          "case": "empty",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "analyticsState": "empty"
+            }
+          ],
+          "url": "/analytics",
+          "width": 360
+        },
+        {
+          "case": "empty",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "stationsState": "empty",
+              "stationsTotal": "0"
+            }
+          ],
+          "url": "/stations",
+          "width": 360
+        },
+        {
+          "case": "empty",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "forecastPage": "empty"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 360
+        },
+        {
+          "case": "empty",
+          "client": 360,
+          "scrollWidth": 360,
+          "states": [
+            {
+              "scenarioState": "empty"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 360
+        },
+        {
+          "case": "empty",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "overviewState": "empty"
+            }
+          ],
+          "url": "/",
+          "width": 390
+        },
+        {
+          "case": "empty",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "analyticsState": "empty"
+            }
+          ],
+          "url": "/analytics",
+          "width": 390
+        },
+        {
+          "case": "empty",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "stationsState": "empty",
+              "stationsTotal": "0"
+            }
+          ],
+          "url": "/stations",
+          "width": 390
+        },
+        {
+          "case": "empty",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "forecastPage": "empty"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 390
+        },
+        {
+          "case": "empty",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "scenarioState": "empty"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 390
+        },
+        {
+          "case": "empty",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "overviewState": "empty"
+            }
+          ],
+          "url": "/",
+          "width": 768
+        },
+        {
+          "case": "empty",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "analyticsState": "empty"
+            }
+          ],
+          "url": "/analytics",
+          "width": 768
+        },
+        {
+          "case": "empty",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "stationsState": "empty",
+              "stationsTotal": "0"
+            }
+          ],
+          "url": "/stations",
+          "width": 768
+        },
+        {
+          "case": "empty",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "forecastPage": "empty"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 768
+        },
+        {
+          "case": "empty",
+          "client": 768,
+          "scrollWidth": 768,
+          "states": [
+            {
+              "scenarioState": "empty"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 768
+        },
+        {
+          "case": "empty",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "overviewState": "empty"
+            }
+          ],
+          "url": "/",
+          "width": 1440
+        },
+        {
+          "case": "empty",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "analyticsState": "empty"
+            }
+          ],
+          "url": "/analytics",
+          "width": 1440
+        },
+        {
+          "case": "empty",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "stationsState": "empty",
+              "stationsTotal": "0"
+            }
+          ],
+          "url": "/stations",
+          "width": 1440
+        },
+        {
+          "case": "empty",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "forecastPage": "empty"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 1440
+        },
+        {
+          "case": "empty",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "scenarioState": "empty"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 1440
+        },
+        {
+          "case": "valid",
+          "client": 305,
+          "scrollWidth": 305,
+          "states": [
+            {
+              "overviewPublication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+              "overviewState": "ok"
+            }
+          ],
+          "url": "/",
+          "width": 320
+        },
+        {
+          "case": "valid",
+          "client": 305,
+          "scrollWidth": 305,
+          "states": [
+            {
+              "analyticsState": "ok",
+              "publicationId": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1"
+            }
+          ],
+          "url": "/analytics",
+          "width": 320
+        },
+        {
+          "case": "valid",
+          "client": 305,
+          "scrollWidth": 305,
+          "states": [
+            {
+              "geoId": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+              "stationsState": "ok",
+              "stationsTotal": "2"
+            }
+          ],
+          "url": "/stations",
+          "width": 320
+        },
+        {
+          "case": "valid",
+          "client": 305,
+          "scrollWidth": 305,
+          "states": [
+            {
+              "forecastPage": "valid"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 320
+        },
+        {
+          "case": "valid",
+          "client": 305,
+          "scrollWidth": 305,
+          "states": [
+            {
+              "scenarioId": "cfe68f24af50b2f502ad0bb0e027b66d239955d59720c1225f33eeb85db4b916",
+              "scenarioState": "current_scenario"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 320
+        },
+        {
+          "case": "valid",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "overviewPublication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+              "overviewState": "ok"
+            }
+          ],
+          "url": "/",
+          "width": 360
+        },
+        {
+          "case": "valid",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "analyticsState": "ok",
+              "publicationId": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1"
+            }
+          ],
+          "url": "/analytics",
+          "width": 360
+        },
+        {
+          "case": "valid",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "geoId": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+              "stationsState": "ok",
+              "stationsTotal": "2"
+            }
+          ],
+          "url": "/stations",
+          "width": 360
+        },
+        {
+          "case": "valid",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "forecastPage": "valid"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 360
+        },
+        {
+          "case": "valid",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "scenarioId": "cfe68f24af50b2f502ad0bb0e027b66d239955d59720c1225f33eeb85db4b916",
+              "scenarioState": "current_scenario"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 360
+        },
+        {
+          "case": "valid",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "overviewPublication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+              "overviewState": "ok"
+            }
+          ],
+          "url": "/",
+          "width": 390
+        },
+        {
+          "case": "valid",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "analyticsState": "ok",
+              "publicationId": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1"
+            }
+          ],
+          "url": "/analytics",
+          "width": 390
+        },
+        {
+          "case": "valid",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "geoId": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+              "stationsState": "ok",
+              "stationsTotal": "2"
+            }
+          ],
+          "url": "/stations",
+          "width": 390
+        },
+        {
+          "case": "valid",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "forecastPage": "valid"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 390
+        },
+        {
+          "case": "valid",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "scenarioId": "cfe68f24af50b2f502ad0bb0e027b66d239955d59720c1225f33eeb85db4b916",
+              "scenarioState": "archival_replay"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 390
+        },
+        {
+          "case": "valid",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "overviewPublication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+              "overviewState": "ok"
+            }
+          ],
+          "url": "/",
+          "width": 768
+        },
+        {
+          "case": "valid",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "analyticsState": "ok",
+              "publicationId": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1"
+            }
+          ],
+          "url": "/analytics",
+          "width": 768
+        },
+        {
+          "case": "valid",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "geoId": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+              "stationsState": "ok",
+              "stationsTotal": "2"
+            }
+          ],
+          "url": "/stations",
+          "width": 768
+        },
+        {
+          "case": "valid",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "forecastPage": "valid"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 768
+        },
+        {
+          "case": "valid",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "scenarioId": "cfe68f24af50b2f502ad0bb0e027b66d239955d59720c1225f33eeb85db4b916",
+              "scenarioState": "archival_replay"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 768
+        },
+        {
+          "case": "valid",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "overviewPublication": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1",
+              "overviewState": "ok"
+            }
+          ],
+          "url": "/",
+          "width": 1440
+        },
+        {
+          "case": "valid",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "analyticsState": "ok",
+              "publicationId": "c3d2a39c645d034258302d67cb7b3aa91820be36a50c149d944f1869649ccbe1"
+            }
+          ],
+          "url": "/analytics",
+          "width": 1440
+        },
+        {
+          "case": "valid",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "geoId": "669b9b810eaf8b2613838328046bee3b1f91f394522fc015f70cec38b0445602",
+              "stationsState": "ok",
+              "stationsTotal": "2"
+            }
+          ],
+          "url": "/stations",
+          "width": 1440
+        },
+        {
+          "case": "valid",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "forecastPage": "valid"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 1440
+        },
+        {
+          "case": "valid",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "scenarioId": "cfe68f24af50b2f502ad0bb0e027b66d239955d59720c1225f33eeb85db4b916",
+              "scenarioState": "archival_replay"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 1440
+        },
+        {
+          "case": "api-down",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "overviewState": "unavailable"
+            }
+          ],
+          "url": "/",
+          "width": 320
+        },
+        {
+          "case": "api-down",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "analyticsState": "error"
+            }
+          ],
+          "url": "/analytics",
+          "width": 320
+        },
+        {
+          "case": "api-down",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "stationsState": "unavailable"
+            }
+          ],
+          "url": "/stations",
+          "width": 320
+        },
+        {
+          "case": "api-down",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "forecastPage": "unavailable"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 320
+        },
+        {
+          "case": "api-down",
+          "client": 320,
+          "scrollWidth": 320,
+          "states": [
+            {
+              "scenarioState": "unavailable"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 320
+        },
+        {
+          "case": "api-down",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "overviewState": "unavailable"
+            }
+          ],
+          "url": "/",
+          "width": 360
+        },
+        {
+          "case": "api-down",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "analyticsState": "error"
+            }
+          ],
+          "url": "/analytics",
+          "width": 360
+        },
+        {
+          "case": "api-down",
+          "client": 345,
+          "scrollWidth": 345,
+          "states": [
+            {
+              "stationsState": "unavailable"
+            }
+          ],
+          "url": "/stations",
+          "width": 360
+        },
+        {
+          "case": "api-down",
+          "client": 360,
+          "scrollWidth": 360,
+          "states": [
+            {
+              "forecastPage": "unavailable"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 360
+        },
+        {
+          "case": "api-down",
+          "client": 360,
+          "scrollWidth": 360,
+          "states": [
+            {
+              "scenarioState": "unavailable"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 360
+        },
+        {
+          "case": "api-down",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "overviewState": "unavailable"
+            }
+          ],
+          "url": "/",
+          "width": 390
+        },
+        {
+          "case": "api-down",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "analyticsState": "error"
+            }
+          ],
+          "url": "/analytics",
+          "width": 390
+        },
+        {
+          "case": "api-down",
+          "client": 375,
+          "scrollWidth": 375,
+          "states": [
+            {
+              "stationsState": "unavailable"
+            }
+          ],
+          "url": "/stations",
+          "width": 390
+        },
+        {
+          "case": "api-down",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "forecastPage": "unavailable"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 390
+        },
+        {
+          "case": "api-down",
+          "client": 390,
+          "scrollWidth": 390,
+          "states": [
+            {
+              "scenarioState": "unavailable"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 390
+        },
+        {
+          "case": "api-down",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "overviewState": "unavailable"
+            }
+          ],
+          "url": "/",
+          "width": 768
+        },
+        {
+          "case": "api-down",
+          "client": 753,
+          "scrollWidth": 753,
+          "states": [
+            {
+              "analyticsState": "error"
+            }
+          ],
+          "url": "/analytics",
+          "width": 768
+        },
+        {
+          "case": "api-down",
+          "client": 768,
+          "scrollWidth": 768,
+          "states": [
+            {
+              "stationsState": "unavailable"
+            }
+          ],
+          "url": "/stations",
+          "width": 768
+        },
+        {
+          "case": "api-down",
+          "client": 768,
+          "scrollWidth": 768,
+          "states": [
+            {
+              "forecastPage": "unavailable"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 768
+        },
+        {
+          "case": "api-down",
+          "client": 768,
+          "scrollWidth": 768,
+          "states": [
+            {
+              "scenarioState": "unavailable"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 768
+        },
+        {
+          "case": "api-down",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "overviewState": "unavailable"
+            }
+          ],
+          "url": "/",
+          "width": 1440
+        },
+        {
+          "case": "api-down",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "analyticsState": "error"
+            }
+          ],
+          "url": "/analytics",
+          "width": 1440
+        },
+        {
+          "case": "api-down",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "stationsState": "unavailable"
+            }
+          ],
+          "url": "/stations",
+          "width": 1440
+        },
+        {
+          "case": "api-down",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "forecastPage": "unavailable"
+            }
+          ],
+          "url": "/forecasts",
+          "width": 1440
+        },
+        {
+          "case": "api-down",
+          "client": 1440,
+          "scrollWidth": 1440,
+          "states": [
+            {
+              "scenarioState": "unavailable"
+            }
+          ],
+          "url": "/scenarios",
+          "width": 1440
+        }
+      ],
+      "total_matrix_cases": 100,
+      "overflow": "0 cases with scrollWidth > documentElement.clientWidth; wide tables retain local scrolling",
+      "visual_qa": "Full-page captures plus targeted focus/drill/station/screens; reviewed top/middle/end contact sheets for all real widths and captured fixture states; native screenshots unmodified",
+      "screenshots": {
+        "corrective-1440-analytics.jpg": {
+          "bytes": 655581,
+          "sha256": "2de7780df5c54b01f7137f7f788c2a57c226f964d03e63a99ecd06062838dd13"
+        },
+        "corrective-1440-forecasts.jpg": {
+          "bytes": 163727,
+          "sha256": "15aaff120e638a41aafe25188e16137459bb7923d6488b1820d144af349535ad"
+        },
+        "corrective-1440-overview.jpg": {
+          "bytes": 326278,
+          "sha256": "0bb47499b62fce2f649ab6c9b396d4c51d47e47a7e6eed452827e2de825b481c"
+        },
+        "corrective-1440-scenarios.jpg": {
+          "bytes": 314038,
+          "sha256": "8e3dc6932caa5ecb5c8d5de44b4e30e5b605295e7da30fd82a463c76ae2c72f2"
+        },
+        "corrective-1440-stations.jpg": {
+          "bytes": 174401,
+          "sha256": "d5d852d5f4210174cee6efb769c4fe766ac66f069d47a88f8429c9a2284a4b6e"
+        },
+        "corrective-320-analytics.jpg": {
+          "bytes": 523754,
+          "sha256": "c28de816b518e32ea058b158e2bd22da02a9a6a3214b6384204cea5f257fb332"
+        },
+        "corrective-320-forecasts.jpg": {
+          "bytes": 132152,
+          "sha256": "948c806a81aa648ab0e1355751480acd80febfc1d10f7a46118321814ec583f6"
+        },
+        "corrective-320-overview.jpg": {
+          "bytes": 241296,
+          "sha256": "37e6ce365df4654f7e2ea9ac352be3affd2794cc1b806d9dd81b9ff51f422507"
+        },
+        "corrective-320-scenarios.jpg": {
+          "bytes": 239285,
+          "sha256": "b9c1eeb284750e885dc774476ca7f25a5936a48fe90f9081dc28c5ba283a7da8"
+        },
+        "corrective-320-stations.jpg": {
+          "bytes": 127629,
+          "sha256": "cf82fe1cade5794900e6129f2951a341c3085010a4ffd3c03234a6d7e0bcf4d5"
+        },
+        "corrective-360-analytics.jpg": {
+          "bytes": 540648,
+          "sha256": "a97837e0e5e71b09ebfe5ad18d66ab072bd92b7270058db5cb990ee967bdb93f"
+        },
+        "corrective-360-forecasts.jpg": {
+          "bytes": 137253,
+          "sha256": "7e0fd16a091b108fc5c6ee90c0e3c23de64e91159c879e19d91932bf73dd4485"
+        },
+        "corrective-360-overview.jpg": {
+          "bytes": 244521,
+          "sha256": "67ac4c599b3bf85c41491643a146b5453d93a5580dc6baae23878fe74c97be7b"
+        },
+        "corrective-360-scenarios.jpg": {
+          "bytes": 241689,
+          "sha256": "2afcea081fbf6f18b82c6f6d534224a5ed94384b4facdd2ef21711ecebcf5c8e"
+        },
+        "corrective-360-stations.jpg": {
+          "bytes": 131199,
+          "sha256": "4d62fbd6106441dcf3a81673a79cc66a0781c01ffaf475584078a323c640244e"
+        },
+        "corrective-390-analytics.jpg": {
+          "bytes": 547700,
+          "sha256": "d598a3a4cb5c9c9b6fd8c0402bab782b98fe28b0bf089944c755c4659a184b5f"
+        },
+        "corrective-390-forecasts.jpg": {
+          "bytes": 138631,
+          "sha256": "18811827c525fb1f8cc34968facbbc7287707ac558cee3cd908f6a5579c4cccc"
+        },
+        "corrective-390-overview.jpg": {
+          "bytes": 247752,
+          "sha256": "2d46c09552aae3ed60681835e06981b439c3233bbdac90ab82c974ec74324441"
+        },
+        "corrective-390-scenarios.jpg": {
+          "bytes": 241724,
+          "sha256": "1f2aa095999fb72169f3a121b85595585f851d78a232a58d42c972ea9f93f365"
+        },
+        "corrective-390-stations.jpg": {
+          "bytes": 129901,
+          "sha256": "5a1a1ac59f89ebc9d2dae50e4d38319ea2c779239770eb09b3b9fb07f8e8d751"
+        },
+        "corrective-768-analytics.jpg": {
+          "bytes": 630479,
+          "sha256": "b602ab8dab96dcfac65b83990cdc2daab7874623b85e034d6a74be13a6fe6d3c"
+        },
+        "corrective-768-forecasts.jpg": {
+          "bytes": 151098,
+          "sha256": "28af6d69abfba2938106897c070d5ae932091d3922d7cc04661867c5f3d8cb03"
+        },
+        "corrective-768-overview.jpg": {
+          "bytes": 287984,
+          "sha256": "0d8d1001e19d3fb1022ec11130a37d530d8bc1e914bab95b1742cbd945b88bc2"
+        },
+        "corrective-768-scenarios.jpg": {
+          "bytes": 297485,
+          "sha256": "03db99ec15afa7778de71a673df2efeed76ddb6f57fce1776106031286450a71"
+        },
+        "corrective-768-stations.jpg": {
+          "bytes": 164065,
+          "sha256": "972deb1c9edb6eb0953724d9721dcb09376cc130e03e43c6861d55106bae1a0b"
+        },
+        "corrective-api-down-1440-analytics.jpg": {
+          "bytes": 281740,
+          "sha256": "acb9b046039d71d3a141551a82fd2ffc991f5085eb2a381be14b100e4a70cab1"
+        },
+        "corrective-api-down-1440-forecasts.jpg": {
+          "bytes": 68227,
+          "sha256": "03055dc3579a8dd994987da538367caa5d1029f4c78bb73b32fa163ddb324b97"
+        },
+        "corrective-api-down-1440-overview.jpg": {
+          "bytes": 113291,
+          "sha256": "5be445efad856de4d7d88c35849a7bca3533efaf8424b9d4acd92c84947bfd40"
+        },
+        "corrective-api-down-1440-scenarios.jpg": {
+          "bytes": 43925,
+          "sha256": "5387c5ca3a3dfe3389bf9b98bfbf9718f2703b29fe8007d2231a263ca734d407"
+        },
+        "corrective-api-down-1440-stations.jpg": {
+          "bytes": 73258,
+          "sha256": "1483c6878184dd7ef68a38884e866206b97d575bab13ecd18e2dbff3c74e182f"
+        },
+        "corrective-api-down-320-analytics.jpg": {
+          "bytes": 269243,
+          "sha256": "85e8c30fc23d77ea5e5b761ea780384d4b9b3928474bf37a3a60af0df9801b50"
+        },
+        "corrective-api-down-320-forecasts.jpg": {
+          "bytes": 43169,
+          "sha256": "f287705e19b889bc728f516006e2bcd4c88ed01cf2eb5cbb96c592662fa3afa2"
+        },
+        "corrective-api-down-320-overview.jpg": {
+          "bytes": 91968,
+          "sha256": "e3b88c3fb8b406c93b28c9784fba1435ea36f3408517b540a5c2b30a21b1dab3"
+        },
+        "corrective-api-down-320-scenarios.jpg": {
+          "bytes": 34678,
+          "sha256": "acf7c189f27da75b2a9f47cbfbe5bbc0cca46bdda0b490f27edf74598a8f53c8"
+        },
+        "corrective-api-down-320-stations.jpg": {
+          "bytes": 55834,
+          "sha256": "a3054d019f83d291d28ba44e7b1b91e54c93bc36355e98ba429e38ce1d67da61"
+        },
+        "corrective-before-nav-320.jpg": {
+          "bytes": 28143,
+          "sha256": "b2f5f4f62b5099c9c26b206e2d4dec7e22b55fa2bbda8634a219fa2a84f6e57b"
+        },
+        "corrective-delivery-overview.jpg": {
+          "bytes": 40852,
+          "sha256": "ea421ed679db5ae59a2140771c3ca6aceda604b3b38a8fb205ab2212c5897523"
+        },
+        "corrective-empty-1440-analytics.jpg": {
+          "bytes": 277664,
+          "sha256": "be26d4a2ec0bef76dfde0895d7d8a2216594f689a9e23ac2b089322899f62e0c"
+        },
+        "corrective-empty-1440-forecasts.jpg": {
+          "bytes": 85360,
+          "sha256": "5448498d43863ee04ad0f61a422a5946a0bf0bdf44e435c1f74956669da8a839"
+        },
+        "corrective-empty-1440-overview.jpg": {
+          "bytes": 110598,
+          "sha256": "6483d418e1d5b1aaf0d40c449f6836f5545a1c6bb2faae62722bed41f4312754"
+        },
+        "corrective-empty-1440-scenarios.jpg": {
+          "bytes": 60314,
+          "sha256": "912f6ad39104b0e0160a71bee0734deb34172ee82f70a5a4f36c1418e753eda7"
+        },
+        "corrective-empty-1440-stations.jpg": {
+          "bytes": 98660,
+          "sha256": "6ee523583a045d973d43d15bc5966dd93db402fbdd4f1c9df72c77e658d9d29e"
+        },
+        "corrective-empty-320-analytics.jpg": {
+          "bytes": 261695,
+          "sha256": "ae74770a841dcbcf836514295055d98c8da6e22a0d409002c09665eeffcff555"
+        },
+        "corrective-empty-320-forecasts.jpg": {
+          "bytes": 58053,
+          "sha256": "9189ef9ad6bed6f9fc70cc16161acca57459259e6c09f85e141ec2206eab4f40"
+        },
+        "corrective-empty-320-overview.jpg": {
+          "bytes": 91070,
+          "sha256": "54618b95e3642ce5677eec634c3c77244676519555dea52d3e2e46b3b0e12e19"
+        },
+        "corrective-empty-320-scenarios.jpg": {
+          "bytes": 33414,
+          "sha256": "c76835d22f24a3a45426ccfc7f2a94e49e633fcb781be63338aa8b90e98d478e"
+        },
+        "corrective-empty-320-stations.jpg": {
+          "bytes": 78075,
+          "sha256": "8b608605b11606597276850d8a146cf0b41c47f119ae73e7e2131f2cccd6cd01"
+        },
+        "corrective-f1-keyboard-320.jpg": {
+          "bytes": 29735,
+          "sha256": "70359d391f376dc5e17ff7977356940c739e8d778e5fa324328a8e2f7b58a027"
+        },
+        "corrective-findings-link-390.jpg": {
+          "bytes": 38907,
+          "sha256": "d6f1e22de2bf84c1ca10f2449b2c7439825e0492e14cf346cf1601d60528fea2"
+        },
+        "corrective-keyboard-drill-390.jpg": {
+          "bytes": 31095,
+          "sha256": "db531440a535550cd7ed511376d5dcaca091238b26a3ba86da8d7dc2d2744148"
+        },
+        "corrective-keyboard-station-390.jpg": {
+          "bytes": 219839,
+          "sha256": "658cc3ee59bf03bcba9e2dd2c6766f10ef255857b8bc6abaeffdcbec20c34c41"
+        },
+        "corrective-map-click-390.jpg": {
+          "bytes": 254831,
+          "sha256": "e31bef23d9a1dbda4ae71bbb09fdc11dc7804e6160efc76827acb334ca8adbb2"
+        },
+        "corrective-pointer-drill-390.jpg": {
+          "bytes": 32672,
+          "sha256": "53e773abe8b2a5652045a1ac34329fef474508ea709e5c6e854a89da7aca620d"
+        },
+        "corrective-scenario-controls-390.jpg": {
+          "bytes": 243686,
+          "sha256": "7ae6930b9f42ca13b5967dea5cfb2113f290fa4fda4eac5d45be7c803efb8f37"
+        },
+        "corrective-tooltip-focus-320.jpg": {
+          "bytes": 29257,
+          "sha256": "f26e3c76f90d27528fe9012851e8e44630e547211ea5fa00a0bef47d36895e3f"
+        },
+        "corrective-valid-1440-analytics.jpg": {
+          "bytes": 542416,
+          "sha256": "9079b064f4d63402421901043d1746fff33056f8da75636b239ba3e5a7a9c1d1"
+        },
+        "corrective-valid-1440-forecasts.jpg": {
+          "bytes": 220816,
+          "sha256": "291d89ec1b0633211060a649f96039908075e7004f72dc8542c0f855c25b27cb"
+        },
+        "corrective-valid-1440-overview.jpg": {
+          "bytes": 222617,
+          "sha256": "e81a888ca1df2edc3eaf8f8f3d82fc6c7af21467e9c64d4977eaa9c131ffbcd2"
+        },
+        "corrective-valid-1440-scenarios.jpg": {
+          "bytes": 284447,
+          "sha256": "90e5c4523eb7cd5937ccd5d18097297fea1c22e82b79fbc1df63bc58343e0e5e"
+        },
+        "corrective-valid-1440-stations.jpg": {
+          "bytes": 134384,
+          "sha256": "04dbe4b9b94bdbfe6fb8e7feb45220a8c21ccb52f10fac864ff8018267e11115"
+        },
+        "corrective-valid-390-analytics.jpg": {
+          "bytes": 470124,
+          "sha256": "5ec7578c532d5e1241ff595df8f78ae5c7ca13843e4837a36d7f39eeda44b2bc"
+        },
+        "corrective-valid-390-forecasts.jpg": {
+          "bytes": 158079,
+          "sha256": "7851d5c55cf4645b78d802e4d40947b8d96b5b163b695d7d3e4e50cfb2eef981"
+        },
+        "corrective-valid-390-overview.jpg": {
+          "bytes": 189977,
+          "sha256": "68a32213c48f561958abdcf49cef53dbbf1a473c7530e6c0f576e71b1e23946c"
+        },
+        "corrective-valid-390-scenarios.jpg": {
+          "bytes": 226486,
+          "sha256": "08c22d50c623cc76b3b80f091debfdac4c5cd23bf72cfafa0a0acd48d642558c"
+        },
+        "corrective-valid-390-stations.jpg": {
+          "bytes": 95467,
+          "sha256": "be84685b8d63a8a3a740c237ebe3400255d713dde13df2e6fd705832857c2235"
+        }
+      }
+    },
+    "performance": {
+      "status": "MEASURED; not a production SLA",
+      "method": "Full navigations in a visible browser, local shared Windows host, no CPU/network throttling, warm module/HTTP caches. Hidden RenderTiming DOM marker records performance.now after two rAF after page header hydration (conservative first-data-screen paint upper bound); Chart markers after synchronous ECharts setup plus two rAF. FCP may describe the loading shell and is not data readiness. DOM marks used because browser automation read-only scope does not expose performance. Five observations per route at five widths; not a load test or p95 estimate.",
+      "by_page": {
+        "/": {
+          "n": 5,
+          "first_screen_upper_bound_ms": [
+            333.9,
+            720.0
+          ],
+          "chart_ready_upper_bound_ms": [
+            335.7,
+            729.0
+          ]
+        },
+        "/analytics": {
+          "n": 5,
+          "first_screen_upper_bound_ms": [
+            1811.4,
+            1993.9
+          ],
+          "chart_ready_upper_bound_ms": [
+            1815.6,
+            2002.2
+          ]
+        },
+        "/stations": {
+          "n": 5,
+          "first_screen_upper_bound_ms": [
+            733.5,
+            806.8
+          ],
+          "chart_ready_upper_bound_ms": [
+            733.6,
+            806.9
+          ]
+        },
+        "/forecasts": {
+          "n": 5,
+          "first_screen_upper_bound_ms": [
+            143.6,
+            203.3
+          ],
+          "chart_ready_upper_bound_ms": null
+        },
+        "/scenarios": {
+          "n": 5,
+          "first_screen_upper_bound_ms": [
+            247.8,
+            317.2
+          ],
+          "chart_ready_upper_bound_ms": [
+            249.7,
+            321.0
+          ]
+        }
+      },
+      "payload_bytes": {
+        "prior_f6": 704286,
+        "dark_redesign": 855789,
+        "corrective_final": 855476
+      },
+      "payload_growth_vs_prior_pct": 21.4671,
+      "decision": "Retain richer UI payload: these browser observations show no measured UX latency problem. Size regression remains recorded; HTTP timing is reported separately and not substituted for rendering.",
+      "http_observations": {
+        "overview": {
+          "first_ms": 165.8,
+          "p50_ms": 183.5,
+          "p95_ms": 250.07,
+          "max_ms": 250.07,
+          "samples": 5,
+          "bytes": 135231
+        },
+        "analytics_default": {
+          "first_ms": 988.64,
+          "p50_ms": 929.25,
+          "p95_ms": 1069.18,
+          "max_ms": 1069.18,
+          "samples": 5,
+          "bytes": 855476
+        },
+        "analytics_28d_station": {
+          "first_ms": 916.53,
+          "p50_ms": 1675.07,
+          "p95_ms": 1848.28,
+          "max_ms": 1848.28,
+          "samples": 5,
+          "bytes": 225419
+        },
+        "stations": {
+          "first_ms": 521.8,
+          "p50_ms": 303.34,
+          "p95_ms": 430.8,
+          "max_ms": 430.8,
+          "samples": 5,
+          "bytes": 639718
+        },
+        "station_detail": {
+          "first_ms": 354.14,
+          "p50_ms": 354.06,
+          "p95_ms": 466.15,
+          "max_ms": 466.15,
+          "samples": 5,
+          "bytes": 637351
+        },
+        "forecasts": {
+          "first_ms": 35.15,
+          "p50_ms": 33.68,
+          "p95_ms": 34.44,
+          "max_ms": 34.44,
+          "samples": 5,
+          "bytes": 35904
+        },
+        "scenarios": {
+          "first_ms": 55.2,
+          "p50_ms": 60.07,
+          "p95_ms": 90.64,
+          "max_ms": 90.64,
+          "samples": 5,
+          "bytes": 136776
+        }
+      }
+    },
+    "checks": {
+      "npm --prefix apps/web ci": "PASS; 33 packages, 0 vulnerabilities; network-permitted retry",
+      "npm --prefix apps/web run lint": "PASS; 35 files; final code",
+      "npm --prefix apps/web run typecheck": "PASS; final code",
+      "npm --prefix apps/web test": "PASS; 14/14; final code",
+      "npm --prefix apps/web run build": "PASS; final production build",
+      "uv run --locked ruff check .": "PASS",
+      "uv run --locked ruff format --check .": "PASS; 151 files",
+      "uv run --locked mypy": "PASS; 151 source files",
+      "uv run --locked --group ml pytest -q tests/integration/test_product.py": "PASS; 2 passed, 1 existing StarletteDeprecationWarning; 55.56s; Python/backend unchanged thereafter",
+      "uv run --locked --group ml python -m tests.integration.product_smoke --mode real --web-url http://127.0.0.1:3005 --api-url http://127.0.0.1:8000 --output .cache/f6-corrective/acceptance-real-smoke.json": "PASS; final build",
+      "uv run --locked --group ml python .cache/f6-corrective/acceptance_fixture.py": "PASS; ignored disposable harness runs existing product_smoke --mode fixture, analytics_smoke and smoke.py --expect-data empty; final build",
+      "git diff --check": "PASS before implementation commit; repeated for delivery",
+      "git diff --cached --check": "PASS implementation staging"
+    },
+    "real_e2e": {
+      "mode": "real_official",
+      "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+      "overview": {
+        "silver": 4697240,
+        "api": 4697240,
+        "html": 4697240,
+        "baseline_silver": 4975250,
+        "baseline_api": 4975250,
+        "change_independent": -0.055878599065373596,
+        "change_api": -0.055878599065373596,
+        "change_html": -0.055878599065373596,
+        "publication_html": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+      },
+      "stations": {
+        "6611.07": {
+          "silver": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "api_v4": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "api_v2": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "html": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "coordinate_silver": [
+            40.75676475086503,
+            -73.99971440439913
+          ],
+          "coordinate_api": [
+            40.75676475086503,
+            -73.99971440439913
+          ],
+          "split_partner": null,
+          "split_html": null
+        },
+        "5980.1": {
+          "silver": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "api_v4": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "api_v2": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "html": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "coordinate_silver": [
+            40.737006,
+            -73.990134
+          ],
+          "coordinate_api": [
+            40.737006,
+            -73.990134
+          ],
+          "split_partner": "5980.10",
+          "split_html": "5980.10"
+        },
+        "5980.10": {
+          "silver": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "api_v4": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "api_v2": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "html": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "coordinate_silver": [
+            40.737006,
+            -73.990134
+          ],
+          "coordinate_api": [
+            40.737006,
+            -73.990134
+          ],
+          "split_partner": "5980.1",
+          "split_html": "5980.1"
+        },
+        "3138.03": {
+          "silver": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "api_v4": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "api_v2": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "html": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "coordinate_silver": [
+            40.645705,
+            -74.020292
+          ],
+          "coordinate_api": [
+            40.645705,
+            -74.020292
+          ],
+          "split_partner": null,
+          "split_html": null
+        }
+      },
+      "dst_hours": {
+        "2025-11-02": 25,
+        "2026-03-08": 23
+      },
+      "forecast": {
+        "api_status": "stale",
+        "valid_until": "2026-10-30T12:00:00+00:00",
+        "expired_now": true,
+        "html_state": "expired",
+        "html_values_shown": false
+      },
+      "scenario": {
+        "artifact_cells": 27,
+        "served_cells": 27,
+        "objective_mismatches": 0,
+        "status": "archival_replay",
+        "html_state": "archival_replay",
+        "html_coverage": "3/64",
+        "artifact_coverage": "3/64",
+        "no_action_best_cells": 9,
+        "as_of": "2026-10-30T06:36:54.163891+00:00",
+        "action_verdict": "no_action",
+        "rendered_cells": 9
+      },
+      "filter_states": {
+        "reversed": "error",
+        "half": "error",
+        "unknown_station": "empty",
+        "invalid_vehicle": "error"
+      },
+      "api_latency": {
+        "v2_kpi_28d": {
+          "first_ms": 51.53,
+          "p50_ms": 33.92,
+          "p95_ms": 68.29,
+          "max_ms": 68.29,
+          "samples": 20
+        },
+        "v2_timeseries_28d": {
+          "first_ms": 33.5,
+          "p50_ms": 37.37,
+          "p95_ms": 80.1,
+          "max_ms": 80.1,
+          "samples": 20
+        },
+        "v2_compare_28d": {
+          "first_ms": 85.07,
+          "p50_ms": 93.46,
+          "p95_ms": 114.79,
+          "max_ms": 114.79,
+          "samples": 20
+        },
+        "v4_stations_28d_map": {
+          "first_ms": 193.0,
+          "p50_ms": 231.33,
+          "p95_ms": 369.19,
+          "max_ms": 369.19,
+          "samples": 20
+        },
+        "v4_stations_full_window": {
+          "first_ms": 656.7,
+          "p50_ms": 588.03,
+          "p95_ms": 1029.58,
+          "max_ms": 1029.58,
+          "samples": 20
+        },
+        "v4_station_detail": {
+          "first_ms": 34.81,
+          "p50_ms": 30.42,
+          "p95_ms": 33.44,
+          "max_ms": 33.44,
+          "samples": 20
+        },
+        "v4_risk": {
+          "first_ms": 28.16,
+          "p50_ms": 23.95,
+          "p95_ms": 28.32,
+          "max_ms": 28.32,
+          "samples": 20
+        },
+        "v3_forecasts": {
+          "first_ms": 20.88,
+          "p50_ms": 20.36,
+          "p95_ms": 21.13,
+          "max_ms": 21.13,
+          "samples": 20
+        }
+      },
+      "html_render": {
+        "overview": {
+          "first_ms": 165.8,
+          "p50_ms": 183.5,
+          "p95_ms": 250.07,
+          "max_ms": 250.07,
+          "samples": 5,
+          "bytes": 135231
+        },
+        "analytics_default": {
+          "first_ms": 988.64,
+          "p50_ms": 929.25,
+          "p95_ms": 1069.18,
+          "max_ms": 1069.18,
+          "samples": 5,
+          "bytes": 855476
+        },
+        "analytics_28d_station": {
+          "first_ms": 916.53,
+          "p50_ms": 1675.07,
+          "p95_ms": 1848.28,
+          "max_ms": 1848.28,
+          "samples": 5,
+          "bytes": 225419
+        },
+        "stations": {
+          "first_ms": 521.8,
+          "p50_ms": 303.34,
+          "p95_ms": 430.8,
+          "max_ms": 430.8,
+          "samples": 5,
+          "bytes": 639718
+        },
+        "station_detail": {
+          "first_ms": 354.14,
+          "p50_ms": 354.06,
+          "p95_ms": 466.15,
+          "max_ms": 466.15,
+          "samples": 5,
+          "bytes": 637351
+        },
+        "forecasts": {
+          "first_ms": 35.15,
+          "p50_ms": 33.68,
+          "p95_ms": 34.44,
+          "max_ms": 34.44,
+          "samples": 5,
+          "bytes": 35904
+        },
+        "scenarios": {
+          "first_ms": 55.2,
+          "p50_ms": 60.07,
+          "p95_ms": 90.64,
+          "max_ms": 90.64,
+          "samples": 5,
+          "bytes": 136776
+        }
+      },
+      "checked_at": "2026-11-06T05:48:01.723554+00:00"
+    },
+    "controlled_e2e": {
+      "mode": "controlled_fixture",
+      "database": "bikeflow_test_cf581b62ed474ed3ba1813d113542a47",
+      "api": "http://127.0.0.1:8016",
+      "web": "http://127.0.0.1:3016",
+      "started_at": "2026-11-06T05:41:54.511213+00:00",
+      "states": {
+        "empty": {
+          "/": "empty",
+          "/analytics": "empty",
+          "/stations": "empty",
+          "/forecasts": "empty",
+          "/scenarios": "empty"
+        },
+        "valid": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "current_scenario"
+        },
+        "api_down": {
+          "/": "unavailable",
+          "/analytics": "error",
+          "/stations": "unavailable",
+          "/forecasts": "unavailable",
+          "/scenarios": "unavailable"
+        },
+        "recovered": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "archival_replay"
+        }
+      },
+      "f1_smoke_empty": "PASS",
+      "command": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m tests.integration.product_smoke --mode fixture --api-url http://127.0.0.1:8016 --web-url http://127.0.0.1:3016 --data-dir C:\\Users\\nurs\\citibike\\.cache\\f6-corrective\\fixture-data --output C:\\Users\\nurs\\citibike\\.cache\\f6-corrective\\fixture-smoke.json",
+      "analytics_smoke": "PASS",
+      "grid_count": {
+        "api_cells": 2,
+        "html_cells": 2
+      },
+      "status": "PASS",
+      "real_publications_unchanged": true,
+      "finished_at": "2026-11-06T05:49:26.544160+00:00",
+      "disposable_database_removed": true
+    },
+    "failed_or_intermediate_attempts": [
+      "Restricted shell initially failed Git DNS/gh auth probe and uv cache persistence; permitted retries succeeded. npm ci first restricted attempt interrupted and permitted exact ci passed.",
+      "First build EBUSY because own standalone process was running; stopped own process and rebuilt successfully.",
+      "First findings content test read controls container instead of controls.cases:12/13; corrected assertion, final14/14 PASS.",
+      "Trend ResizeObserver ref narrowing TS2345 exposed after useMemo extraction; observer uses narrowed element; final typecheck/build PASS.",
+      "Selector/probe waits occasionally observed old Next navigation or missed canvas points; repeated with destination state checks. No success inferred from initiating navigation."
+    ],
+    "preservation": {
+      "historical_evidence_keys_unchanged": true,
+      "finding_statuses_unchanged": true,
+      "normative_docs_only_roadmap6_append": true,
+      "api_backend_contracts_models_publications_unchanged": true,
+      "research_branch_merged": false
+    },
+    "dod": {
+      "ten_clickable_substantively_checked_findings": "PASS",
+      "clear_mobile_navigation_all_five_sections_keyboard": "PASS",
+      "drill_map_scenario_filters_reset_keyboard_alternatives": "PASS",
+      "targeted_contrast_semantics_touch_reduced_motion": "PASS",
+      "visible_browser_timing_and_payload_accounting": "PASS",
+      "five_pages_real_empty_error_stale_responsive_visuals": "PASS",
+      "required_local_regression_gates": "PASS"
+    },
+    "independent_owner_acceptance": "NOT VERIFIED - owner review required; Codex checks are not independent owner acceptance",
+    "delivery": "Implementation commit recorded above. Exact documentation delivery SHA, final-SHA CI, ordinary push, annotated checkpoint and verified Git-only bundle are checked after commit and reported in final response/external bundle manifest, avoiding self-reference.",
+    "next_step": "Independent owner acceptance of F6 corrective remainder; no new phase, promotion or research merge"
   }
 }
