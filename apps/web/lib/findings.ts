@@ -34,6 +34,11 @@ export function evidenceHref(source: string) {
   return `https://github.com/Nusultan11/citibike/blob/${EVIDENCE_REVISION}/${source}`;
 }
 
+export const RESEARCH_POPULATIONS = {
+  features: ["cohort64", "cohort128"],
+  decision: ["cohort64", "cohort128", "cohort256", "cohort256x4"],
+} as const;
+
 export const FINDINGS: readonly Finding[] = [
   {
     id: "f2-reconciliation",
@@ -102,7 +107,7 @@ export const FINDINGS: readonly Finding[] = [
     value: "105 / 105",
     title: "Топ net flow искажали двойные ID",
     takeaway:
-      "Все 40 станций топа |net flow| оказались парами dddd.d / dddd.d0: одно название, < 1 м между точками, причина — формат raw-архива. Пары помечаются и исключаются из рейтингов, Silver не объединяется.",
+      "Все 40 станций исходного топа |net flow| оказались парами dddd.d / dddd.d0: одно название, < 1 м между точками, причина — формат raw-архива. В историческом decision research пары исключены из рейтингов. Текущий интерфейс показывает исходные ID раздельно с пометками; Silver не объединяется.",
     limitation: "Тождество подтверждено lineage, оператором — нет; маппинг ждёт решения владельца.",
     source: "docs/evidence/f4-decision-research.json",
     recorded: "2026-11-02",
@@ -172,6 +177,8 @@ export function findingPage(
 }
 
 export function findingPopulation(finding: Finding) {
+  if (finding.id === "f4-research")
+    return `A/B: ${RESEARCH_POPULATIONS.features.join(" / ")}; decision research: ${RESEARCH_POPULATIONS.decision.join(" / ")}; exploratory validation-only`;
   if (finding.area === "forecast")
     return "Когорта 64 source station ID; ретроспективные station-hour, горизонты 1–24 ч";
   if (finding.area === "scenario")

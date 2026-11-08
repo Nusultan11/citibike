@@ -9,6 +9,7 @@ import {
   FORECAST_STUDY,
   findingPage,
   findingPopulation,
+  RESEARCH_POPULATIONS,
 } from "./findings.ts";
 
 const repo = new URL("../../../", import.meta.url);
@@ -124,6 +125,11 @@ test("forecast research retains frozen scores, inconclusive results and unverifi
     assert.ok(text.includes(`| ${target} | ${model} | 44773 | ${mae} |`));
   assert.match(finding("f4-final").limitation, /promotion NOT VERIFIED/);
   const feature = JSON.parse(read("f4-feature-research.json"));
+  assert.deepEqual([...RESEARCH_POPULATIONS.features], Object.keys(feature.populations));
+  assert.deepEqual(
+    RESEARCH_POPULATIONS.features.map((p) => feature.populations[p].stations.length),
+    [64, 128],
+  );
   assert.equal(feature.outcome_counts.success, 176);
   assert.equal(feature.group_effects.length, 44);
   for (const [verdict, count] of [
@@ -136,6 +142,11 @@ test("forecast research retains frozen scores, inconclusive results and unverifi
       count,
     );
   const decision = JSON.parse(read("f4-decision-research.json"));
+  assert.deepEqual([...RESEARCH_POPULATIONS.decision], Object.keys(decision.plan.populations));
+  assert.equal(
+    decision.plan.populations.cohort256.dataset_id,
+    decision.plan.populations.cohort256x4.dataset_id,
+  );
   assert.equal(decision.outcome_counts.success, 872);
   assert.ok(
     decision.gates.every(

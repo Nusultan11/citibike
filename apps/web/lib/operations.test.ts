@@ -6,11 +6,41 @@ import {
   defaultWindow,
   forecastState,
   localHourProfile,
+  observedMaximum,
   type RiskData,
   readFilters,
+  sameTripSeries,
   splitPartner,
   stationPeriod,
 } from "./operations.ts";
+
+test("duplicate trip charts require the same observed buckets and values", () => {
+  const months = [
+    { key: "2026-02-01", value: null },
+    { key: "2026-03-01", value: 2945320 },
+  ];
+  assert.equal(
+    sameTripSeries(
+      months,
+      months.map((p) => ({ ...p })),
+    ),
+    true,
+  );
+  assert.equal(sameTripSeries(months, [{ key: "2026-03-01", value: 2945320 }]), false);
+  assert.equal(sameTripSeries(months, [{ key: "2026-02-01", value: 0 }, months[1]]), false);
+  assert.equal(sameTripSeries(months, [months[0], { key: "2026-03-02", value: 2945320 }]), false);
+  assert.equal(sameTripSeries(months, [months[0], { key: "2026-03-01", value: 2945321 }]), false);
+  assert.equal(sameTripSeries([], []), false);
+});
+
+test("chart descriptions use observed maxima without inventing zero or breaking ties", () => {
+  assert.equal(observedMaximum([]), null);
+  assert.equal(observedMaximum([{ key: "absent", value: null }]), null);
+  const zero = { key: "observed-zero", value: 0 };
+  assert.equal(observedMaximum([{ key: "absent", value: null }, zero]), zero);
+  const peak = { key: "2026-03-10", value: 152807 };
+  assert.equal(observedMaximum([zero, peak, { key: "2026-03-11", value: 152807 }]), peak);
+});
 
 test("absent F3 period stays unavailable without fictional dates or null arrows", () => {
   assert.equal(stationPeriod(null, null), " · период не опубликован");

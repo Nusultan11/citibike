@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { evidenceHref, FORECAST_STUDY } from "../../lib/findings";
+import { FORECAST_STUDY, RESEARCH_POPULATIONS } from "../../lib/findings";
 import {
   type ForecastData,
   forecastState,
@@ -314,14 +314,19 @@ export default async function ForecastsPage({
           </EvidenceNote>
           <p className="body-text">
             Последующий exploratory A/B: 176 trials, 44 сравнения групп — 40 inconclusive, 3
-            ухудшения, 1 улучшение. В decision research (872 trials) ни один вариант не прошёл
-            критические сегменты. Эти результаты не меняют frozen selection.
+            ухудшения, 1 улучшение.
           </p>
           <EvidenceNote source="docs/evidence/f4-feature-research.json">
-            02.11.2026 · validation-only, 64 ID · эффект групп не установлен.{" "}
-            <a href={evidenceHref("docs/evidence/f4-decision-research.json")}>
-              Decision research ↗
-            </a>
+            02.11.2026 · validation-only · {RESEARCH_POPULATIONS.features.join(" / ")} (64 и 128
+            исходных ID) · эффект групп не установлен.
+          </EvidenceNote>
+          <p className="body-text">
+            В decision research (872 trials) ни один вариант не прошёл критические сегменты. Эти
+            результаты не меняют frozen selection.
+          </p>
+          <EvidenceNote source="docs/evidence/f4-decision-research.json">
+            02.11.2026 · validation-only · {RESEARCH_POPULATIONS.decision.join(" / ")}. cohort256x4
+            использует те же 256 ID с расширенной обучающей выборкой. Нового независимого теста нет.
           </EvidenceNote>
           <p className="body-text">
             Poisson и hurdle проверялись как разные модели счётчиков. Сравнение семейств

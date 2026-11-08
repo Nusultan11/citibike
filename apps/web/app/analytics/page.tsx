@@ -15,6 +15,8 @@ import {
   getStations,
   localHourProfile,
   nyDate,
+  observedMaximum,
+  sameTripSeries,
   splitPartner,
   withParams,
 } from "../../lib/operations";
@@ -287,6 +289,21 @@ export default async function AnalyticsPage({
   );
   const comparison = compare?.comparison;
   const seriesRows = series?.rows ?? [];
+  const seriesPoints = seriesRows.map((r) => ({
+    key: r.key,
+    value: r.metrics?.completed_published_rides ?? null,
+  }));
+  const monthlyPoints = (monthly?.rows ?? []).map((r) => ({
+    key: r.key,
+    value: r.metrics?.completed_published_rides ?? null,
+  }));
+  const showSeasonality =
+    params.get("grain") !== "month" || !sameTripSeries(seriesPoints, monthlyPoints);
+  const seriesMaximum = observedMaximum(seriesPoints);
+  const monthlyMaximum = observedMaximum(monthlyPoints);
+  const profileMaximum = observedMaximum(
+    profile.map((p) => ({ ...p, key: `${WEEKDAYS[p.weekday]} ${p.hour}:00 NY` })),
+  );
   const lastDay = pub ? nyDate(pub.period_end) : null;
   const advancedOpen = Boolean(
     chipParams.get("station_id") ||
@@ -554,6 +571,13 @@ export default async function AnalyticsPage({
                       </b>{" "}
                       поездок. Часы — UTC, дни и месяцы — America/New_York. Пропуски не заполнены
                       нулями. Клик по дню открывает почасовой разрез, по месяцу — дни месяца.
+                      {seriesMaximum && (
+                        <>
+                          {" "}
+                          Наибольший наблюдаемый объём: {show(seriesMaximum.value)} начал за
+                          интервал {axisLabel(seriesMaximum.key)}; среди равных — первый.
+                        </>
+                      )}
                     </p>
                   </div>
                   <Kind kind="fact" />
@@ -684,7 +708,7 @@ export default async function AnalyticsPage({
                 </section>
               </div>
 
-              <section className="card span-7">
+              <section className={`card ${showSeasonality ? "span-7" : "span-12"}`}>
                 <div className="card-head">
                   <div>
                     <h2>Профиль недели: день × час NY</h2>
@@ -692,6 +716,14 @@ export default async function AnalyticsPage({
                       Сумма начал за {range(hourWindow?.start, hourWindow?.end)} (≤ 28 дней, конец
                       периода). Только наблюдённые часы; в ночь смены времени 01:00 учитывает два
                       UTC-часа, пропущенный 02:00 отсутствует.
+                      {profileMaximum && (
+                        <>
+                          {" "}
+                          Наибольшая сумма начал в этом окне — {profileMaximum.key}:{" "}
+                          {show(profileMaximum.value)}. Это сумма наблюдений, не средняя
+                          интенсивность.
+                        </>
+                      )}
                     </p>
                   </div>
                   <Kind kind="fact" />
@@ -733,36 +765,46 @@ export default async function AnalyticsPage({
                   </TableScroll>
                 </details>
               </section>
-              <section className="card span-5">
-                <div className="card-head">
-                  <div>
-                    <h2>Сезонность по месяцам</h2>
-                    <p className="card-sub">
-                      Весь опубликованный период, NY-месяцы, те же фильтры. Клик по месяцу — открыть
-                      его по дням.
-                    </p>
+              {showSeasonality && (
+                <section className="card span-5">
+                  <div className="card-head">
+                    <div>
+                      <h2>Сезонность по месяцам</h2>
+                      <p className="card-sub">
+                        Весь опубликованный период, NY-месяцы, те же фильтры. Клик по месяцу —
+                        открыть его по дням.
+                        {monthlyMaximum && (
+                          <>
+                            {" "}
+                            Наибольший месячный объём: {show(monthlyMaximum.value)} начал в{" "}
+                            {monthlyMaximum.key.slice(0, 7)}. Два годовых цикла не отделяют сезон от
+                            тренда.
+                          </>
+                        )}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <Chart
-                  size="heat"
-                  label="Поездки по NY-месяцам за весь опубликованный период"
-                  spec={{
-                    kind: "bar",
-                    unit: "поездок",
-                    peak: true,
-                    categories: (monthly?.rows ?? []).map((r) => r.key.slice(0, 7)),
-                    drill: { base: withParams("/analytics", params), to: "day" },
-                    series: [
-                      {
-                        name: "Поездки",
-                        values: (monthly?.rows ?? []).map(
-                          (r) => r.metrics?.completed_published_rides ?? null,
-                        ),
-                      },
-                    ],
-                  }}
-                />
-              </section>
+                  <Chart
+                    size="heat"
+                    label="Поездки по NY-месяцам за весь опубликованный период"
+                    spec={{
+                      kind: "bar",
+                      unit: "поездок",
+                      peak: true,
+                      categories: (monthly?.rows ?? []).map((r) => r.key.slice(0, 7)),
+                      drill: { base: withParams("/analytics", params), to: "day" },
+                      series: [
+                        {
+                          name: "Поездки",
+                          values: (monthly?.rows ?? []).map(
+                            (r) => r.metrics?.completed_published_rides ?? null,
+                          ),
+                        },
+                      ],
+                    }}
+                  />
+                </section>
+              )}
 
               <section className="card span-6">
                 <div className="card-head">

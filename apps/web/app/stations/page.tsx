@@ -738,9 +738,14 @@ function StationSections({
                     <Term name="route_volume">{title}</Term>
                   </h2>
                   <p className="card-sub">
-                    {value
-                      ? `Покрытие ${percent(value.coverage.eligible_coverage as number | null)} · показано ${value.rows.length} из ${show(value.total_groups)} пар`
-                      : "Маршруты недоступны для этого периода."}
+                    {other === "to_station"
+                      ? "Доля начал этой станции с известным ID назначения"
+                      : "Доля всех начал городского среза с обоими известными ID и назначением здесь"}
+                    : {percent(value.coverage.eligible_coverage as number | null)} (
+                    {show(value.coverage.eligible_count_before_pagination as number | null)} /{" "}
+                    {show(value.coverage.population_denominator as number | null)}). Показано{" "}
+                    {value.rows.length} из {show(value.total_groups)} пар. Окно — по NY-дате начала
+                    поездки; доля рассчитана до ограничения списка.
                   </p>
                 </div>
                 <Kind kind="fact" />

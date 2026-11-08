@@ -120,6 +120,29 @@ export function localHourProfile(rows: { key: string; value: number | null }[]):
   return [...cells.values()].sort((a, b) => a.weekday - b.weekday || a.hour - b.hour);
 }
 
+export type TripPoint = { key: string; value: number | null };
+
+/** Compare observed values and buckets; missing observations never equal zero. */
+export function sameTripSeries(a: readonly TripPoint[], b: readonly TripPoint[]): boolean {
+  return (
+    a.length > 0 &&
+    a.length === b.length &&
+    a.every((point, i) => point.key === b[i].key && point.value === b[i].value)
+  );
+}
+
+/** Describe an existing chart maximum, retaining observed zeros and the first tie. */
+export function observedMaximum<T extends TripPoint>(points: readonly T[]): T | null {
+  let maximum: T | null = null;
+  for (const point of points)
+    if (
+      point.value !== null &&
+      (maximum === null || maximum.value === null || point.value > maximum.value)
+    )
+      maximum = point;
+  return maximum;
+}
+
 const SHORT = /^\d+\.\d$/;
 /** dddd.d ↔ dddd.d0 raw-source lineage pairs are flagged, never merged. */
 export function splitPartner(id: string, universe: Set<string>): string | null {
