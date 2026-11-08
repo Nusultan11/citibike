@@ -6937,5 +6937,3792 @@
     "independent_owner_acceptance": "NOT VERIFIED - owner review required; Codex checks are not independent owner acceptance",
     "delivery": "Implementation commit recorded above. Exact documentation delivery SHA, final-SHA CI, ordinary push, annotated checkpoint and verified Git-only bundle are checked after commit and reported in final response/external bundle manifest, avoiding self-reference.",
     "next_step": "Independent owner acceptance of F6 corrective remainder; no new phase, promotion or research merge"
+  },
+  "content_correction_20261108": {
+    "status": "COMPLETED in requested F6 product correction scope; independent owner acceptance separate",
+    "started_at": "2026-11-06",
+    "verified_at": "2026-11-08T14:03:35.083564+00:00",
+    "base_head": "1ba22328c6fac05834fbc999f317f82210c7131b",
+    "implementation_shas": [
+      "ea0efc06a0a6949711d1fa8bbfae97b9284ef00d",
+      "201dfb945ce413ffb9a38e3377db5f8ed3e5cbb5"
+    ],
+    "scope": "Existing app/lib/profile tests/README; existing evidence and append-only ROADMAP §6. No backend/API/schema/data/model/champion/formula change, research merge, new real training/experiment/promotion or production deploy. Existing synthetic test fixtures are tests, not new research.",
+    "inventory": [
+      {
+        "primary_page": "/",
+        "user_question": "В чём смысл проекта и куда перейти?",
+        "source": "PROJECT_SPEC §§1–4,6",
+        "useful_result": "Независимый NYC проект; data → analytics → ML → scenario; четыре ссылки"
+      },
+      {
+        "primary_page": "/",
+        "user_question": "Каков масштаб, длительность и состав поездок выбранного периода?",
+        "source": "F3 publication/kpi/categories/compare",
+        "useful_result": "3 KPI; определения и знаменатели; equal-period change"
+      },
+      {
+        "primary_page": "/",
+        "user_question": "Как менялось число поездок по дням?",
+        "source": "F3 current/baseline timeseries",
+        "useful_result": "Один сравнительный тренд с переходом в Analytics; F1 скрыт в техническом disclosure"
+      },
+      {
+        "primary_page": "/analytics",
+        "user_question": "Можно ли доверять исходной истории?",
+        "source": "f2-analysis.md; f3-analytics.json",
+        "useful_result": "Row accounting, gaps, sparsity; 0 reconciliation mismatches; 513 строк вне F3 start-window"
+      },
+      {
+        "primary_page": "/analytics",
+        "user_question": "Что изменилось за два годовых окна?",
+        "source": "f4-decision-research.json analytics only",
+        "useful_result": "Annual rides/category/Gini; без причинного вывода"
+      },
+      {
+        "primary_page": "/analytics",
+        "user_question": "Когда и где концентрируются поездки?",
+        "source": "F3 timeseries/peaks/stations/routes/categories/geography",
+        "useful_result": "Период/weekday-hour/month/station/route/category/grid; явные оси и coverage"
+      },
+      {
+        "primary_page": "/analytics",
+        "user_question": "Сопоставимы ли периоды и какие потоки выбраны?",
+        "source": "F3 compare/kpi/coverage",
+        "useful_result": "Только departures/arrivals/net flow/route coverage как KPI; контрольная сумма у графика"
+      },
+      {
+        "primary_page": "/stations",
+        "user_question": "Как найти и выбрать station ID?",
+        "source": "v4 stations + F6 geo publication",
+        "useful_result": "Карта, поиск, keyboard selector; без пустого sidebar до выбора"
+      },
+      {
+        "primary_page": "/stations",
+        "user_question": "Каковы потоки и история выбранного ID?",
+        "source": "v4 station detail; F3 timeseries/routes",
+        "useful_result": "Реальные departures/arrivals, маршруты обеих сторон, координатная история"
+      },
+      {
+        "primary_page": "/stations",
+        "user_question": "Почему похожие ID не объединены?",
+        "source": "f4-decision-research.json lineage",
+        "useful_result": "ID-split evidence и сравнение рядом; никакого Silver merge"
+      },
+      {
+        "primary_page": "/stations",
+        "user_question": "Можно ли сейчас взять или вернуть велосипед?",
+        "source": "station GBFS status + TTL",
+        "useful_result": "Только fresh/ok допускает counts; stale/unknown — одна причина без остатков"
+      },
+      {
+        "primary_page": "/forecasts",
+        "user_question": "Что и на какой популяции прогнозировали?",
+        "source": "f4-forecasting.md/json",
+        "useful_result": "Две цели, 64 source ID, 1–24h; observed published rides, approximate retrospective"
+      },
+      {
+        "primary_page": "/forecasts",
+        "user_question": "Какая модель точнее и почему не promotion?",
+        "source": "f4-forecasting.json selection/final_results",
+        "useful_result": "SN/Poisson/LGB/Cat отдельно для dep/arr, horizon MAE, gate и SN champion"
+      },
+      {
+        "primary_page": "/forecasts",
+        "user_question": "Устойчивы ли ошибки во времени и сегментах?",
+        "source": "f4-forecasting.json validation_splits/corrective_validation",
+        "useful_result": "4 rolling windows, zero/nonzero/peak N/MAE/bias; без смешения final и validation"
+      },
+      {
+        "primary_page": "/forecasts",
+        "user_question": "Что доказали признаки и loss-варианты?",
+        "source": "f4-forecasting.json ablation; feature/decision research",
+        "useful_result": "Feature ablation и inconclusive A/B; isolated loss-ablation NOT VERIFIED, сравнение семейств не изолирует loss"
+      },
+      {
+        "primary_page": "/forecasts",
+        "user_question": "Что означает диагностический сигнал?",
+        "source": "f4-ml-diagnostics.json",
+        "useful_result": "593 deduplicated events из1126 signals, не physical incidents; labels/Precision@K unknown"
+      },
+      {
+        "primary_page": "/forecasts",
+        "user_question": "Доступна ли текущая публикация?",
+        "source": "v3 forecasts + valid_until",
+        "useful_result": "Отдельный статус/lineage; значения только valid, исследование остаётся при expired/API-down"
+      },
+      {
+        "primary_page": "/scenarios",
+        "user_question": "Нужны ли перевозки с учётом стоимости?",
+        "source": "F5 immutable artifact → v4 risk; f5-risk.md",
+        "useful_result": "No-action/heuristic/MILP, objective и вердикт9/9 для real recorded as-of"
+      },
+      {
+        "primary_page": "/scenarios",
+        "user_question": "Как меняется сравнение от допущений?",
+        "source": "v4 risk outcomes/config",
+        "useful_result": "Scale/order switches, objective all cells, distribution table, transfer/risk details"
+      },
+      {
+        "primary_page": "/scenarios",
+        "user_question": "Что ограничивает применимость результата?",
+        "source": "f5-risk.md; F5 provenance/coverage",
+        "useful_result": "3/64, archive vs TTL; controlled4-station fixture отдельно; no actual economy"
+      },
+      {
+        "primary_page": "README",
+        "user_question": "Что представляет собой репозиторий и что смотреть?",
+        "source": "Те же committed product/data/ML sources",
+        "useful_result": "Короткий вход, пять маршрутов и ограничения; технические разделы сохранены"
+      }
+    ],
+    "source_audit": [
+      {
+        "source": "docs/evidence/f2-analysis.md",
+        "pinned_git_blob": "ab15c99da0fc522a43dea64d23ca6cf6ea86272e",
+        "local_git_blob": "ab15c99da0fc522a43dea64d23ca6cf6ea86272e",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f2-analysis.md"
+      },
+      {
+        "source": "docs/evidence/f3-analytics.json",
+        "pinned_git_blob": "e60b30c83ba9351129d3a7e1e7fc116be4f7dfef",
+        "local_git_blob": "e60b30c83ba9351129d3a7e1e7fc116be4f7dfef",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f3-analytics.json"
+      },
+      {
+        "source": "docs/evidence/f4-decision-research.json",
+        "pinned_git_blob": "5ecb1478950f103f2113d8c4dd0a353b07c4023d",
+        "local_git_blob": "5ecb1478950f103f2113d8c4dd0a353b07c4023d",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-decision-research.json"
+      },
+      {
+        "source": "docs/evidence/f4-feature-research.json",
+        "pinned_git_blob": "0b7d5e108dc6a423904eecb5fa707504efcc0504",
+        "local_git_blob": "0b7d5e108dc6a423904eecb5fa707504efcc0504",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-feature-research.json"
+      },
+      {
+        "source": "docs/evidence/f4-forecasting.json",
+        "pinned_git_blob": "01b1794c826654f8ac1da145cb8b6d28ca94ee76",
+        "local_git_blob": "01b1794c826654f8ac1da145cb8b6d28ca94ee76",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-forecasting.json"
+      },
+      {
+        "source": "docs/evidence/f4-forecasting.md",
+        "pinned_git_blob": "7e7c1697328022279b6909d3e9a99096f2898a51",
+        "local_git_blob": "7e7c1697328022279b6909d3e9a99096f2898a51",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-forecasting.md"
+      },
+      {
+        "source": "docs/evidence/f4-ml-diagnostics.json",
+        "pinned_git_blob": "7f6efe28e29b690abfb78693010c1ef3c99c023f",
+        "local_git_blob": "7f6efe28e29b690abfb78693010c1ef3c99c023f",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f4-ml-diagnostics.json"
+      },
+      {
+        "source": "docs/evidence/f5-risk.md",
+        "pinned_git_blob": "791bb6cfda725e127ba4e71d0525b8549abbe0c5",
+        "local_git_blob": "791bb6cfda725e127ba4e71d0525b8549abbe0c5",
+        "pinned_root_values_preserved": null,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f5-risk.md"
+      },
+      {
+        "source": "docs/evidence/f6-product.json",
+        "pinned_git_blob": "eb3fa1feed8b62a3710fa4e456aaa812d4af6971",
+        "local_git_blob": "64981031740f27ecbcfa782d639fba60c9c64903",
+        "pinned_root_values_preserved": 16,
+        "status": "PASS",
+        "url": "https://github.com/Nusultan11/citibike/blob/107be3ca7221801f8f14bdf2dc1e56465a94b013/docs/evidence/f6-product.json"
+      }
+    ],
+    "historical_source_notes": [
+      "The F4 Poisson degraded-segment counts in selection JSON are40/47; the historical Markdown summary says41/48. The UI cites and tests the exact JSON gate arrays; no historical file or selection was rewritten, both sources reject promotion.",
+      "Loss-ablation is not isolated by comparing model families. Its absence is explicitly NOT VERIFIED; no new experiment was run to fill it."
+    ],
+    "zip_comparison": {
+      "zip": "C:\\Users\\nurs\\Downloads\\CitiBike_Project_Architecture_Knowledge_Base_UPDATED.zip",
+      "sha256": "2521241764b5c24b8760fc246c2130959126a7153b99c308fa5343b481b01378",
+      "files": [
+        {
+          "file": "ARCHITECTURE.md",
+          "equal": true
+        },
+        {
+          "file": "DATA_CONTRACTS.md",
+          "equal": true
+        },
+        {
+          "file": "METRICS.md",
+          "equal": true
+        },
+        {
+          "file": "ML_SPEC.md",
+          "equal": true
+        },
+        {
+          "file": "OPERATIONS.md",
+          "equal": true
+        },
+        {
+          "file": "PROJECT_SPEC.md",
+          "equal": true
+        },
+        {
+          "file": "ROADMAP.md",
+          "equal": false
+        },
+        {
+          "file": "knowledge_base/01_SOURCES_RESEARCH.md",
+          "equal": true
+        },
+        {
+          "file": "knowledge_base/02_DATA_ENGINEERING.md",
+          "equal": true
+        },
+        {
+          "file": "knowledge_base/03_ANALYTICS_SQL.md",
+          "equal": true
+        },
+        {
+          "file": "knowledge_base/04_ML_RESEARCH.md",
+          "equal": false
+        },
+        {
+          "file": "knowledge_base/05_BACKEND_DASHBOARD.md",
+          "equal": true
+        },
+        {
+          "file": "knowledge_base/06_TESTING_OPERATIONS.md",
+          "equal": true
+        },
+        {
+          "file": "knowledge_base/07_SIMULATION_OPTIMIZATION.md",
+          "equal": false
+        }
+      ]
+    },
+    "defects_closed": [
+      {
+        "reproduction": "Overview repeated full F1 trend and F4/F5 research; Analytics mixed findings F2–F5; expired Forecasts was nearly empty",
+        "fix": "3 overview KPI +1 trend, compact F1 disclosure, primary finding destinations; substantive static F4 study independent of publication status",
+        "verification": "16 web tests, pinned source audit, real smoke, visible five-page matrix"
+      },
+      {
+        "reproduction": "Default Stations sidebar stretched an empty instruction card to map height",
+        "fix": "Full-width map until query or selected station; no default ranking/table duplicate",
+        "verification": "Before/after JPEG; final25 real viewport cases"
+      },
+      {
+        "reproduction": "Stale station GBFS branch displayed rentable bikes/docks as if current",
+        "fix": "Counts only on fresh/ok; one stale/unknown reason",
+        "verification": "Real selected6313.10 statusstale, no dl/counts in GBFS panel; real smoke unchanged"
+      },
+      {
+        "reproduction": "320px F4 tables: clientWidth238, scrollWidth472, tabIndex-1",
+        "fix": "Shared native focusable TableScroll region, visible focus, Arrow-key scrolling; narrow lint exception documents native scroll requirement",
+        "verification": "ArrowRight twice → scrollLeft80, focused=true, solid #8db1ff outline; browser chart horizon24/reset1"
+      },
+      {
+        "reproduction": "Analytics retained the same rides/duration summary cards as Overview",
+        "fix": "Two unique flow/coverage cards; rides retained only as chart control total with original smoke marker",
+        "verification": "Final lint/types/test16/build; real Silver/API/HTML and final65 real/empty/API-down cases"
+      }
+    ],
+    "checks": [
+      {
+        "command": "npm --prefix apps/web ci",
+        "status": "PASS",
+        "executed": "2026-11-06",
+        "result": "33 packages, audit34,0 vulnerabilities; initial sandbox DNS failed then permitted retry passed"
+      },
+      {
+        "command": "npm --prefix apps/web run lint",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "35 files, no warnings"
+      },
+      {
+        "command": "npm --prefix apps/web run typecheck",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "tsc noEmit exit0"
+      },
+      {
+        "command": "npm --prefix apps/web test",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "16 passed"
+      },
+      {
+        "command": "npm --prefix apps/web run build",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "optimized production build exit0"
+      },
+      {
+        "command": "uv run --locked ruff check .",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "All checks passed"
+      },
+      {
+        "command": "uv run --locked ruff format --check .",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "151 files already formatted"
+      },
+      {
+        "command": "uv run --locked mypy",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "151 source files, no issues"
+      },
+      {
+        "command": "uv run --locked --group ml pytest -q tests/integration/test_product.py",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "2 passed,51.85s; existing StarletteDeprecationWarning"
+      },
+      {
+        "command": "uv run --locked --group ml python -m tests.integration.product_smoke --mode real --web-url http://127.0.0.1:3005 --api-url http://127.0.0.1:8000",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "Repeated after final Analytics correction; embedded real_e2e below"
+      },
+      {
+        "command": "python -m tests.integration.product_smoke --mode fixture --api-url <isolated API> --web-url <isolated web>",
+        "status": "PASS",
+        "executed": "2026-11-06",
+        "result": "Existing fixture protocol, isolated UUID DB; F1 empty and analytics_smoke PASS, publication parity; not a real-data experiment"
+      },
+      {
+        "command": "git diff --check; git diff --cached --check",
+        "status": "PASS",
+        "executed": "2026-11-08",
+        "result": "source commits reviewed; evidence final audit follows"
+      }
+    ],
+    "real_e2e": {
+      "mode": "real_official",
+      "publication_id": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+      "overview": {
+        "silver": 4697240,
+        "api": 4697240,
+        "html": 4697240,
+        "baseline_silver": 4975250,
+        "baseline_api": 4975250,
+        "change_independent": -0.055878599065373596,
+        "change_api": -0.055878599065373596,
+        "change_html": -0.055878599065373596,
+        "publication_html": "38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91"
+      },
+      "stations": {
+        "6611.07": {
+          "silver": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "api_v4": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "api_v2": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "html": {
+            "departures": 3680,
+            "arrivals": 3618
+          },
+          "coordinate_silver": [
+            40.75676475086503,
+            -73.99971440439913
+          ],
+          "coordinate_api": [
+            40.75676475086503,
+            -73.99971440439913
+          ],
+          "split_partner": null,
+          "split_html": null
+        },
+        "5980.1": {
+          "silver": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "api_v4": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "api_v2": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "html": {
+            "departures": 0,
+            "arrivals": 9280
+          },
+          "coordinate_silver": [
+            40.737006,
+            -73.990134
+          ],
+          "coordinate_api": [
+            40.737006,
+            -73.990134
+          ],
+          "split_partner": "5980.10",
+          "split_html": "5980.10"
+        },
+        "5980.10": {
+          "silver": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "api_v4": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "api_v2": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "html": {
+            "departures": 14347,
+            "arrivals": 5140
+          },
+          "coordinate_silver": [
+            40.737006,
+            -73.990134
+          ],
+          "coordinate_api": [
+            40.737006,
+            -73.990134
+          ],
+          "split_partner": "5980.1",
+          "split_html": "5980.1"
+        },
+        "3138.03": {
+          "silver": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "api_v4": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "api_v2": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "html": {
+            "departures": 570,
+            "arrivals": 560
+          },
+          "coordinate_silver": [
+            40.645705,
+            -74.020292
+          ],
+          "coordinate_api": [
+            40.645705,
+            -74.020292
+          ],
+          "split_partner": null,
+          "split_html": null
+        }
+      },
+      "dst_hours": {
+        "2025-11-02": 25,
+        "2026-03-08": 23
+      },
+      "forecast": {
+        "api_status": "stale",
+        "valid_until": "2026-10-30T12:00:00+00:00",
+        "expired_now": true,
+        "html_state": "expired",
+        "html_values_shown": false
+      },
+      "scenario": {
+        "artifact_cells": 27,
+        "served_cells": 27,
+        "objective_mismatches": 0,
+        "status": "archival_replay",
+        "html_state": "archival_replay",
+        "html_coverage": "3/64",
+        "artifact_coverage": "3/64",
+        "no_action_best_cells": 9,
+        "as_of": "2026-10-30T06:36:54.163891+00:00",
+        "action_verdict": "no_action",
+        "rendered_cells": 9
+      },
+      "filter_states": {
+        "reversed": "error",
+        "half": "error",
+        "unknown_station": "empty",
+        "invalid_vehicle": "error"
+      },
+      "api_latency": {
+        "v2_kpi_28d": {
+          "first_ms": 50.18,
+          "p50_ms": 47.69,
+          "p95_ms": 58.08,
+          "max_ms": 58.08,
+          "samples": 20
+        },
+        "v2_timeseries_28d": {
+          "first_ms": 56.66,
+          "p50_ms": 80.49,
+          "p95_ms": 190.89,
+          "max_ms": 190.89,
+          "samples": 20
+        },
+        "v2_compare_28d": {
+          "first_ms": 72.27,
+          "p50_ms": 79.47,
+          "p95_ms": 144.72,
+          "max_ms": 144.72,
+          "samples": 20
+        },
+        "v4_stations_28d_map": {
+          "first_ms": 448.72,
+          "p50_ms": 296.88,
+          "p95_ms": 861.21,
+          "max_ms": 861.21,
+          "samples": 20
+        },
+        "v4_stations_full_window": {
+          "first_ms": 935.71,
+          "p50_ms": 886.4,
+          "p95_ms": 1116.81,
+          "max_ms": 1116.81,
+          "samples": 20
+        },
+        "v4_station_detail": {
+          "first_ms": 53.15,
+          "p50_ms": 56.87,
+          "p95_ms": 70.5,
+          "max_ms": 70.5,
+          "samples": 20
+        },
+        "v4_risk": {
+          "first_ms": 36.12,
+          "p50_ms": 39.72,
+          "p95_ms": 51.75,
+          "max_ms": 51.75,
+          "samples": 20
+        },
+        "v3_forecasts": {
+          "first_ms": 30.58,
+          "p50_ms": 30.79,
+          "p95_ms": 36.11,
+          "max_ms": 36.11,
+          "samples": 20
+        }
+      },
+      "html_render": {
+        "overview": {
+          "first_ms": 254.36,
+          "p50_ms": 216.35,
+          "p95_ms": 263.67,
+          "max_ms": 263.67,
+          "samples": 5,
+          "bytes": 65198
+        },
+        "analytics_default": {
+          "first_ms": 1423.11,
+          "p50_ms": 1249.63,
+          "p95_ms": 1356.85,
+          "max_ms": 1356.85,
+          "samples": 5,
+          "bytes": 723660
+        },
+        "analytics_28d_station": {
+          "first_ms": 1045.37,
+          "p50_ms": 1069.3,
+          "p95_ms": 1126.68,
+          "max_ms": 1126.68,
+          "samples": 5,
+          "bytes": 185220
+        },
+        "stations": {
+          "first_ms": 284.69,
+          "p50_ms": 271.59,
+          "p95_ms": 332.71,
+          "max_ms": 332.71,
+          "samples": 5,
+          "bytes": 363286
+        },
+        "station_detail": {
+          "first_ms": 336.84,
+          "p50_ms": 269.59,
+          "p95_ms": 291.58,
+          "max_ms": 291.58,
+          "samples": 5,
+          "bytes": 408218
+        },
+        "forecasts": {
+          "first_ms": 40.49,
+          "p50_ms": 41.6,
+          "p95_ms": 44.04,
+          "max_ms": 44.04,
+          "samples": 5,
+          "bytes": 71146
+        },
+        "scenarios": {
+          "first_ms": 68.96,
+          "p50_ms": 63.16,
+          "p95_ms": 86.12,
+          "max_ms": 86.12,
+          "samples": 5,
+          "bytes": 140530
+        }
+      },
+      "checked_at": "2026-11-08T13:57:51.326241+00:00"
+    },
+    "controlled_e2e_20261106": {
+      "mode": "controlled_fixture",
+      "database": "bikeflow_test_3fb352131a944b8199a7593a30fbb7c6",
+      "api": "http://127.0.0.1:8017",
+      "web": "http://127.0.0.1:3017",
+      "started_at": "2026-11-06T07:06:56.548397+00:00",
+      "states": {
+        "empty": {
+          "/": "empty",
+          "/analytics": "empty",
+          "/stations": "empty",
+          "/forecasts": "empty",
+          "/scenarios": "empty"
+        },
+        "valid": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "current_scenario"
+        },
+        "api_down": {
+          "/": "unavailable",
+          "/analytics": "error",
+          "/stations": "unavailable",
+          "/forecasts": "unavailable",
+          "/scenarios": "unavailable"
+        },
+        "recovered": {
+          "/": "ok",
+          "/analytics": "ok",
+          "/stations": "ok",
+          "/forecasts": "valid",
+          "/scenarios": "archival_replay"
+        }
+      },
+      "f1_smoke_empty": "PASS",
+      "command": "C:\\Users\\nurs\\citibike\\.venv\\Scripts\\python.exe -m tests.integration.product_smoke --mode fixture --api-url http://127.0.0.1:8017 --web-url http://127.0.0.1:3017 --data-dir C:\\Users\\nurs\\citibike\\.cache\\f6-content\\fixture-data --output C:\\Users\\nurs\\citibike\\.cache\\f6-content\\fixture-smoke.json",
+      "analytics_smoke": "PASS",
+      "grid_count": {
+        "api_cells": 2,
+        "html_cells": 2
+      },
+      "status": "PASS",
+      "real_publications_unchanged": true,
+      "finished_at": "2026-11-06T07:25:19.929321+00:00",
+      "disposable_database_removed": true
+    },
+    "final_empty_outage_recovery_20261108": {
+      "mode": "controlled_fixture",
+      "database": "bikeflow_test_de5984fe94d64c979b68b5632c60cd4f",
+      "api": "http://127.0.0.1:8017",
+      "web": "http://127.0.0.1:3017",
+      "started_at": "2026-11-08T13:55:18.954349+00:00",
+      "states": {
+        "empty": {
+          "/": "empty",
+          "/analytics": "empty",
+          "/stations": "empty",
+          "/forecasts": "empty",
+          "/scenarios": "empty"
+        },
+        "api_down": {
+          "/": "unavailable",
+          "/analytics": "error",
+          "/stations": "unavailable",
+          "/forecasts": "unavailable",
+          "/scenarios": "unavailable"
+        },
+        "recovered": {
+          "/": "empty",
+          "/analytics": "empty",
+          "/stations": "empty",
+          "/forecasts": "empty",
+          "/scenarios": "empty"
+        }
+      },
+      "status": "PASS",
+      "real_publications_unchanged": true,
+      "finished_at": "2026-11-08T14:01:07.633119+00:00",
+      "disposable_database_removed": true
+    },
+    "browser": {
+      "method": "Visible IAB localhost; responsive viewport, ordinary warm caches/shared Windows host, no throttling. Full navigation timing: hydration+2rAF upper bound; chart-ready separately; not HTTP/FCP shell or SLA.",
+      "final_cases": [
+        {
+          "mode": "real",
+          "path": "/",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "513.7"
+            }
+          ],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "152.0",
+            "firstScreenMs": "509.4",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/analytics",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "2475.5"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "2475.6"
+            },
+            {
+              "kind": "bar",
+              "ready": "2478.0"
+            }
+          ],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "132.0",
+            "firstScreenMs": "2467.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/stations",
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "873.6"
+            }
+          ],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "164.0",
+            "firstScreenMs": "873.4",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "280.2"
+            },
+            {
+              "kind": "line",
+              "ready": "282.2"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "172.0",
+            "firstScreenMs": "277.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/scenarios",
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "484.8"
+            }
+          ],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "128.0",
+            "firstScreenMs": "483.2",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "609.6"
+            }
+          ],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "176.0",
+            "firstScreenMs": "605.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 360,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/analytics",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "2379.6"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "2379.7"
+            },
+            {
+              "kind": "bar",
+              "ready": "2381.8"
+            }
+          ],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "140.0",
+            "firstScreenMs": "2373.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 360,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/stations",
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "879.0"
+            }
+          ],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "128.0",
+            "firstScreenMs": "878.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 360,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "289.1"
+            },
+            {
+              "kind": "line",
+              "ready": "290.9"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "168.0",
+            "firstScreenMs": "285.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 360,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/scenarios",
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "479.5"
+            }
+          ],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "120.0",
+            "firstScreenMs": "477.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 360,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "528.6"
+            }
+          ],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "152.0",
+            "firstScreenMs": "524.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/analytics",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "1909.8"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "1909.9"
+            },
+            {
+              "kind": "bar",
+              "ready": "1912.0"
+            }
+          ],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "92.0",
+            "firstScreenMs": "1903.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/stations",
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "965.2"
+            }
+          ],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "180.0",
+            "firstScreenMs": "965.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "637.7"
+            },
+            {
+              "kind": "line",
+              "ready": "642.0"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "208.0",
+            "firstScreenMs": "632.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/scenarios",
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "531.7"
+            }
+          ],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "128.0",
+            "firstScreenMs": "529.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "579.7"
+            }
+          ],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "168.0",
+            "firstScreenMs": "572.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/analytics",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "2582.7"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "2582.7"
+            },
+            {
+              "kind": "bar",
+              "ready": "2584.6"
+            }
+          ],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "132.0",
+            "firstScreenMs": "2573.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/stations",
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "895.3"
+            }
+          ],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "184.0",
+            "firstScreenMs": "895.2",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "564.2"
+            },
+            {
+              "kind": "line",
+              "ready": "567.2"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "172.0",
+            "firstScreenMs": "559.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/scenarios",
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "480.9"
+            }
+          ],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "116.0",
+            "firstScreenMs": "478.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "632.9"
+            }
+          ],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "292.0",
+            "firstScreenMs": "624.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/analytics",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "2218.2"
+            },
+            {
+              "kind": "heatmap",
+              "ready": "2218.3"
+            },
+            {
+              "kind": "bar",
+              "ready": "2219.4"
+            }
+          ],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "136.0",
+            "firstScreenMs": "2212.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/stations",
+          "charts": [
+            {
+              "kind": "map",
+              "ready": "971.5"
+            }
+          ],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "164.0",
+            "firstScreenMs": "971.4",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "322.6"
+            },
+            {
+              "kind": "line",
+              "ready": "325.4"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "168.0",
+            "firstScreenMs": "317.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "real",
+          "path": "/scenarios",
+          "charts": [
+            {
+              "kind": "bar",
+              "ready": "480.4"
+            }
+          ],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "112.0",
+            "firstScreenMs": "478.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "204.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "188.0",
+            "firstScreenMs": "450.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": null
+            },
+            {
+              "kind": "line",
+              "ready": null
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "142.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "170.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "124.0",
+            "firstScreenMs": "183.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "260.9"
+            },
+            {
+              "kind": "line",
+              "ready": "263.2"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "257.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "118.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "209.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "176.0",
+            "firstScreenMs": "490.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "293.5"
+            },
+            {
+              "kind": "line",
+              "ready": "296.4"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "164.0",
+            "firstScreenMs": "289.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "166.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "264.1"
+            },
+            {
+              "kind": "line",
+              "ready": "266.7"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "148.0",
+            "firstScreenMs": "260.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "empty",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "116.2",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "184.0",
+            "firstScreenMs": "202.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "188.0",
+            "firstScreenMs": "216.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "155.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "324.0"
+            },
+            {
+              "kind": "line",
+              "ready": "326.8"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "156.0",
+            "firstScreenMs": "320.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "127.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "135.8",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "194.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "124.0",
+            "firstScreenMs": "172.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "339.3"
+            },
+            {
+              "kind": "line",
+              "ready": "343.7"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "192.0",
+            "firstScreenMs": "332.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "182.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "174.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "168.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "167.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "483.1"
+            },
+            {
+              "kind": "line",
+              "ready": "484.8"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "112.0",
+            "firstScreenMs": "480.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "116.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/",
+          "charts": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "168.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/analytics",
+          "charts": [],
+          "heading": "История поездок в деталях",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "171.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/stations",
+          "charts": [],
+          "heading": "Карта станций и потоки",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "145.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/forecasts",
+          "charts": [
+            {
+              "kind": "line",
+              "ready": "279.3"
+            },
+            {
+              "kind": "line",
+              "ready": "300.4"
+            }
+          ],
+          "heading": "Какая модель выдерживает проверку?",
+          "overflow": 0,
+          "timing": {
+            "fcpMs": "168.0",
+            "firstScreenMs": "275.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "mode": "api-down",
+          "path": "/scenarios",
+          "charts": [],
+          "heading": "Сценарии, а не распоряжения",
+          "overflow": 0,
+          "timing": {
+            "firstScreenMs": "126.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        }
+      ],
+      "interactions_before_final_KPI_removal": {
+        "tableFocus": {
+          "focused": true,
+          "fullWidth": 472,
+          "outline": "rgb(141, 177, 255) solid 1.6px",
+          "scrollLeft": 80,
+          "width": 238
+        },
+        "navFocus": [
+          {
+            "outline": "rgb(141, 177, 255) solid 1.6px",
+            "rect": {
+              "height": 44,
+              "right": 72.4000015258789
+            },
+            "text": "Обзор"
+          },
+          {
+            "outline": "rgb(141, 177, 255) solid 1.6px",
+            "rect": {
+              "height": 44,
+              "right": 156.4000015258789
+            },
+            "text": "Аналитика"
+          },
+          {
+            "outline": "rgb(141, 177, 255) solid 1.6px",
+            "rect": {
+              "height": 44,
+              "right": 227.60001373291016
+            },
+            "text": "Станции"
+          },
+          {
+            "outline": "rgb(141, 177, 255) solid 1.6px",
+            "rect": {
+              "height": 44,
+              "right": 94.8000030517578
+            },
+            "text": "Прогнозы"
+          },
+          {
+            "outline": "rgb(141, 177, 255) solid 1.6px",
+            "rect": {
+              "height": 44,
+              "right": 175.60000610351562
+            },
+            "text": "Сценарии"
+          }
+        ],
+        "tooltip": {
+          "tipOpen": {
+            "dismissed": "false",
+            "display": "block"
+          },
+          "tipClosed": {
+            "dismissed": "true",
+            "display": "none"
+          }
+        },
+        "stale": {
+          "hasCounts": false,
+          "state": "stale",
+          "text": "GBFS · свежесть?Текущий момент − последняя source timestamp GBFS.GBFS · наблюдениенедоступноНаблюдение устарело; текущие велосипеды и доки неизвестны."
+        },
+        "drillEvidence": [
+          {
+            "step": "month",
+            "text": "Данные и переходы с клавиатуры\nДинамика допустимых поездок; часовые подписи UTC, дни и месяцы Нью-Йорка\nТочка графика\n2024-10-01\n2024-11-01\n2024-12-01\n2025-01-01\n2025-02-01\n2025-03-01\n2025-04-01\n2025-05-01\n2025-06-01\n2025-07-01\n2025-08-01\n2025-09-01\n2025-10-01\n2025-11-01\n2025-12-01\n2026-01-01\n2026-02-01\n2026-03-01\n2026-04-01\n2026-05-01\n2026-06-01\n2026-07-01\n2026-08-01\n2026-09-01\n\nПоездки: 2 945 320 поездок\n\nОткрыть подробный период\nК первой точке"
+          },
+          {
+            "step": "day",
+            "text": "Данные и переходы с клавиатуры\nДинамика допустимых поездок; часовые подписи UTC, дни и месяцы Нью-Йорка\nТочка графика\n2026-03-01\n2026-03-02\n2026-03-03\n2026-03-04\n2026-03-05\n2026-03-06\n2026-03-07\n2026-03-08\n2026-03-09\n2026-03-10\n2026-03-11\n2026-03-12\n2026-03-13\n2026-03-14\n2026-03-15\n2026-03-16\n2026-03-17\n2026-03-18\n2026-03-19\n2026-03-20\n2026-03-21\n2026-03-22\n2026-03-23\n2026-03-24\n2026-03-25\n2026-03-26\n2026-03-27\n2026-03-28\n2026-03-29\n2026-03-30\n2026-03-31\n\nПоездки: 152 807 поездок\n\nОткрыть подробный период\nК первой точке"
+          },
+          {
+            "step": "hour",
+            "url": "http://127.0.0.1:3005/analytics?start_date=2026-03-10&end_date=2026-03-11&grain=hour&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91",
+            "grain": "hour",
+            "rides": "152807"
+          },
+          {
+            "step": "filtered-electric",
+            "rides": "105170"
+          },
+          {
+            "step": "reset",
+            "url": "http://127.0.0.1:3005/analytics"
+          }
+        ],
+        "keyboardStation": "http://127.0.0.1:3005/stations?start_date=2026-09-03&end_date=2026-10-01&publication_id=38f4a4bfaf9d05837c63f31c98e615ee121e197440fa1cba19b49922c30a2e91&station_id=1964.01",
+        "scenarioChoice": "http://127.0.0.1:3005/scenarios?scale=1.5&event_order=arrivals_first",
+        "scenarioReset": "http://127.0.0.1:3005/scenarios"
+      },
+      "controlled_populated_before_final_copy": [
+        {
+          "label": "fixture-populated-overview-320",
+          "url": "http://127.0.0.1:3017/",
+          "charts": [
+            {
+              "ready": "468.2",
+              "type": "line"
+            }
+          ],
+          "findings": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 96.8000030517578,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "fcpMs": "120.0",
+            "firstScreenMs": "466.1",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-analytics-320",
+          "url": "http://127.0.0.1:3017/analytics",
+          "charts": [
+            {
+              "ready": "520.8",
+              "type": "line"
+            },
+            {
+              "ready": "520.9",
+              "type": "heatmap"
+            },
+            {
+              "ready": "521.3",
+              "type": "bar"
+            }
+          ],
+          "findings": [
+            "f2-reconciliation",
+            "f2-gaps",
+            "f2-sparsity",
+            "f2-weekly",
+            "da-annual"
+          ],
+          "heading": "История поездок в деталях",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 96.8000030517578,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "fcpMs": "112.0",
+            "firstScreenMs": "518.9",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-stations-320",
+          "url": "http://127.0.0.1:3017/stations",
+          "charts": [
+            {
+              "ready": "196.3",
+              "type": "map"
+            }
+          ],
+          "findings": [
+            "da-id-split"
+          ],
+          "heading": "Карта станций и потоки",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 96.8000030517578,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "196.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-forecasts-320",
+          "url": "http://127.0.0.1:3017/forecasts",
+          "charts": [
+            {
+              "ready": null,
+              "type": "line"
+            },
+            {
+              "ready": null,
+              "type": "line"
+            },
+            {
+              "ready": null,
+              "type": "line"
+            }
+          ],
+          "findings": [
+            "f4-diagnostics"
+          ],
+          "forecast": "valid",
+          "heading": "Какая модель выдерживает проверку?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 96.8000030517578,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "renderTiming": "navigation"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-scenarios-320",
+          "url": "http://127.0.0.1:3017/scenarios",
+          "charts": [
+            {
+              "ready": "471.8",
+              "type": "bar"
+            }
+          ],
+          "findings": [],
+          "heading": "Сценарии, а не распоряжения",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 96.8000030517578,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "scenario": "archival_replay",
+          "timing": {
+            "fcpMs": "236.0",
+            "firstScreenMs": "470.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 320,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-overview-390",
+          "url": "http://127.0.0.1:3017/",
+          "charts": [
+            {
+              "ready": "276.3",
+              "type": "line"
+            }
+          ],
+          "findings": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 229.6000061035156,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "274.4",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-analytics-390",
+          "url": "http://127.0.0.1:3017/analytics",
+          "charts": [
+            {
+              "ready": "642.2",
+              "type": "line"
+            },
+            {
+              "ready": "642.2",
+              "type": "heatmap"
+            },
+            {
+              "ready": "642.8",
+              "type": "bar"
+            }
+          ],
+          "findings": [
+            "f2-reconciliation",
+            "f2-gaps",
+            "f2-sparsity",
+            "f2-weekly",
+            "da-annual"
+          ],
+          "heading": "История поездок в деталях",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 229.6000061035156,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "fcpMs": "368.0",
+            "firstScreenMs": "640.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-stations-390",
+          "url": "http://127.0.0.1:3017/stations",
+          "charts": [
+            {
+              "ready": "197.7",
+              "type": "map"
+            }
+          ],
+          "findings": [
+            "da-id-split"
+          ],
+          "heading": "Карта станций и потоки",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 229.6000061035156,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "197.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-forecasts-390",
+          "url": "http://127.0.0.1:3017/forecasts",
+          "charts": [
+            {
+              "ready": "275.6",
+              "type": "line"
+            },
+            {
+              "ready": "278.7",
+              "type": "line"
+            },
+            {
+              "ready": "281.3",
+              "type": "line"
+            }
+          ],
+          "findings": [
+            "f4-diagnostics"
+          ],
+          "forecast": "valid",
+          "heading": "Какая модель выдерживает проверку?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 229.6000061035156,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "271.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-scenarios-390",
+          "url": "http://127.0.0.1:3017/scenarios",
+          "charts": [
+            {
+              "ready": "218.1",
+              "type": "bar"
+            }
+          ],
+          "findings": [],
+          "heading": "Сценарии, а не распоряжения",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 56.400001525878906,
+                "x": 16,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 82,
+                "x": 74.4000015258789,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 69.20000457763672,
+                "x": 158.40000915527344,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 229.6000061035156,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 78.80000305175781,
+                "x": 16,
+                "y": 90
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "scenario": "archival_replay",
+          "timing": {
+            "firstScreenMs": "216.6",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 390,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-overview-768",
+          "url": "http://127.0.0.1:3017/",
+          "charts": [
+            {
+              "ready": "269.1",
+              "type": "line"
+            }
+          ],
+          "findings": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 32,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 120.8000030517578,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 236.8000030517578,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 339.20001220703125,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 452,
+                "y": 44
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "266.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-analytics-768",
+          "url": "http://127.0.0.1:3017/analytics",
+          "charts": [
+            {
+              "ready": "656.0",
+              "type": "line"
+            },
+            {
+              "ready": "656.0",
+              "type": "heatmap"
+            },
+            {
+              "ready": "675.9",
+              "type": "bar"
+            }
+          ],
+          "findings": [
+            "f2-reconciliation",
+            "f2-gaps",
+            "f2-sparsity",
+            "f2-weekly",
+            "da-annual"
+          ],
+          "heading": "История поездок в деталях",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 32,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 120.8000030517578,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 236.8000030517578,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 339.20001220703125,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 452,
+                "y": 44
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "fcpMs": "208.0",
+            "firstScreenMs": "653.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-stations-768",
+          "url": "http://127.0.0.1:3017/stations",
+          "charts": [
+            {
+              "ready": "203.6",
+              "type": "map"
+            }
+          ],
+          "findings": [
+            "da-id-split"
+          ],
+          "heading": "Карта станций и потоки",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 32,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 120.8000030517578,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 236.8000030517578,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 339.20001220703125,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 452,
+                "y": 44
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "203.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-forecasts-768",
+          "url": "http://127.0.0.1:3017/forecasts",
+          "charts": [
+            {
+              "ready": "266.4",
+              "type": "line"
+            },
+            {
+              "ready": "268.3",
+              "type": "line"
+            },
+            {
+              "ready": "269.7",
+              "type": "line"
+            }
+          ],
+          "findings": [
+            "f4-diagnostics"
+          ],
+          "forecast": "valid",
+          "heading": "Какая модель выдерживает проверку?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 32,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 120.8000030517578,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 236.8000030517578,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 339.20001220703125,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 452,
+                "y": 44
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "262.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-scenarios-768",
+          "url": "http://127.0.0.1:3017/scenarios",
+          "charts": [
+            {
+              "ready": "204.7",
+              "type": "bar"
+            }
+          ],
+          "findings": [],
+          "heading": "Сценарии, а не распоряжения",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 32,
+                "y": 44
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 120.8000030517578,
+                "y": 44
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 236.8000030517578,
+                "y": 44
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 339.20001220703125,
+                "y": 44
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 452,
+                "y": 44
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "scenario": "archival_replay",
+          "timing": {
+            "firstScreenMs": "203.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 768,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-overview-1440",
+          "url": "http://127.0.0.1:3017/",
+          "charts": [
+            {
+              "ready": "467.4",
+              "type": "line"
+            }
+          ],
+          "findings": [],
+          "heading": "Как устроен велопрокат Нью-Йорка?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 242.40000915527344,
+                "y": 8
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 331.20001220703125,
+                "y": 8
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 447.2000122070313,
+                "y": 8
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 549.6000366210938,
+                "y": 8
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 662.4000244140625,
+                "y": 8
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "fcpMs": "176.0",
+            "firstScreenMs": "466.0",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-analytics-1440",
+          "url": "http://127.0.0.1:3017/analytics",
+          "charts": [
+            {
+              "ready": "630.7",
+              "type": "line"
+            },
+            {
+              "ready": "630.8",
+              "type": "heatmap"
+            },
+            {
+              "ready": "631.4",
+              "type": "bar"
+            }
+          ],
+          "findings": [
+            "f2-reconciliation",
+            "f2-gaps",
+            "f2-sparsity",
+            "f2-weekly",
+            "da-annual"
+          ],
+          "heading": "История поездок в деталях",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 242.40000915527344,
+                "y": 8
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 331.20001220703125,
+                "y": 8
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 447.2000122070313,
+                "y": 8
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 549.6000366210938,
+                "y": 8
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 662.4000244140625,
+                "y": 8
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "fcpMs": "188.0",
+            "firstScreenMs": "627.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-stations-1440",
+          "url": "http://127.0.0.1:3017/stations",
+          "charts": [
+            {
+              "ready": "197.7",
+              "type": "map"
+            }
+          ],
+          "findings": [
+            "da-id-split"
+          ],
+          "heading": "Карта станций и потоки",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 242.40000915527344,
+                "y": 8
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 331.20001220703125,
+                "y": 8
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 447.2000122070313,
+                "y": 8
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 549.6000366210938,
+                "y": 8
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 662.4000244140625,
+                "y": 8
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "197.5",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-forecasts-1440",
+          "url": "http://127.0.0.1:3017/forecasts",
+          "charts": [
+            {
+              "ready": "325.2",
+              "type": "line"
+            },
+            {
+              "ready": "328.2",
+              "type": "line"
+            },
+            {
+              "ready": "330.9",
+              "type": "line"
+            }
+          ],
+          "findings": [
+            "f4-diagnostics"
+          ],
+          "forecast": "valid",
+          "heading": "Какая модель выдерживает проверку?",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 242.40000915527344,
+                "y": 8
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 331.20001220703125,
+                "y": 8
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 447.2000122070313,
+                "y": 8
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 549.6000366210938,
+                "y": 8
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 662.4000244140625,
+                "y": 8
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "timing": {
+            "firstScreenMs": "321.7",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        },
+        {
+          "label": "fixture-populated-scenarios-1440",
+          "url": "http://127.0.0.1:3017/scenarios",
+          "charts": [
+            {
+              "ready": "191.9",
+              "type": "bar"
+            }
+          ],
+          "findings": [],
+          "heading": "Сценарии, а не распоряжения",
+          "nav": [
+            {
+              "rect": {
+                "height": 44,
+                "width": 86.80000305175781,
+                "x": 242.40000915527344,
+                "y": 8
+              },
+              "text": "Обзор"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 114,
+                "x": 331.20001220703125,
+                "y": 8
+              },
+              "text": "Аналитика"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 100.4000015258789,
+                "x": 447.2000122070313,
+                "y": 8
+              },
+              "text": "Станции"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110.8000030517578,
+                "x": 549.6000366210938,
+                "y": 8
+              },
+              "text": "Прогнозы"
+            },
+            {
+              "rect": {
+                "height": 44,
+                "width": 110,
+                "x": 662.4000244140625,
+                "y": 8
+              },
+              "text": "Сценарии"
+            }
+          ],
+          "overflow": -15,
+          "scenario": "archival_replay",
+          "timing": {
+            "firstScreenMs": "190.3",
+            "renderTiming": "navigation",
+            "visibility": "visible"
+          },
+          "visibility": "visible",
+          "width": 1440,
+          "logs": []
+        }
+      ],
+      "notes": "65 final cases:25 real on five widths +20 empty +20 API-down on four widths. Keyboard/map/filter/scenario/Escape checks immediately preceded removal of2 duplicate Analytics cards; shared interaction code unchanged. Previous timed-out batch discarded and repeated in persisted small batches."
+    },
+    "accessibility": {
+      "status": "PASS in measured scope; full WCAG certification/screen reader/physical phone NOT VERIFIED",
+      "contrast_20261106": [
+        {
+          "path": "/",
+          "failures": [],
+          "min": 4.782844616178055,
+          "samples": 197
+        },
+        {
+          "path": "/forecasts",
+          "failures": [],
+          "min": 5.586110558734869,
+          "samples": 227
+        },
+        {
+          "path": "/scenarios",
+          "failures": [],
+          "min": 4.782844616178055,
+          "samples": 443
+        },
+        {
+          "path": "/analytics",
+          "failures": [],
+          "min": 4.782844616178055,
+          "samples": 3991
+        },
+        {
+          "path": "/stations",
+          "failures": [],
+          "min": 4.782844616178055,
+          "samples": 40
+        }
+      ],
+      "text_min_ratio": 4.782844616178055,
+      "palette_boundaries_focus": "Existing AA unit test passed; boundaries >=3.60:1; actual final nav and TableScroll focus #8db1ff,44px nav targets; inline links are text exceptions.",
+      "reduced_motion": "Loaded CSSOM prefers-reduced-motion disables skeleton/transition, ECharts animationfalse. OS preference unchanged."
+    },
+    "performance": {
+      "browser_analytics_first_screen_ms": {
+        "min": 1903.0,
+        "max": 2573.1,
+        "samples": 5
+      },
+      "browser_analytics_charts_ms": {
+        "min": 1909.8,
+        "max": 2584.6,
+        "samples": 15
+      },
+      "html_payload": {
+        "/": {
+          "bytes": 65198,
+          "sha256": "e0fdb601f68e7ce61645e62442782337598a63a8d72e03337568cf4d2dbdadd4"
+        },
+        "/analytics": {
+          "bytes": 723660,
+          "sha256": "3f360b15bac361d3d374ca8093894b48150e8172a4f8f4dc8aa01256fed7b612"
+        },
+        "/stations": {
+          "bytes": 363286,
+          "sha256": "61d715700996fc0130fc2399c420b8596630c18c71c4d25f7a10c0766c77222f"
+        },
+        "/forecasts": {
+          "bytes": 71146,
+          "sha256": "b1f2d6058928dfd510bb6dbc87cf9b6766272ee0c7d2371e33e9b2b0fd3a02e7"
+        },
+        "/scenarios": {
+          "bytes": 140530,
+          "sha256": "91e7a5e659d3ee6e67295f94a5c0e1f7a94e5addc6389b6eb2c56ea1851c3774"
+        }
+      },
+      "analytics_payload_history_bytes": [
+        704286,
+        855789,
+        855476,
+        723660
+      ],
+      "change_from_early_F6_percent": 2.750871094981311,
+      "change_from_pre_correction_percent": -15.40849772524302,
+      "conclusion": "Payload reduced by removing duplicated content and an unused availability request; residual growth over704286 remains recorded. No demonstrated rendering defect in measured local runs; no p95/SLA claim."
+    },
+    "visual_evidence": [
+      {
+        "path": "docs/evidence/f6-visual/content-analytics-1440.jpg",
+        "bytes": 473596,
+        "sha256": "afcc8ba8560a3f1d43e3c3263e3c19670a3ee95fadbe158b79b5d842cf90f92a",
+        "captured_at": "2026-11-08T13:58:57.265550+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-analytics-390.jpg",
+        "bytes": 371721,
+        "sha256": "7a2e172d57b4efa342a353743b68da845f277bf8623305d6be8ab0a81b8f976d",
+        "captured_at": "2026-11-08T13:58:35.840198+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-api-down-scenarios-1440.jpg",
+        "bytes": 97985,
+        "sha256": "daeba2c36a1a3968f15b0e7f0139ac13de1ef32ace92e8ab64f46d3de059da87",
+        "captured_at": "2026-11-08T13:45:59.355958+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-empty-scenarios-1440.jpg",
+        "bytes": 18128,
+        "sha256": "19ed7a2376289c73cdac9f63735bcbcdad82c53edd047177935bf4798e0b0b51",
+        "captured_at": "2026-11-08T13:44:51.859420+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-forecast-keyboard-320.jpg",
+        "bytes": 33564,
+        "sha256": "0394d5754b602ff93ac38f5005699fc244e7488f9563acc2f0b61a50735c4c34",
+        "captured_at": "2026-11-08T13:44:53.384208+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-forecasts-1440.jpg",
+        "bytes": 401810,
+        "sha256": "b411e44af45a3202a5aa661d549fdc40814952f0acc645016c8d4bc6e744ad08",
+        "captured_at": "2026-11-08T13:44:20.975178+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-forecasts-390.jpg",
+        "bytes": 323747,
+        "sha256": "3413b3dc1e0008b0aeb1a70db61159d64d6080e7faa1f57bb0d1c6a0b3169dad",
+        "captured_at": "2026-11-08T13:56:41.312238+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-overview-1440.jpg",
+        "bytes": 209212,
+        "sha256": "113cff101989848bd54a7b5f01116e6188fca57abf4f9bfdd431268036e115f7",
+        "captured_at": "2026-11-08T13:56:56.834647+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-overview-390.jpg",
+        "bytes": 166074,
+        "sha256": "beb80fb7dfc70358e858abb169e30eaa4e9030831c873af253d52cba48aada2b",
+        "captured_at": "2026-11-08T13:56:28.437722+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-scenarios-1440.jpg",
+        "bytes": 231385,
+        "sha256": "91085100ff48b75723e0f5c84c50c368ad15e1723e9864df27c8e797616bdf34",
+        "captured_at": "2026-11-08T13:44:22.890829+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-scenarios-390.jpg",
+        "bytes": 188654,
+        "sha256": "8b49c3af92665cc4a2df4c037e49e453b107fe58ae669c8b556bf147c7358277",
+        "captured_at": "2026-11-08T13:56:43.754195+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-station-stale-390.jpg",
+        "bytes": 257657,
+        "sha256": "b12878d109d884032a8fb5e5b43f91d4e2e5963353a67ba27660155f0ab7becd",
+        "captured_at": "2026-11-08T13:47:44.621843+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-stations-1440.jpg",
+        "bytes": 170354,
+        "sha256": "6b76d20e89cedea27301c6feef12d4b34e50845b7c2fa13b47115041817260c2",
+        "captured_at": "2026-11-08T13:44:18.920507+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-stations-390.jpg",
+        "bytes": 119917,
+        "sha256": "cab17cad0c7277c2517a10f543039b7b5bd4a67e7d9fa424429502b4032ecebb",
+        "captured_at": "2026-11-08T13:56:38.623592+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-stations-before-1440.jpg",
+        "bytes": 177694,
+        "sha256": "07169605ab9d33c7b1604fe33ad33f65797ba60a5aef5f1a45ac8d9a4fcfdab4",
+        "captured_at": "2026-11-06T07:09:16.921556+00:00"
+      },
+      {
+        "path": "docs/evidence/f6-visual/content-valid-forecast-390.jpg",
+        "bytes": 366593,
+        "sha256": "7c9a90f6028a8770fe3a93d7ce39bf32358d1da7d65e536c594ad51ce26d1f03",
+        "captured_at": "2026-11-06T07:23:31.649281+00:00"
+      }
+    ],
+    "preservation": {
+      "protected_files": 17289,
+      "json_hashes": 6723,
+      "changed_data_files": 0,
+      "scope_files": [
+        "README.md",
+        "apps/web/app/analytics/page.tsx",
+        "apps/web/app/forecasts/page.tsx",
+        "apps/web/app/globals.css",
+        "apps/web/app/page.tsx",
+        "apps/web/app/scenarios/page.tsx",
+        "apps/web/app/stations/page.tsx",
+        "apps/web/app/ui.tsx",
+        "apps/web/lib/findings.test.ts",
+        "apps/web/lib/findings.ts"
+      ],
+      "readme_technical_sections_preserved": true,
+      "base_head": "1ba22328c6fac05834fbc999f317f82210c7131b"
+    },
+    "limitations": [
+      "64 source IDs; approximate retrospective and strict historical PIT NOT VERIFIED",
+      "Isolated loss-ablation, real anomaly labels/Precision@K, operational promotion, calibration, field economy and production readiness NOT VERIFIED",
+      "F5 real replay3/64 remains archival; no fresh forecast publication",
+      "F8 remains PARTIAL; unmerged research branch untouched",
+      "Persistent C: bundle is local recovery only, no off-host disaster recovery claim"
+    ],
+    "failed_attempts": [
+      "Initial approval review timeout; later review failure caused by usage quota, resumed on owner continue08Nov; no approval bypass",
+      "Sandbox npm DNS ENOTFOUND and uv-cache access failed; permitted npm retry and workspace UV_CACHE_DIR passed",
+      "Docker Desktop was off:2 product setup errors due to DB unavailable; after restoration2/2 passed",
+      "Float equality in new excerpt test differed by1ulp; numerical tolerance1e-12 applied only to arithmetic means; frozen data untouched",
+      "Own standalone web processes caused EBUSY before rebuild; verified owned processes stopped; final build passed",
+      "Read-only browser parseFloat unavailable; Number.parseFloat used in audit; waiting for real data corrected two loading-shell samples",
+      "CUA batch timed out at60s; no unobserved outcomes claimed, smaller persisted batches passed",
+      "Tooltip Escape verified via displaynone/data-dismissedtrue; opacity/visibility alone do not indicate displaynone"
+    ],
+    "delivery_at_evidence_commit": "Implementation commits recorded; docs final-SHA CI/checkpoint/bundle verified after this commit and reported in final response/external manifest to avoid recursive self-SHA edits."
   }
 }
