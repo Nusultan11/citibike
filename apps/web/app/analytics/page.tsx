@@ -21,7 +21,6 @@ import {
 import Chart, { SERIES } from "../chart";
 import {
   AppliedFilters,
-  Delta,
   EvidenceNote,
   Icon,
   Kind,
@@ -511,51 +510,11 @@ export default async function AnalyticsPage({
         {!error && pub && kpi?.metrics && (
           <>
             <section
-              className="kpi-row"
-              aria-label="Ключевые показатели периода"
+              className="kpi-row analytics-kpis"
+              aria-label="Потоки и покрытие текущего среза"
               data-analytics-state="ok"
               data-publication-id={pub.publication_id}
             >
-              <article className="card kpi-card hero">
-                <div className="kpi-label">
-                  <Term name="completed_published_rides">Поездки</Term>
-                  <Kind kind="fact" compact />
-                </div>
-                <strong
-                  className="kpi"
-                  data-analytics-completed-rides={kpi.metrics.completed_published_rides}
-                >
-                  {show(kpi.metrics.completed_published_rides)}
-                </strong>
-                <div className="kpi-split">
-                  <Delta value={comparison?.relative_change} />
-                  <span className="kpi-desc">
-                    {comparison
-                      ? `к ${range(comparison.previous_start, comparison.previous_end)}`
-                      : "нет сопоставимой базы"}
-                  </span>
-                </div>
-              </article>
-              <article className="card kpi-card">
-                <div className="kpi-label">
-                  <Term name="average_duration">Средняя длительность</Term>
-                  <Kind kind="fact" compact />
-                </div>
-                <strong className="kpi">
-                  {kpi.metrics.average_duration_seconds == null ? (
-                    "N/A"
-                  ) : (
-                    <>
-                      {show(kpi.metrics.average_duration_seconds / 60)}
-                      <span className="kpi-unit">мин</span>
-                    </>
-                  )}
-                </strong>
-                <p className="kpi-desc">
-                  {show(kpi.metrics.average_duration_seconds)} с — сумма длительностей / число
-                  поездок с допустимой длительностью.
-                </p>
-              </article>
               <article className="card kpi-card">
                 <div className="kpi-label">
                   <span>
@@ -589,8 +548,12 @@ export default async function AnalyticsPage({
                   <div>
                     <h2>Динамика поездок</h2>
                     <p className="card-sub">
-                      Часы — UTC, дни и месяцы — America/New_York. Пропуски не заполнены нулями.
-                      Клик по дню открывает почасовой разрез, по месяцу — дни месяца.
+                      В срезе{" "}
+                      <b data-analytics-completed-rides={kpi.metrics.completed_published_rides}>
+                        {show(kpi.metrics.completed_published_rides)}
+                      </b>{" "}
+                      поездок. Часы — UTC, дни и месяцы — America/New_York. Пропуски не заполнены
+                      нулями. Клик по дню открывает почасовой разрез, по месяцу — дни месяца.
                     </p>
                   </div>
                   <Kind kind="fact" />

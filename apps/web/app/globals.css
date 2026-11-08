@@ -1828,11 +1828,15 @@ dl.facts dd {
   color: var(--text-2);
   line-height: 1.6;
 }
+.analytics-kpis {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .overview-kpis {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 @media (max-width: 768px) {
   .overview-kpis,
+  .analytics-kpis,
   .explore-grid {
     grid-template-columns: 1fr;
   }
