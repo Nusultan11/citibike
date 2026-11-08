@@ -1,14 +1,15 @@
 import Link from "next/link";
+import { evidenceHref, FORECAST_STUDY } from "../../lib/findings";
 import {
   type ForecastData,
   forecastState,
   getForecasts,
   message,
   readFilters,
-  withParams,
 } from "../../lib/operations";
 import Chart from "../chart";
 import {
+  EvidenceNote,
   Icon,
   Kind,
   nyTime,
@@ -16,11 +17,10 @@ import {
   SiteFooter,
   SiteHeader,
   StatePanel,
-  Status,
   short,
   show,
+  TableScroll,
   Term,
-  type Tone,
 } from "../ui";
 
 export const dynamic = "force-dynamic";
@@ -83,35 +83,274 @@ export default async function ForecastsPage({
   const horizons = Array.from({ length: 24 }, (_, i) => i + 1);
   const value = (type: string, h: number) =>
     rows.find((r) => r.prediction_type === type && r.horizon_h === h);
-  const freshness = pub?.freshness as Record<string, number> | undefined;
-  const origin = Date.parse(String(pub?.forecast_origin_utc ?? ""));
-  const until = Date.parse(String(pub?.valid_until ?? ""));
-  const span = Number.isFinite(origin) && Number.isFinite(until) && until > origin;
-  const elapsed = span ? Math.min(1, Math.max(0, (now.getTime() - origin) / (until - origin))) : 0;
-  const validRows = Number(pub?.valid_rows ?? 0);
-  const unavailableRows = Number(pub?.unavailable_rows ?? 0);
-  const rowShare = validRows + unavailableRows > 0 ? validRows / (validRows + unavailableRows) : 0;
   return (
     <>
       <SiteHeader current="/forecasts" params={params} />
       <main id="content" className="product-page">
         <PageHead
-          eyebrow={
-            <>
-              <Icon name="forecast" size={13} /> Прогноз F4 · опубликованные поездки
-            </>
-          }
-          title="Прогноз — только пока он действителен"
-          lead={
-            <>
-              Показывается лишь активная публикация до её <code>valid_until</code>. Истёкший или
-              устаревший прогноз помечается как недоступный и не выдаётся за свежую оценку.
-            </>
-          }
+          eyebrow="F4 · историческое исследование и публикация"
+          title="Какая модель выдерживает проверку?"
+          lead="Отправления и прибытия прогнозируются отдельно на 1–24 часа. Средняя ошибка деревьев ниже, но рабочим выбором остаётся Seasonal Naive: сегментные проверки не пройдены."
         >
           <Kind kind="forecast" />
         </PageHead>
+        <section className="card" aria-labelledby="study-scope">
+          <h2 id="study-scope">Что именно оценивали</h2>
+          <p className="body-text">
+            Когорта — 64 исходных ID станций NYC. Цель — число опубликованных поездок за
+            станцию-час, а не скрытый спрос или наличие велосипедов. Backtest использует
+            приближённую историческую доступность архивов (+45 дней); фактический момент первой
+            публикации не установлен.
+          </p>
+          <EvidenceNote source="docs/evidence/f4-forecasting.md">
+            Зафиксировано 29.10.2026 · история 2024-10–2026-09 · 64 станции · approximate
+            retrospective.
+          </EvidenceNote>
+        </section>
 
+        <div className="section-title">
+          <h2>Сравнение моделей</h2>
+          <p>
+            MAE — среднее абсолютное отклонение в поездках на станцию-час; меньше лучше. Validation
+            — среднее четырёх окон, сентябрь — прежний отложенный тест.
+          </p>
+        </div>
+        <div className="grid">
+          {FORECAST_STUDY.targets.map((target) => (
+            <section className="card span-6" key={target.target} data-study-target={target.target}>
+              <h2>{target.target === "departures" ? "Отправления" : "Прибытия"}</h2>
+              <TableScroll>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Модель</th>
+                      <th className="num">MAE validation</th>
+                      <th className="num">MAE сентябрь</th>
+                      <th className="num">Сегментов хуже &gt;20%</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {target.models.map((m) => (
+                      <tr key={m.model}>
+                        <th scope="row">{MODEL[m.model]}</th>
+                        <td className="num">{show(m.validation, 4)}</td>
+                        <td className="num">{show(m.final, 4)}</td>
+                        <td className="num">
+                          {m.model === "seasonal_naive" ? "база" : m.degraded}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableScroll>
+              <p className="note">
+                Сопоставимые bounded-конфигурации; validation: четыре окна. Сентябрь:{" "}
+                {show(target.models[0].n)} оценок для каждой модели этой задачи.
+              </p>
+              <Chart
+                label={`MAE по горизонту: ${target.target === "departures" ? "отправления" : "прибытия"}, сентябрь 2026`}
+                spec={{
+                  kind: "line",
+                  unit: "поездок MAE",
+                  categories: horizons.map((h) => `+${h} ч`),
+                  series: target.models
+                    .filter((m) => m.model === "seasonal_naive" || m.model === "lightgbm_bounded")
+                    .map((m) => ({ name: MODEL[m.model], values: [...m.horizons] })),
+                }}
+              />
+              <EvidenceNote source="docs/evidence/f4-forecasting.json">
+                29.10.2026 · 64 ID · validation 2025-06/09/12 и 2026-03; final 2026-09 · ось X:
+                горизонт, Y: MAE.
+              </EvidenceNote>
+            </section>
+          ))}
+        </div>
+        <section className="callout tone-warning" style={{ marginTop: 16 }}>
+          <Icon name="alert" size={17} />
+          <div>
+            <h2>Почему champion — Seasonal Naive</h2>
+            <p>
+              Для замены нужны выигрыш в большинстве окон, отсутствие деградации &gt;20% в
+              критических сегментах, допустимые ресурсы и доказанная доступность признаков. LightGBM
+              и CatBoost выигрывают в 3/4 окон, но проваливают сегментный gate. Низкий общий MAE не
+              разрешает promotion.
+            </p>
+            <EvidenceNote source="docs/evidence/f4-forecasting.json">
+              29.10.2026 · frozen selection по validation · строгая историческая доступность (PIT) и
+              operational promotion NOT VERIFIED; champion не менялся.
+            </EvidenceNote>
+          </div>
+        </section>
+        <details className="disclosure card" style={{ marginTop: 16 }}>
+          <summary>Rolling backtest: четыре окна и ошибки по моделям</summary>
+          <p className="body-text">
+            Каждое окно обучалось только на предшествующих данных; embargo — 24 часа. Этот протокол
+            ограничен предположением о публикации архивов и не доказывает strict PIT.
+          </p>
+          {FORECAST_STUDY.targets.map((target) => (
+            <div key={target.target}>
+              <h3>{TARGET[target.target]}</h3>
+              <TableScroll>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Окно origin (UTC)</th>
+                      {target.models.map((m) => (
+                        <th key={m.model} className="num">
+                          {MODEL[m.model]}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {FORECAST_STUDY.folds.map((f, i) => (
+                      <tr key={f.start}>
+                        <td>
+                          {f.start.slice(0, 10)} → {f.end.slice(0, 10)}
+                        </td>
+                        {target.models.map((m) => (
+                          <td key={m.model} className="num">
+                            {show(m.folds[i], 4)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableScroll>
+            </div>
+          ))}
+          <EvidenceNote source="docs/evidence/f4-forecasting.json">
+            29.10.2026 · 64 ID · четыре rolling-origin окна 2025-06–2026-03; MAE в поездках.
+          </EvidenceNote>
+        </details>
+        <section className="card" style={{ marginTop: 16 }}>
+          <h2>Где средняя ошибка скрывает проблему</h2>
+          <p className="body-text">
+            На нулевых и обычных часах score leader лучше базы, на пиках ≥20 поездок — хуже и
+            систематически недооценивает поток. Это отдельный pooled validation-анализ, не
+            сентябрьский тест.
+          </p>
+          <TableScroll>
+            <table>
+              <thead>
+                <tr>
+                  <th>Задача · сегмент</th>
+                  <th className="num">N</th>
+                  <th className="num">MAE SN</th>
+                  <th className="num">MAE leader</th>
+                  <th className="num">Bias leader</th>
+                </tr>
+              </thead>
+              <tbody>
+                {FORECAST_STUDY.targets.flatMap((t) =>
+                  t.slices
+                    .filter((r) => r.name !== "seasonal_naive")
+                    .map((r) => (
+                      <tr key={`${t.target}-${r.slice}`}>
+                        <th scope="row">
+                          {TARGET[t.target]} · {SLICE[r.slice]}
+                        </th>
+                        <td className="num">{show(r.n)}</td>
+                        <td className="num">
+                          {show(
+                            t.slices.find((s) => s.name === "seasonal_naive" && s.slice === r.slice)
+                              ?.mae,
+                            4,
+                          )}
+                        </td>
+                        <td className="num">{show(r.mae, 4)}</td>
+                        <td className="num">{show(r.bias, 4)}</td>
+                      </tr>
+                    )),
+                )}
+              </tbody>
+            </table>
+          </TableScroll>
+          <EvidenceNote source="docs/evidence/f4-forecasting.json">
+            Corrective validation 30.10.2026 · 64 ID · leader: CatBoost default для отправлений,
+            bounded для прибытий; bias = prediction − actual.
+          </EvidenceNote>
+        </section>
+        <section className="card" style={{ marginTop: 16 }}>
+          <h2>Что дали признаки и варианты loss</h2>
+          <p className="body-text">
+            Удаление календаря заметно ухудшает CatBoost; удаление station ID и профиля спроса даёт
+            меньший средний эффект. Это ablation на тех же четырёх validation-окнах, без нового
+            независимого теста.
+          </p>
+          <TableScroll>
+            <table>
+              <thead>
+                <tr>
+                  <th>CatBoost bounded · MAE</th>
+                  <th className="num">Полный</th>
+                  <th className="num">Без календаря</th>
+                  <th className="num">Без station ID</th>
+                  <th className="num">Без профиля</th>
+                </tr>
+              </thead>
+              <tbody>
+                {FORECAST_STUDY.targets.map((t) => {
+                  const full =
+                    t.models.find((m) => m.model === "catboost_bounded")?.validation ?? 0;
+                  return (
+                    <tr key={t.target}>
+                      <th scope="row">{TARGET[t.target]}</th>
+                      <td className="num">{show(full, 4)}</td>
+                      {t.ablation.map((a) => (
+                        <td key={a.group} className="num">
+                          {show(full + a.delta, 4)}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </TableScroll>
+          <EvidenceNote source="docs/evidence/f4-forecasting.json">
+            30.10.2026 · 64 ID · одинаковые строки в парных ablation; среднее MAE четырёх окон.
+          </EvidenceNote>
+          <p className="body-text">
+            Последующий exploratory A/B: 176 trials, 44 сравнения групп — 40 inconclusive, 3
+            ухудшения, 1 улучшение. В decision research (872 trials) ни один вариант не прошёл
+            критические сегменты. Эти результаты не меняют frozen selection.
+          </p>
+          <EvidenceNote source="docs/evidence/f4-feature-research.json">
+            02.11.2026 · validation-only, 64 ID · эффект групп не установлен.{" "}
+            <a href={evidenceHref("docs/evidence/f4-decision-research.json")}>
+              Decision research ↗
+            </a>
+          </EvidenceNote>
+          <p className="body-text">
+            Poisson и hurdle проверялись как разные модели счётчиков. Сравнение семейств
+            одновременно меняет модель и обучение; оно не изолирует эффект loss. Контролируемая
+            loss-ablation при фиксированных остальных условиях — <strong>NOT VERIFIED</strong>.
+          </p>
+          <EvidenceNote source="docs/evidence/f4-decision-research.json" status="NOT VERIFIED">
+            02.11.2026 · H5 hurdle · exploratory, без слепой предрегистрации и нового независимого
+            периода.
+          </EvidenceNote>
+        </section>
+        <section className="card" style={{ marginTop: 16 }} data-finding="f4-diagnostics">
+          <h2>593 диагностических события — не 593 инцидента</h2>
+          <p className="body-text">
+            Из 1 126 сырых сигналов spike / long zero / CUSUM получены 593 дедуплицированных
+            события. Контрольный протокол (инъекции и отрицательные случаи) прошёл 12/12 проверок.
+            Независимой разметки реальных сбоев нет: Precision@K и реальная доля ложных тревог
+            неизвестны; гипотеза контекстного признака — inconclusive.
+          </p>
+          <EvidenceNote source="docs/evidence/f4-ml-diagnostics.json" status="NOT VERIFIED">
+            03.11.2026 · контекстные station-hour ретроспективной когорты; physical incidents не
+            подтверждены, final test не пересчитывался.
+          </EvidenceNote>
+        </section>
+
+        <div className="section-title">
+          <h2>Текущая публикация</h2>
+          <p>Её доступность проверяется отдельно от результатов исследования выше.</p>
+        </div>
         <form
           className="filterbar static"
           action="/forecasts"
@@ -130,7 +369,7 @@ export default async function ForecastsPage({
             </label>
             <div className="filter-actions">
               <Link className="btn btn-ghost" href="/forecasts">
-                Все
+                Сбросить
               </Link>
               <button className="btn btn-primary" type="submit">
                 Показать
@@ -138,147 +377,52 @@ export default async function ForecastsPage({
             </div>
           </div>
         </form>
-
         {failure ? (
-          <StatePanel
-            state={failure.state}
-            title={failure.state === "error" ? "Запрос не подходит" : "Прогноз недоступен"}
-          >
+          <StatePanel state={failure.state} title="Публикация недоступна">
             <p data-forecast-page={failure.state}>{failure.text}</p>
           </StatePanel>
         ) : (
           <>
             <section
-              className={`callout tone-${meta.tone} state-${state}`}
+              className={`callout tone-${meta.tone}`}
               data-forecast-page={state}
               role="status"
             >
-              <span className="callout-icon">
-                <Icon name={meta.icon} size={17} />
-              </span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div className="card-head" style={{ marginBottom: 6 }}>
-                  <h2>{meta.title}</h2>
-                  <Status tone={meta.tone as Tone}>{meta.label}</Status>
-                </div>
+              <Icon name={meta.icon} size={17} />
+              <div>
+                <h2>{meta.title}</h2>
                 <p>
                   {state === "expired"
-                    ? `Окно действия закрылось ${nyTime(pub?.valid_until)}. Значения скрыты: новая публикация требует отдельного batch F4/F7, модель из интерфейса не запускается.`
+                    ? `Окно закрылось ${nyTime(pub?.valid_until)}. Значения скрыты.`
                     : state === "valid"
-                      ? "Значения ниже — оценки опубликованных поездок, не факт и не скрытый спрос."
-                      : state === "empty"
-                        ? "Нет активной публикации прогноза."
-                        : "Все строки выбранного среза недоступны или ответ не прошёл проверку."}
+                      ? "Оценки опубликованных поездок; не факты и не скрытый спрос."
+                      : "Нет действительных значений для выбранной станции."}
                 </p>
-                {span && (
-                  <>
-                    <div className="timeline" aria-hidden="true">
-                      <i
-                        style={{
-                          width: `${elapsed * 100}%`,
-                          background: state === "valid" ? "var(--success)" : "var(--warning)",
-                          opacity: 0.7,
-                        }}
-                      />
-                      <span className="now" style={{ left: `calc(${elapsed * 100}% - 1px)` }} />
-                    </div>
-                    <div className="timeline-labels">
-                      <span>origin {nyTime(pub?.forecast_origin_utc)}</span>
-                      <span>сейчас {state === "valid" ? "внутри окна" : "после окна"}</span>
-                      <span>valid_until {nyTime(pub?.valid_until)}</span>
-                    </div>
-                  </>
-                )}
               </div>
             </section>
-
             {pub && (
-              <div className="grid" style={{ marginTop: 16 }}>
-                <section className="card span-7">
-                  <div className="card-head">
-                    <div>
-                      <h2>Provenance публикации</h2>
-                      <p className="card-sub">Из чего и когда собран этот прогноз.</p>
-                    </div>
-                  </div>
-                  <div className="lineage">
-                    <span className="chip">
-                      F2 <span className="mono">{short(pub.source_snapshot_id)}</span>
-                    </span>
-                    <span className="arrow">→</span>
-                    <span className="chip">
-                      F3 <span className="mono">{short(pub.gold_publication_id)}</span>
-                    </span>
-                    <span className="arrow">→</span>
-                    <span className="chip">
-                      dataset <span className="mono">{short(pub.dataset_id)}</span>
-                    </span>
-                    <span className="arrow">→</span>
-                    <span className="chip">
-                      bundle <span className="mono">{short(pub.model_bundle_id)}</span>
-                    </span>
-                  </div>
-                  <dl className="facts" style={{ marginTop: 16 }}>
-                    <dt>Publication</dt>
-                    <dd className="hash">{String(pub.publication_id)}</dd>
-                    <dt>Forecast origin</dt>
-                    <dd>{nyTime(pub.forecast_origin_utc)}</dd>
-                    <dt>Горизонт</dt>
-                    <dd>1–24 ч после origin (UTC-часы)</dd>
-                    <dt>valid_until</dt>
-                    <dd data-forecast-valid-until={String(pub.valid_until)}>
-                      {nyTime(pub.valid_until)}
-                    </dd>
-                    <dt>Данные as-of</dt>
-                    <dd>
-                      {nyTime(pub.data_as_of)} ({String(pub.data_as_of_kind)}); возраст источника{" "}
-                      {show(freshness?.source_age_days)} из {show(freshness?.max_source_age_days)}{" "}
-                      дней
-                    </dd>
-                    <dt>Ограничения</dt>
-                    <dd>{String(pub.limitations)}</dd>
-                  </dl>
-                </section>
-                <section className="card span-5">
-                  <div className="card-head">
-                    <h2>Модель и покрытие</h2>
-                    <Status tone="info">Seasonal Naive</Status>
-                  </div>
-                  <p className="body-text">
-                    Frozen selection F4: delayed Seasonal Naive baseline для отправлений и прибытий.
-                    Исследовательские кандидаты точнее в среднем, но не прошли gate деградации
-                    сегментов; operational promotion — NOT VERIFIED. Семейство модели в
-                    serving-контракте F4 не публикуется.
-                  </p>
-                  <div style={{ marginTop: 14 }}>
-                    <div className="share-legend" style={{ justifyContent: "space-between" }}>
-                      <span>
-                        {show(validRows)} valid / {show(unavailableRows)} unavailable строк
-                      </span>
-                      <span>{show(rowShare * 100)}%</span>
-                    </div>
-                    <div className="share-bar" style={{ marginTop: 6 }} aria-hidden="true">
-                      <span style={{ width: `${rowShare * 100}%`, background: "var(--success)" }} />
-                    </div>
-                  </div>
-                  <dl className="facts" style={{ marginTop: 14 }}>
-                    <dt>Quality</dt>
-                    <dd>{String(pub.quality_status)}</dd>
-                    <dt>Accuracy evidence</dt>
-                    <dd>{String(pub.accuracy_evidence_mode)}</dd>
-                    <dt>Availability</dt>
-                    <dd>{String(pub.availability_mode)}</dd>
-                  </dl>
-                  <div className="card-foot">
-                    <span>Выводы исследований F4</span>
-                    <Link className="link-arrow" href="/analytics#findings">
-                      Что проверяли <Icon name="arrow" size={14} />
-                    </Link>
-                  </div>
-                </section>
-              </div>
+              <details className="disclosure card" style={{ marginTop: 16 }}>
+                <summary>Источник и срок публикации · {short(pub.publication_id)}</summary>
+                <dl className="facts">
+                  <dt>Publication</dt>
+                  <dd className="hash">{String(pub.publication_id)}</dd>
+                  <dt>Forecast origin</dt>
+                  <dd>{nyTime(pub.forecast_origin_utc)}</dd>
+                  <dt>Valid until</dt>
+                  <dd data-forecast-valid-until={String(pub.valid_until)}>
+                    {nyTime(pub.valid_until)}
+                  </dd>
+                  <dt>Bundle</dt>
+                  <dd className="hash">{String(pub.model_bundle_id)}</dd>
+                  <dt>Data as-of</dt>
+                  <dd>
+                    {nyTime(pub.data_as_of)} · {String(pub.data_as_of_kind)}
+                  </dd>
+                  <dt>Ограничения</dt>
+                  <dd>{String(pub.limitations)}</dd>
+                </dl>
+              </details>
             )}
-
             {state === "valid" ? (
               <section
                 className="card"
@@ -310,7 +454,7 @@ export default async function ForecastsPage({
                 />
                 <details className="disclosure" open>
                   <summary>Таблица по горизонтам</summary>
-                  <div className="table-scroll">
+                  <TableScroll>
                     <table>
                       <thead>
                         <tr>
@@ -343,45 +487,10 @@ export default async function ForecastsPage({
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </TableScroll>
                 </details>
               </section>
-            ) : (
-              <section className="card" style={{ marginTop: 16 }}>
-                <div className="empty-state">
-                  <Icon name="forecast" size={22} />
-                  <strong>Значения прогноза скрыты</strong>
-                  <span>
-                    Пока нет действительной публикации, здесь не показываются числа. Исторические
-                    факты по станциям доступны в аналитике.
-                  </span>
-                  <span className="meta-row" style={{ justifyContent: "center", marginTop: 6 }}>
-                    <Link
-                      className="btn btn-secondary btn-sm"
-                      href={withParams("/stations", params, { station_id: station ?? "" })}
-                    >
-                      Карта станций
-                    </Link>
-                    <Link
-                      className="btn btn-secondary btn-sm"
-                      href={withParams("/analytics", params, { station_id: station ?? "" })}
-                    >
-                      История поездок
-                    </Link>
-                  </span>
-                </div>
-              </section>
-            )}
-            {station && (
-              <p style={{ marginTop: 16 }}>
-                <Link
-                  className="link-arrow"
-                  href={withParams("/stations", params, { station_id: station })}
-                >
-                  Карточка станции {station} <Icon name="arrow" size={14} />
-                </Link>
-              </p>
-            )}
+            ) : null}
           </>
         )}
       </main>
@@ -389,3 +498,15 @@ export default async function ForecastsPage({
     </>
   );
 }
+const TARGET = { departures: "Отправления", arrivals: "Прибытия" };
+const MODEL = {
+  seasonal_naive: "Seasonal Naive",
+  poisson_bounded: "Poisson",
+  lightgbm_bounded: "LightGBM",
+  catboost_bounded: "CatBoost",
+};
+const SLICE = {
+  "actual:zero": "0 поездок",
+  "actual:nonzero": ">0 поездок",
+  "actual:peak_ge20": "≥20 поездок",
+};

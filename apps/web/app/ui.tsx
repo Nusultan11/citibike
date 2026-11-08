@@ -1,8 +1,47 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { evidenceHref } from "../lib/findings";
 import { withParams } from "../lib/operations";
 import RenderTiming from "./render-timing";
 import TermTooltip from "./term-tooltip";
+
+export function TableScroll({
+  children,
+  free,
+  style,
+}: {
+  children: ReactNode;
+  free?: boolean;
+  style?: CSSProperties;
+}) {
+  return (
+    <section
+      className={`table-scroll${free ? " free" : ""}`}
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: Overflow regions need native keyboard focus for Arrow-key scrolling.
+      tabIndex={0}
+      aria-label="Таблица, прокрутка влево и вправо"
+      style={style}
+    >
+      {children}
+    </section>
+  );
+}
+
+export function EvidenceNote({
+  source,
+  children,
+  status = "LIMITED",
+}: {
+  source: string;
+  children: ReactNode;
+  status?: "VERIFIED" | "LIMITED" | "NOT VERIFIED";
+}) {
+  return (
+    <p className="note evidence-note">
+      <strong>{status}</strong> · {children} <a href={evidenceHref(source)}>Доказательство ↗</a>
+    </p>
+  );
+}
 
 // Short definitions from METRICS.md; tooltips never replace the normative text.
 export const DEFINITIONS = {

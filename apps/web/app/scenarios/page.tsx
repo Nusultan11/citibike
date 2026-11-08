@@ -9,6 +9,7 @@ import {
 } from "../../lib/operations";
 import Chart from "../chart";
 import {
+  EvidenceNote,
   Icon,
   Kind,
   nyTime,
@@ -21,6 +22,7 @@ import {
   Status,
   short,
   show,
+  TableScroll,
   Term,
 } from "../ui";
 
@@ -126,13 +128,18 @@ export default async function ScenariosPage({
                   <h2>
                     {archival
                       ? "Архивный recorded-as-of replay — не текущая рекомендация"
-                      : "Сценарий в пределах TTL начального состояния"}
+                      : pub?.data_mode === "controlled_fixture"
+                        ? "Контролируемая проверка интерфейса — не данные города"
+                        : "Сценарий в пределах TTL начального состояния"}
                   </h2>
                   <Status tone={archival ? "warning" : "success"}>
-                    {archival ? "архив" : "текущий"}
+                    {archival
+                      ? "LIMITED · архив"
+                      : pub?.data_mode === "controlled_fixture"
+                        ? "Тестовый fixture"
+                        : "Сценарий в TTL"}
                   </Status>
                 </div>
-                <p>{data.currency?.reason}</p>
                 <div className="meta-row" style={{ marginTop: 10 }}>
                   <span className="chip">
                     as-of{" "}
@@ -173,6 +180,12 @@ export default async function ScenariosPage({
                     ? `«Ничего не делать» не хуже по loss + λ·cost во всех ${cells.length} показанных ячейках масштаба × порядка событий. Перемещения эвристики и MILP ниже — только сценарные альтернативы.`
                     : `Победа по objective в отдельных из ${cells.length} ячеек сама по себе не подтверждает устойчивую пользу и не разрешает перевозки.`}
                 </p>
+                {pub?.data_mode === "real_official" && (
+                  <EvidenceNote source="docs/evidence/f5-risk.md">
+                    Проверка 02.11.2026 · recorded as-of 30.10.2026 06:36 UTC · 3/64 станции · 27
+                    objective, 0 расхождений; 9 ячеек × 32 розыгрыша.
+                  </EvidenceNote>
+                )}
               </div>
             </section>
 
@@ -313,7 +326,7 @@ export default async function ScenariosPage({
               />
               <details className="disclosure">
                 <summary>Таблица всех исходов · {data.outcomes.length}</summary>
-                <div className="table-scroll">
+                <TableScroll>
                   <table data-scenario-outcomes={data.outcomes.length}>
                     <thead>
                       <tr>
@@ -357,214 +370,233 @@ export default async function ScenariosPage({
                       })}
                     </tbody>
                   </table>
-                </div>
+                </TableScroll>
               </details>
             </section>
 
-            <div className="grid" style={{ marginTop: 16 }}>
-              <section className="card span-5">
-                <div className="card-head">
-                  <div>
-                    <h2>Перемещения при масштабе ×{data.filters.scale}</h2>
-                    <p className="card-sub">
-                      Расстояния и время — сценарные допущения (Haversine proxy), не маршруты улиц.
-                    </p>
-                  </div>
-                  <Kind kind="simulation" />
-                </div>
-                {data.transfers.length === 0 ? (
-                  <div className="empty-state" style={{ minHeight: 120 }}>
-                    <strong>Нет перемещений</strong>
-                  </div>
-                ) : (
-                  <ul className="list-clean">
-                    {data.transfers.map((t) => (
-                      <li
-                        key={`${t.policy}-${t.source}-${t.destination}`}
-                        className="row-link"
-                        style={{ alignItems: "flex-start" }}
-                      >
-                        <span>
-                          <span className="badge info" style={{ marginLeft: 0 }}>
-                            {POLICY[t.policy as keyof typeof POLICY]}
-                          </span>
-                          <span className="mono" style={{ display: "block", marginTop: 4 }}>
-                            {t.source} → {t.destination}
-                          </span>
-                        </span>
-                        <span style={{ textAlign: "right" }}>
-                          <b>{t.bikes} вел.</b>
-                          <span className="cell-sub">
-                            {t.vehicles} маш. · {show(t.distance_km, 2)} км · {show(t.minutes, 1)}{" "}
-                            мин
-                          </span>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-              <section className="card span-7">
-                <div className="card-head">
-                  <div>
-                    <h2>
-                      <Term name="empty_full_risk">Риск станций</Term> · ×{data.filters.scale} ·{" "}
-                      {data.filters.event_order}
-                    </h2>
-                    <p className="card-sub">
-                      Полоса — доля розыгрышей, рамка — Wilson 95% (точность Монте-Карло, не
-                      калибровка).
-                    </p>
-                  </div>
-                  <Kind kind="simulation" />
-                </div>
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Станция</th>
-                        <th>Политика</th>
-                        <th>Пустая</th>
-                        <th>Полная</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.station_outcomes
-                        .filter((o) => o.status === "ok")
-                        .map((o) => (
-                          <tr key={`${o.station_id}-${o.policy}`}>
-                            <td>
-                              <Link
-                                className="mono"
-                                href={withParams("/stations", new URLSearchParams(), {
-                                  station_id: o.station_id,
-                                })}
-                              >
-                                {o.station_id}
-                              </Link>
-                            </td>
-                            <td>{POLICY[o.policy as keyof typeof POLICY]}</td>
-                            <td>
-                              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                <RiskBar
-                                  value={o.empty_fraction}
-                                  low={o.empty_low}
-                                  high={o.empty_high}
-                                />
-                                <span className="cell-sub" style={{ display: "inline" }}>
-                                  {percent(o.empty_fraction, 0)} ({percent(o.empty_low, 0)}–
-                                  {percent(o.empty_high, 0)})
-                                </span>
+            <details className="disclosure card" style={{ marginTop: 16 }}>
+              <summary>Перемещения, риски станций и протокол</summary>
+              <div className="grid">
+                {data.transfers.length > 0 && (
+                  <section className="card span-5">
+                    <div className="card-head">
+                      <div>
+                        <h2>Перемещения при масштабе ×{data.filters.scale}</h2>
+                        <p className="card-sub">
+                          Расстояния и время — сценарные допущения (Haversine proxy), не маршруты
+                          улиц.
+                        </p>
+                      </div>
+                      <Kind kind="simulation" />
+                    </div>
+                    {data.transfers.length === 0 ? (
+                      <div className="empty-state" style={{ minHeight: 120 }}>
+                        <strong>Нет перемещений</strong>
+                      </div>
+                    ) : (
+                      <ul className="list-clean">
+                        {data.transfers.map((t) => (
+                          <li
+                            key={`${t.policy}-${t.source}-${t.destination}`}
+                            className="row-link"
+                            style={{ alignItems: "flex-start" }}
+                          >
+                            <span>
+                              <span className="badge info" style={{ marginLeft: 0 }}>
+                                {POLICY[t.policy as keyof typeof POLICY]}
                               </span>
-                            </td>
-                            <td>
-                              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                                <RiskBar
-                                  value={o.full_fraction}
-                                  low={o.full_low}
-                                  high={o.full_high}
-                                />
-                                <span className="cell-sub" style={{ display: "inline" }}>
-                                  {percent(o.full_fraction, 0)} ({percent(o.full_low, 0)}–
-                                  {percent(o.full_high, 0)})
-                                </span>
+                              <span className="mono" style={{ display: "block", marginTop: 4 }}>
+                                {t.source} → {t.destination}
                               </span>
-                            </td>
-                          </tr>
+                            </span>
+                            <span style={{ textAlign: "right" }}>
+                              <b>{t.bikes} вел.</b>
+                              <span className="cell-sub">
+                                {t.vehicles} маш. · {show(t.distance_km, 2)} км ·{" "}
+                                {show(t.minutes, 1)} мин
+                              </span>
+                            </span>
+                          </li>
                         ))}
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+                      </ul>
+                    )}
+                  </section>
+                )}
+                <section className={`card ${data.transfers.length ? "span-7" : "span-12"}`}>
+                  <div className="card-head">
+                    <div>
+                      <h2>
+                        <Term name="empty_full_risk">Риск станций</Term> · ×{data.filters.scale} ·{" "}
+                        {data.filters.event_order}
+                      </h2>
+                      <p className="card-sub">
+                        Полоса — доля розыгрышей, рамка — Wilson 95% (точность Монте-Карло, не
+                        калибровка).
+                      </p>
+                    </div>
+                    <Kind kind="simulation" />
+                  </div>
+                  <TableScroll>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Станция</th>
+                          <th>Политика</th>
+                          <th>Пустая</th>
+                          <th>Полная</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.station_outcomes
+                          .filter((o) => o.status === "ok")
+                          .map((o) => (
+                            <tr key={`${o.station_id}-${o.policy}`}>
+                              <td>
+                                <Link
+                                  className="mono"
+                                  href={withParams("/stations", new URLSearchParams(), {
+                                    station_id: o.station_id,
+                                  })}
+                                >
+                                  {o.station_id}
+                                </Link>
+                              </td>
+                              <td>{POLICY[o.policy as keyof typeof POLICY]}</td>
+                              <td>
+                                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <RiskBar
+                                    value={o.empty_fraction}
+                                    low={o.empty_low}
+                                    high={o.empty_high}
+                                  />
+                                  <span className="cell-sub" style={{ display: "inline" }}>
+                                    {percent(o.empty_fraction, 0)} ({percent(o.empty_low, 0)}–
+                                    {percent(o.empty_high, 0)})
+                                  </span>
+                                </span>
+                              </td>
+                              <td>
+                                <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  <RiskBar
+                                    value={o.full_fraction}
+                                    low={o.full_low}
+                                    high={o.full_high}
+                                  />
+                                  <span className="cell-sub" style={{ display: "inline" }}>
+                                    {percent(o.full_fraction, 0)} ({percent(o.full_low, 0)}–
+                                    {percent(o.full_high, 0)})
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </TableScroll>
+                </section>
 
-              <section className="card span-4">
-                <div className="card-head">
-                  <h2>Исключённые станции · {excluded.length}</h2>
-                </div>
-                <ul className="list-clean">
-                  {[...reasons].map(([reason, count]) => (
-                    <li key={reason} className="row-link">
-                      <span className="mono" style={{ fontSize: 12 }}>
-                        {reason}
-                      </span>
-                      <b>{count}</b>
-                    </li>
-                  ))}
-                </ul>
-                <details className="disclosure">
-                  <summary>Все исключения</summary>
-                  <ul className="bullets small">
-                    {excluded.map((s) => (
-                      <li key={s.station_id}>
-                        <span className="mono">{s.station_id}</span>: {s.reasons.join(", ")}
+                <section className="span-4">
+                  <div className="card-head">
+                    <h2>Исключённые станции · {excluded.length}</h2>
+                  </div>
+                  <ul className="list-clean">
+                    {[...reasons].map(([reason, count]) => (
+                      <li key={reason} className="row-link">
+                        <span className="mono" style={{ fontSize: 12 }}>
+                          {reason}
+                        </span>
+                        <b>{count}</b>
                       </li>
                     ))}
                   </ul>
-                </details>
-              </section>
-              <section className="card span-4">
-                <div className="card-head">
-                  <h2>Параметры и lineage</h2>
-                </div>
-                <dl className="facts">
-                  <dt>λ (cost_weight)</dt>
-                  <dd>{String(config.cost_weight)}</dd>
-                  <dt>Парк</dt>
-                  <dd>
-                    {String(config.vehicles)} × {String(config.vehicle_capacity)} велосипедов;{" "}
-                    {String(config.speed_kmh)} км/ч + {String(config.handling_minutes)} мин
-                  </dd>
-                  <dt>Пороги эвристики</dt>
-                  <dd>
-                    {String(config.low_threshold)} / {String(config.high_threshold)}
-                  </dd>
-                  <dt>Повторов · seed</dt>
-                  <dd>
-                    {String(config.repeats)} · {String(config.seed)}
-                  </dd>
-                  <dt>Горизонт</dt>
-                  <dd>
-                    {nyTime(pub?.horizon_start)} → {nyTime(pub?.horizon_end)}
-                  </dd>
-                  <dt>Создан</dt>
-                  <dd>
-                    {nyTime(pub?.created_at)} · {String(pub?.mode)} · {String(pub?.data_mode)}
-                  </dd>
-                  <dt>Lineage</dt>
-                  <dd className="hash">
-                    F5 {short(pub?.publication_id)} · F4 {short(provenance.forecast_id)} · GBFS{" "}
-                    {String(provenance.gbfs_collection_id)}
-                  </dd>
-                  <dt>Verify</dt>
-                  <dd>
-                    {String(verification.status)} ({String(verification.paired_draws)} draws)
-                  </dd>
-                  <dt>Operational promotion</dt>
-                  <dd>{String(pub?.operational_promotion)}</dd>
-                </dl>
-              </section>
-              <section className="card span-4">
-                <div className="card-head">
-                  <h2>Допущения симулятора</h2>
-                </div>
-                <details className="disclosure" style={{ marginTop: 0 }}>
-                  <summary>
-                    Показать {((pub?.assumptions as string[]) ?? []).length} допущений
-                  </summary>
-                  <ol className="bullets small">
-                    {((pub?.assumptions as string[]) ?? []).map((a) => (
-                      <li key={a}>{a}</li>
-                    ))}
-                  </ol>
-                </details>
-                <p className="note" style={{ marginTop: 10 }}>
-                  Ключевое: спрос — Poisson с прогнозом как средним, перевозки стартуют на as-of,
-                  оптимизатор оптимален только для surrogate-цели.
-                </p>
-              </section>
-            </div>
+                  <details className="disclosure">
+                    <summary>Все исключения</summary>
+                    <ul className="bullets small">
+                      {excluded.map((s) => (
+                        <li key={s.station_id}>
+                          <span className="mono">{s.station_id}</span>: {s.reasons.join(", ")}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </section>
+                <section className="span-4">
+                  <div className="card-head">
+                    <h2>Параметры и lineage</h2>
+                  </div>
+                  <dl className="facts">
+                    <dt>λ (cost_weight)</dt>
+                    <dd>{String(config.cost_weight)}</dd>
+                    <dt>Парк</dt>
+                    <dd>
+                      {String(config.vehicles)} × {String(config.vehicle_capacity)} велосипедов;{" "}
+                      {String(config.speed_kmh)} км/ч + {String(config.handling_minutes)} мин
+                    </dd>
+                    <dt>Пороги эвристики</dt>
+                    <dd>
+                      {String(config.low_threshold)} / {String(config.high_threshold)}
+                    </dd>
+                    <dt>Повторов · seed</dt>
+                    <dd>
+                      {String(config.repeats)} · {String(config.seed)}
+                    </dd>
+                    <dt>Горизонт</dt>
+                    <dd>
+                      {nyTime(pub?.horizon_start)} → {nyTime(pub?.horizon_end)}
+                    </dd>
+                    <dt>Создан</dt>
+                    <dd>
+                      {nyTime(pub?.created_at)} · {String(pub?.mode)} · {String(pub?.data_mode)}
+                    </dd>
+                    <dt>Lineage</dt>
+                    <dd className="hash">
+                      F5 {short(pub?.publication_id)} · F4 {short(provenance.forecast_id)} · GBFS{" "}
+                      {String(provenance.gbfs_collection_id)}
+                    </dd>
+                    <dt>Verify</dt>
+                    <dd>
+                      {String(verification.status)} ({String(verification.paired_draws)} draws)
+                    </dd>
+                    <dt>Operational promotion</dt>
+                    <dd>{String(pub?.operational_promotion)}</dd>
+                  </dl>
+                </section>
+                <section className="span-4">
+                  <div className="card-head">
+                    <h2>Допущения симулятора</h2>
+                  </div>
+                  <details className="disclosure" style={{ marginTop: 0 }}>
+                    <summary>
+                      Показать {((pub?.assumptions as string[]) ?? []).length} допущений
+                    </summary>
+                    <ol className="bullets small">
+                      {((pub?.assumptions as string[]) ?? []).map((a) => (
+                        <li key={a}>{a}</li>
+                      ))}
+                    </ol>
+                  </details>
+                  <p className="note" style={{ marginTop: 10 }}>
+                    Ключевое: спрос — Poisson с прогнозом как средним, перевозки стартуют на as-of,
+                    оптимизатор оптимален только для surrogate-цели.
+                  </p>
+                </section>
+              </div>
+            </details>
           </>
         )}
+        <section className="card" style={{ marginTop: 16 }}>
+          <h2>Контрольный эксперимент и реальный replay отвечают на разные вопросы</h2>
+          <p className="body-text">
+            Исторический controlled fixture: 4 тестовые станции, 4 часа и 32 розыгрыша. MILP лучше
+            no-action в 9/9 ячейках, но уступает эвристике в 6/9 (ничья в 3/9). Этот контроль
+            проверяет механизм симуляции; тестовый выигрыш не доказывает пользу на архивных входах
+            города. Выводы любого replay ограничены покрытием его входов.
+          </p>
+          <EvidenceNote source="docs/evidence/f5-risk.md">
+            30.10–02.11.2026 · controlled fixture отдельно от real-official recorded-as-of · field
+            effect, калибровка и фактическая экономия NOT VERIFIED.
+          </EvidenceNote>
+        </section>
       </main>
       <SiteFooter />
     </>

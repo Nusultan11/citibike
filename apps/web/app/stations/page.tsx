@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { type AnalyticsData, analytics } from "../../lib/analytics";
+import { FINDINGS, findingPopulation } from "../../lib/findings";
 import {
   defaultWindow,
   forecastState,
@@ -15,6 +16,7 @@ import {
 import Chart from "../chart";
 import {
   AppliedFilters,
+  EvidenceNote,
   Icon,
   Kind,
   nyTime,
@@ -25,6 +27,7 @@ import {
   StatePanel,
   Status,
   show,
+  TableScroll,
   Term,
 } from "../ui";
 
@@ -249,7 +252,7 @@ export default async function StationsPage({
             <>
               <div className="grid">
                 <section
-                  className="card span-8"
+                  className={`card ${station || q ? "span-8" : "span-12"}`}
                   data-stations-state={list.status}
                   data-stations-total={list.total_stations}
                   data-geo-id={list.geo?.geo_id}
@@ -320,66 +323,77 @@ export default async function StationsPage({
                     </div>
                   )}
                   <p className="note" style={{ marginTop: 10 }}>
-                    Базовая карта улиц не подключена: нет утверждённого провайдера тайлов. Источник
-                    координат: {list.geo?.version ?? "N/A"}
-                    {list.geo?.policy ? ` · ${list.geo.policy}` : ""}
+                    Координатная карта без уличной подложки. Выберите точку мышью или ID в
+                    раскрываемом списке под картой. Координаты исторические; источник —
+                    опубликованные поездки.
                   </p>
+                  {list.publication && (
+                    <EvidenceNote source="docs/evidence/f6-product.json" status="VERIFIED">
+                      Проверка координат 02.11.2026 · F3{" "}
+                      {list.publication.publication_id.slice(0, 12)} · NYC,{" "}
+                      {String(list.filters.start_date)} → {String(list.filters.end_date)} · source
+                      ID без объединения.
+                    </EvidenceNote>
+                  )}
                 </section>
 
-                <aside className="span-4 stack" aria-label="Станция или результаты поиска">
-                  {station ? (
-                    <StationSummary
-                      station={station}
-                      row={row}
-                      detail={detail?.ok ? detail.value : null}
-                      detailError={detail && !detail.ok ? detail.text : null}
-                      params={params}
-                    />
-                  ) : (
-                    <section className="card">
-                      <div className="card-head">
-                        <div>
-                          <h2>{q ? `Найдено по «${q}»` : "Самые активные станции"}</h2>
-                          <p className="card-sub">
-                            {show(matches.length)} станций · по числу поездок · выберите строку или
-                            точку на карте
-                          </p>
+                {(station || q) && (
+                  <aside className="span-4 stack" aria-label="Станция или результаты поиска">
+                    {station ? (
+                      <StationSummary
+                        station={station}
+                        row={row}
+                        detail={detail?.ok ? detail.value : null}
+                        detailError={detail && !detail.ok ? detail.text : null}
+                        params={params}
+                      />
+                    ) : (
+                      <section className="card">
+                        <div className="card-head">
+                          <div>
+                            <h2>{q ? `Найдено по «${q}»` : "Выберите станцию"}</h2>
+                            <p className="card-sub">
+                              {q
+                                ? `Совпадений: ${show(matches.length)}; показаны первые 40 по числу поездок`
+                                : "Нажмите точку карты, выберите ID под графиком с клавиатуры или найдите часть названия."}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      {matches.length === 0 ? (
-                        <div className="empty-state">
-                          <strong>Ничего не найдено</strong>
-                          <span>Проверьте ID или часть названия.</span>
-                        </div>
-                      ) : (
-                        <ol className="list-clean side-list">
-                          {matches.slice(0, 40).map((r) => (
-                            <li key={r.station_id}>
-                              <Link
-                                className="row-link"
-                                href={`${mapHref}${encodeURIComponent(r.station_id)}`}
-                              >
-                                <span style={{ minWidth: 0 }}>
-                                  <span className="mono">{r.station_id}</span>
-                                  {r.suspected_id_split && (
-                                    <span className="badge warn">◇ {r.split_partner}</span>
-                                  )}
-                                  <span className="cell-sub">
-                                    {r.station_name ?? "название N/A"}
+                        {!q ? null : matches.length === 0 ? (
+                          <div className="empty-state">
+                            <strong>Ничего не найдено</strong>
+                            <span>Проверьте ID или часть названия.</span>
+                          </div>
+                        ) : (
+                          <ol className="list-clean side-list">
+                            {matches.slice(0, 40).map((r) => (
+                              <li key={r.station_id}>
+                                <Link
+                                  className="row-link"
+                                  href={`${mapHref}${encodeURIComponent(r.station_id)}`}
+                                >
+                                  <span style={{ minWidth: 0 }}>
+                                    <span className="mono">{r.station_id}</span>
+                                    {r.suspected_id_split && (
+                                      <span className="badge warn">◇ {r.split_partner}</span>
+                                    )}
+                                    <span className="cell-sub">
+                                      {r.station_name ?? "название N/A"}
+                                    </span>
                                   </span>
-                                </span>
-                                <span style={{ textAlign: "right" }}>
-                                  <b>{show(r.completed_published_rides)}</b>
-                                  <span className="cell-sub">net {show(r.net_flow)}</span>
-                                </span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ol>
-                      )}
-                    </section>
-                  )}
-                </aside>
+                                  <span style={{ textAlign: "right" }}>
+                                    <b>{show(r.completed_published_rides)}</b>
+                                    <span className="cell-sub">net {show(r.net_flow)}</span>
+                                  </span>
+                                </Link>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
+                      </section>
+                    )}
+                  </aside>
+                )}
               </div>
 
               {station && row && (
@@ -397,58 +411,17 @@ export default async function StationsPage({
                   params={params}
                 />
               )}
-
-              <details className="disclosure card" style={{ marginTop: 16 }}>
-                <summary>
-                  Таблица всех станций{q ? ` по «${q}»` : ""} · {show(matches.length)}
-                </summary>
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Станция</th>
-                        <th>Название</th>
-                        <th className="num">Отправления</th>
-                        <th className="num">Прибытия</th>
-                        <th className="num">Net flow</th>
-                        <th>Координаты</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {matches.slice(0, 200).map((r) => (
-                        <tr
-                          key={r.station_id}
-                          data-station-row={r.station_id}
-                          aria-current={r.station_id === station ? "true" : undefined}
-                        >
-                          <td>
-                            <Link href={`${mapHref}${encodeURIComponent(r.station_id)}`}>
-                              {r.station_id}
-                            </Link>
-                            {r.suspected_id_split && (
-                              <span className="badge warn" data-id-split={r.station_id}>
-                                ◇ пара {r.split_partner}
-                              </span>
-                            )}
-                          </td>
-                          <td>{r.station_name ?? "N/A"}</td>
-                          <td className="num">{show(r.departures)}</td>
-                          <td className="num">{show(r.arrivals)}</td>
-                          <td className="num">{show(r.net_flow)}</td>
-                          <td className="mono">
-                            {r.coordinate_status === "ok"
-                              ? `${r.lat?.toFixed(5)}, ${r.lon?.toFixed(5)} (${r.coordinate_month})`
-                              : "отсутствуют"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </details>
             </>
           )
         )}
+        <section className="card" style={{ marginTop: 16 }} data-finding="da-id-split">
+          <h2>Почему похожие ID показаны раздельно</h2>
+          <p className="body-text">{ID_SPLIT.takeaway}</p>
+          <p className="note">{ID_SPLIT.limitation}</p>
+          <EvidenceNote source={ID_SPLIT.source}>
+            {ID_SPLIT.recorded} · {findingPopulation(ID_SPLIT)}
+          </EvidenceNote>
+        </section>
       </main>
       <SiteFooter />
     </>
@@ -602,7 +575,6 @@ function StationSections({
   forecastState: string;
   params: URLSearchParams;
 }) {
-  const riskStation = risk?.stations[0];
   const gbfsStatus = String(gbfs?.status ?? "unavailable");
   return (
     <section className="station-detail" aria-label={`Детали станции ${row.station_id}`}>
@@ -618,7 +590,7 @@ function StationSections({
             </div>
             <Status tone="warning">не объединено</Status>
           </div>
-          <div className="table-scroll free">
+          <TableScroll free>
             <table className="compare-table">
               <thead>
                 <tr>
@@ -654,38 +626,40 @@ function StationSections({
                 )}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
         </section>
       )}
 
       <div className="grid" style={{ marginTop: 16 }}>
-        <section className="card span-8">
-          <div className="card-head">
-            <div>
-              <h2>Отправления и прибытия по дням</h2>
-              <p className="card-sub">NY-дни выбранного периода; пропуски не заполнены нулями.</p>
+        {!!series?.rows.length && (
+          <section className="card span-8">
+            <div className="card-head">
+              <div>
+                <h2>Отправления и прибытия по дням</h2>
+                <p className="card-sub">NY-дни выбранного периода; пропуски не заполнены нулями.</p>
+              </div>
+              <Kind kind="fact" />
             </div>
-            <Kind kind="fact" />
-          </div>
-          <Chart
-            label="Отправления и прибытия станции по NY-дням"
-            spec={{
-              kind: "line",
-              unit: "поездок",
-              categories: (series?.rows ?? []).map((r) => r.key),
-              series: [
-                {
-                  name: "Отправления",
-                  values: (series?.rows ?? []).map((r) => r.metrics?.departures ?? null),
-                },
-                {
-                  name: "Прибытия",
-                  values: (series?.rows ?? []).map((r) => r.metrics?.arrivals ?? null),
-                },
-              ],
-            }}
-          />
-        </section>
+            <Chart
+              label="Отправления и прибытия станции по NY-дням"
+              spec={{
+                kind: "line",
+                unit: "поездок",
+                categories: (series?.rows ?? []).map((r) => r.key),
+                series: [
+                  {
+                    name: "Отправления",
+                    values: (series?.rows ?? []).map((r) => r.metrics?.departures ?? null),
+                  },
+                  {
+                    name: "Прибытия",
+                    values: (series?.rows ?? []).map((r) => r.metrics?.arrivals ?? null),
+                  },
+                ],
+              }}
+            />
+          </section>
+        )}
         <div className="span-4 stack">
           <section className="card" data-gbfs-station={gbfsStatus}>
             <div className="card-head">
@@ -694,23 +668,18 @@ function StationSections({
               </h2>
               <Kind kind="realtime" />
             </div>
-            {gbfs?.status === "unavailable" || !gbfs ? (
+            {!gbfs || (gbfsStatus !== "fresh" && gbfsStatus !== "ok") ? (
               <>
                 <Status tone="neutral">недоступно</Status>
                 <p className="body-text" style={{ marginTop: 8 }}>
-                  {String(gbfs?.reason ?? "Статус станции недоступен.")}
+                  {gbfsStatus === "stale"
+                    ? "Наблюдение устарело; текущие велосипеды и доки неизвестны."
+                    : "Нет годного GBFS-наблюдения для станции; текущая доступность неизвестна."}
                 </p>
               </>
             ) : (
               <>
-                <Status tone={gbfs.status === "stale" ? "warning" : "success"}>
-                  {gbfs.status === "stale" ? "устарело" : "свежее"}
-                </Status>
-                <p className="note" style={{ marginTop: 8 }}>
-                  {gbfs.status === "stale"
-                    ? "Устаревшее наблюдение — не текущая доступность."
-                    : "Свежее наблюдение в пределах TTL."}
-                </p>
+                <Status tone="success">свежее · в пределах TTL</Status>
                 <dl className="facts" style={{ marginTop: 10 }}>
                   <dt>Велосипеды / доки</dt>
                   <dd>
@@ -726,26 +695,15 @@ function StationSections({
             )}
           </section>
           <section className="card" data-station-scenario={risk?.status ?? "unavailable"}>
-            <div className="card-head">
-              <h2>Сценарии и прогноз</h2>
-              <Kind kind="simulation" />
-            </div>
-            <p className="body-text">
-              {!risk || risk.status === "empty"
-                ? "Станция вне когорты опубликованного сценария F5."
-                : riskStation?.eligible
-                  ? `В сценарии (архивный replay): capacity ${riskStation.capacity}, велосипедов ${riskStation.bikes}, доков ${riskStation.docks} на as-of.`
-                  : `Исключена из сценария: ${riskStation?.reasons.join(", ")}.`}
-            </p>
-            <p className="body-text">
-              Прогноз F4:{" "}
-              <b>
-                {forecast === "valid"
-                  ? "действителен"
-                  : forecast === "expired"
-                    ? "истёк — значения не показываются"
-                    : "недоступен для станции"}
-              </b>
+            <h2>Проверить оценку для этой станции</h2>
+            <p className="note">
+              Текущий прогноз:{" "}
+              {forecast === "valid"
+                ? "действителен"
+                : forecast === "expired"
+                  ? "истёк"
+                  : "недоступен"}
+              . Сценарный результат и его as-of — на отдельной странице.
             </p>
             <div className="card-foot">
               <Link
@@ -771,6 +729,7 @@ function StationSections({
           ] as const
         ).map(([title, value, other]) => {
           const max = Math.max(1, ...(value?.rows ?? []).map((r) => r.n ?? 0));
+          if (!value?.rows.length) return null;
           return (
             <section className="card span-6" key={title}>
               <div className="card-head">
@@ -814,46 +773,55 @@ function StationSections({
           );
         })}
 
-        <section className="card span-12">
-          <div className="card-head">
-            <div>
-              <h2>История координат и названий</h2>
-              <p className="card-sub">
-                По NY-месяцам и сторонам поездки; координаты исторические, не текущие GBFS.
-              </p>
+        {!!detail?.history.length && (
+          <details className="disclosure card span-12">
+            <summary>История координат и названий</summary>
+            <div className="card-head">
+              <div>
+                <h2>История координат и названий</h2>
+                <p className="card-sub">
+                  По NY-месяцам и сторонам поездки; координаты исторические, не текущие GBFS.
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>NY-месяц</th>
-                  <th>Сторона</th>
-                  <th>lat, lon</th>
-                  <th>Название</th>
-                  <th className="num">Событий / с координатами / модальных</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(detail?.history ?? []).map((h) => (
-                  <tr key={`${String(h.local_month)}-${String(h.event_type)}`}>
-                    <td>{String(h.local_month)}</td>
-                    <td>{h.event_type === "start" ? "начала" : "окончания"}</td>
-                    <td className="mono">
-                      {h.lat == null ? "отсутствуют" : `${String(h.lat)}, ${String(h.lon)}`}
-                    </td>
-                    <td>{String(h.station_name ?? "N/A")}</td>
-                    <td className="num">
-                      {show(h.events as number)} / {show(h.coordinate_rows as number)} /{" "}
-                      {show(h.modal_rows as number)}
-                    </td>
+            <TableScroll>
+              <table>
+                <thead>
+                  <tr>
+                    <th>NY-месяц</th>
+                    <th>Сторона</th>
+                    <th>lat, lon</th>
+                    <th>Название</th>
+                    <th className="num">Событий / с координатами / модальных</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody>
+                  {(detail?.history ?? []).map((h) => (
+                    <tr key={`${String(h.local_month)}-${String(h.event_type)}`}>
+                      <td>{String(h.local_month)}</td>
+                      <td>{h.event_type === "start" ? "начала" : "окончания"}</td>
+                      <td className="mono">
+                        {h.lat == null ? "отсутствуют" : `${String(h.lat)}, ${String(h.lon)}`}
+                      </td>
+                      <td>{String(h.station_name ?? "N/A")}</td>
+                      <td className="num">
+                        {show(h.events as number)} / {show(h.coordinate_rows as number)} /{" "}
+                        {show(h.modal_rows as number)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableScroll>
+          </details>
+        )}
       </div>
     </section>
   );
 }
+
+const ID_SPLIT = (() => {
+  const finding = FINDINGS.find((f) => f.id === "da-id-split");
+  if (!finding) throw new Error("Missing station identity evidence");
+  return finding;
+})();

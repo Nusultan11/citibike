@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { type AnalyticsData, type AnalyticsRow, analytics } from "../../lib/analytics";
-import { evidenceHref, FINDING_AREAS, FINDINGS, type FindingStatus } from "../../lib/findings";
+import {
+  evidenceHref,
+  FINDING_AREAS,
+  FINDINGS,
+  type FindingStatus,
+  findingPage,
+  findingPopulation,
+} from "../../lib/findings";
 import {
   addDays,
   comparisonWindow,
@@ -15,6 +22,7 @@ import Chart, { SERIES } from "../chart";
 import {
   AppliedFilters,
   Delta,
+  EvidenceNote,
   Icon,
   Kind,
   PageHead,
@@ -25,6 +33,7 @@ import {
   Status,
   short,
   show,
+  TableScroll,
   Term,
   type Tone,
 } from "../ui";
@@ -49,7 +58,7 @@ const STATUS_TONE: Record<FindingStatus, Tone> = {
 };
 const STATUS_LABEL: Record<FindingStatus, string> = {
   verified: "VERIFIED",
-  limited: "С ограничением",
+  limited: "LIMITED",
   not_verified: "NOT VERIFIED",
 };
 
@@ -96,7 +105,6 @@ export default async function AnalyticsPage({
   let stations: AnalyticsData | null = null;
   let routes: AnalyticsData | null = null;
   let categories: AnalyticsData | null = null;
-  let gbfs: AnalyticsData | null = null;
   let peaks: AnalyticsData | null = null;
   let monthly: AnalyticsData | null = null;
   let hourly: AnalyticsData | null = null;
@@ -104,7 +112,6 @@ export default async function AnalyticsPage({
   let compare: (AnalyticsData & { comparison?: Comparison }) | null = null;
   let flags = new Map<string, string | null>();
   let routeError = "";
-  let gbfsError = "";
   let geoError = "";
   let compareError = "";
   let hourWindow: { start: string; end: string } | null = null;
@@ -157,19 +164,15 @@ export default async function AnalyticsPage({
         compareParams.set("compare_start", baseline.start);
         compareParams.set("compare_end", baseline.end);
       }
-      const [routeResult, gbfsResult, geoResult, compareResult, flagResult] =
-        await Promise.allSettled([
-          analytics("routes", routeParams),
-          analytics("availability", new URLSearchParams({ publication_id: pub.publication_id })),
-          analytics("geography", geoParams),
-          baseline ? analytics("compare", compareParams) : Promise.reject(new Error("")),
-          flagRequest,
-        ]);
+      const [routeResult, geoResult, compareResult, flagResult] = await Promise.allSettled([
+        analytics("routes", routeParams),
+        analytics("geography", geoParams),
+        baseline ? analytics("compare", compareParams) : Promise.reject(new Error("")),
+        flagRequest,
+      ]);
       if (routeResult.status === "fulfilled") routes = routeResult.value;
       else
         routeError = `${routeResult.reason instanceof Error ? routeResult.reason.message : "Данные недоступны."} Выберите весь опубликованный период, ≤ 31 дня либо станцию отправления / назначения.`;
-      if (gbfsResult.status === "fulfilled") gbfs = gbfsResult.value;
-      else gbfsError = "GBFS API недоступен; исторические поездки показаны отдельно.";
       if (geoResult.status === "fulfilled") geography = geoResult.value;
       else geoError = "География доступна для периода ≤ 31 дня или выбранной станции.";
       if (compareResult.status === "fulfilled") compare = compareResult.value;
@@ -200,7 +203,7 @@ export default async function AnalyticsPage({
   const table = (rows: AnalyticsRow[], route: boolean) => {
     const max = Math.max(1, ...rows.map((r) => r.metrics?.completed_published_rides ?? 0));
     return (
-      <div className="table-scroll">
+      <TableScroll>
         <table>
           <thead>
             <tr>
@@ -274,7 +277,7 @@ export default async function AnalyticsPage({
             })}
           </tbody>
         </table>
-      </div>
+      </TableScroll>
     );
   };
   const profile = localHourProfile(
@@ -285,13 +288,6 @@ export default async function AnalyticsPage({
   );
   const comparison = compare?.comparison;
   const seriesRows = series?.rows ?? [];
-  const peakDeparture = peaks?.rows.find((r) => r.dimension === "departures");
-  const peakArrival = peaks?.rows.find((r) => r.dimension === "arrivals");
-  const busiest = profile.reduce<(typeof profile)[number] | null>(
-    (acc, c) => (!acc || c.value > acc.value ? c : acc),
-    null,
-  );
-  const topStation = stations?.rows[0];
   const lastDay = pub ? nyDate(pub.period_end) : null;
   const advancedOpen = Boolean(
     chipParams.get("station_id") ||
@@ -587,48 +583,6 @@ export default async function AnalyticsPage({
               </article>
             </section>
 
-            <section className="insights" aria-label="Коротко о периоде" style={{ marginTop: 16 }}>
-              <div className="insight">
-                <span className="insight-icon">
-                  <Icon name="forecast" size={15} />
-                </span>
-                <span>
-                  Пик отправлений: <b>{peakDeparture ? axisLabel(peakDeparture.key) : "N/A"}</b> —{" "}
-                  {show(peakDeparture?.n)}; прибытий:{" "}
-                  <b>{peakArrival ? axisLabel(peakArrival.key) : "N/A"}</b>.
-                </span>
-              </div>
-              <div className="insight">
-                <span className="insight-icon">
-                  <Icon name="clock" size={15} />
-                </span>
-                <span>
-                  Самая загруженная ячейка профиля:{" "}
-                  <b>{busiest ? `${WEEKDAYS[busiest.weekday]}, ${busiest.hour}:00 NY` : "N/A"}</b> —{" "}
-                  {show(busiest?.value)} начал за {busiest?.hours ?? "N/A"} ч.
-                </span>
-              </div>
-              <div className="insight">
-                <span className="insight-icon">
-                  <Icon name="stations" size={15} />
-                </span>
-                <span>
-                  Больше всего начал: <b className="mono">{topStation?.key ?? "N/A"}</b> —{" "}
-                  {show(topStation?.metrics?.departures)} отправлений.
-                </span>
-              </div>
-              <div className="insight">
-                <span className="insight-icon">
-                  <Icon name="info" size={15} />
-                </span>
-                <span>
-                  Часов без подтверждённых начал:{" "}
-                  <b>{String(kpi.coverage.unobserved_city_start_hours ?? "N/A")}</b> — это пропуск,
-                  не ноль.
-                </span>
-              </div>
-            </section>
-
             <div className="grid" style={{ marginTop: 16 }}>
               <section className="card span-8">
                 <div className="card-head">
@@ -663,7 +617,7 @@ export default async function AnalyticsPage({
                 />
                 <details className="disclosure">
                   <summary>Таблица временного ряда</summary>
-                  <div className="table-scroll">
+                  <TableScroll>
                     <table className="num-cols">
                       <thead>
                         <tr>
@@ -698,7 +652,7 @@ export default async function AnalyticsPage({
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </TableScroll>
                 </details>
               </section>
 
@@ -792,7 +746,7 @@ export default async function AnalyticsPage({
                 />
                 <details className="disclosure">
                   <summary>Таблица профиля</summary>
-                  <div className="table-scroll">
+                  <TableScroll>
                     <table className="num-cols">
                       <thead>
                         <tr>
@@ -813,7 +767,7 @@ export default async function AnalyticsPage({
                         ))}
                       </tbody>
                     </table>
-                  </div>
+                  </TableScroll>
                 </details>
               </section>
               <section className="card span-5">
@@ -919,65 +873,69 @@ export default async function AnalyticsPage({
                   ))}
                 </ul>
               </section>
-              <section className="card span-7" data-geo-state={geography?.status ?? "unavailable"}>
-                <div className="card-head">
-                  <div>
-                    <h2>Гео-агрегаты · сетка 0,01°</h2>
-                    <p className="card-sub">
-                      {eventType === "start" ? "Начала" : "Окончания"} по координатам самих событий,
-                      не районы.
-                    </p>
-                  </div>
-                  <Kind kind="fact" />
-                </div>
-                {geoError ? (
-                  <p className="callout tone-neutral" role="status">
-                    {geoError}
-                  </p>
-                ) : (
-                  <>
-                    <p className="note" style={{ marginBottom: 10 }}>
-                      Покрытие {percent(geography?.coverage.eligible_coverage as number)} · показано{" "}
-                      {geography?.rows.length ?? 0} из {geography?.total_groups ?? "N/A"} ячеек.
-                    </p>
-                    <div className="table-scroll" style={{ maxHeight: 320 }}>
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>Ячейка lat, lon (юго-запад)</th>
-                            <th className="num">События</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {geography?.rows.slice(0, 30).map((r) => {
-                            const max = geography?.rows[0]?.n ?? 1;
-                            return (
-                              <tr key={r.key}>
-                                <td className="mono">
-                                  {r.cell_lat == null
-                                    ? r.key
-                                    : `${(r.cell_lat / 100).toFixed(2)}, ${((r.cell_lon ?? 0) / 100).toFixed(2)}`}
-                                </td>
-                                <td className="num">
-                                  <span className="cell-bar">
-                                    <i
-                                      style={{
-                                        width: `${((r.n ?? 0) / Math.max(1, max)) * 80}px`,
-                                        background: SERIES[2],
-                                      }}
-                                    />
-                                    {show(r.n)}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+              {!!geography?.rows.length && (
+                <section className="card span-7" data-geo-state={geography.status}>
+                  <div className="card-head">
+                    <div>
+                      <h2>Гео-агрегаты · сетка 0,01°</h2>
+                      <p className="card-sub">
+                        {eventType === "start" ? "Начала" : "Окончания"} по координатам самих
+                        событий, не районы.
+                      </p>
                     </div>
-                  </>
-                )}
-              </section>
+                    <Kind kind="fact" />
+                  </div>
+                  {geoError ? (
+                    <p className="callout tone-neutral" role="status">
+                      {geoError}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="note" style={{ marginBottom: 10 }}>
+                        Покрытие {percent(geography?.coverage.eligible_coverage as number)} ·
+                        показано {geography?.rows.length ?? 0} из {geography?.total_groups ?? "N/A"}{" "}
+                        ячеек.
+                      </p>
+                      <TableScroll style={{ maxHeight: 320 }}>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Ячейка lat, lon (юго-запад)</th>
+                              <th className="num">События</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {geography?.rows.slice(0, 30).map((r) => {
+                              const max = geography?.rows[0]?.n ?? 1;
+                              return (
+                                <tr key={r.key}>
+                                  <td className="mono">
+                                    {r.cell_lat == null
+                                      ? r.key
+                                      : `${(r.cell_lat / 100).toFixed(2)}, ${((r.cell_lon ?? 0) / 100).toFixed(2)}`}
+                                  </td>
+                                  <td className="num">
+                                    <span className="cell-bar">
+                                      <i
+                                        style={{
+                                          width: `${((r.n ?? 0) / Math.max(1, max)) * 80}px`,
+                                          background: SERIES[2],
+                                        }}
+                                      />
+                                      {show(r.n)}
+                                    </span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </TableScroll>
+                    </>
+                  )}
+                </section>
+              )}
+              {geoError && <p className="note span-12">{geoError}</p>}
             </div>
           </>
         )}
@@ -985,56 +943,9 @@ export default async function AnalyticsPage({
         <Findings />
 
         <div className="grid" style={{ marginTop: 16 }}>
-          <section className="card span-6" data-gbfs-state={gbfs?.status ?? "unavailable"}>
-            <div className="card-head">
-              <h2>Наблюдённая доступность сети</h2>
-              <Kind kind="realtime" />
-            </div>
-            <p className="body-text">
-              {gbfsError ||
-                gbfs?.message ||
-                (gbfs?.status === "stale"
-                  ? "Окно покрыто, но текущий источник устарел: это исторические GBFS-интервалы."
-                  : gbfs?.status === "ok"
-                    ? "Метрики рассчитаны по валидным наблюдённым интервалам."
-                    : "Наблюдений недостаточно. История поездок не определяет текущую доступность.")}
-            </p>
-            {gbfs && (
-              <dl className="facts" style={{ marginTop: 12 }}>
-                <dt>Окно</dt>
-                <dd>
-                  {String(gbfs.availability.start ?? "N/A")} →{" "}
-                  {String(gbfs.availability.end ?? "N/A")}
-                </dd>
-                <dt>
-                  <Term name="observed_coverage">Покрытие station-time</Term>
-                </dt>
-                <dd>
-                  {typeof gbfs.availability.observed_coverage === "number"
-                    ? `${show(gbfs.availability.observed_coverage * 100)}%`
-                    : "N/A"}
-                </dd>
-                <dt>Freshness</dt>
-                <dd>{String(gbfs.availability.freshness_status ?? "N/A")}</dd>
-                <dt>Empty / full time share</dt>
-                <dd>
-                  {String(gbfs.availability.empty_station_time_share ?? "N/A")} /{" "}
-                  {String(gbfs.availability.full_station_time_share ?? "N/A")}
-                </dd>
-                {typeof gbfs.availability.scope === "string" && (
-                  <>
-                    <dt>Scope</dt>
-                    <dd>{gbfs.availability.scope}</dd>
-                  </>
-                )}
-              </dl>
-            )}
-            <p className="note" style={{ marginTop: 10 }}>
-              Ограниченные собранные snapshots, а не доступность сети за 24 месяца.
-            </p>
-          </section>
           {pub && kpi && (
-            <section className="card span-6 provenance">
+            <details className="disclosure card span-12 provenance">
+              <summary>Происхождение текущего среза и покрытие</summary>
               <div className="card-head">
                 <h2>Происхождение, покрытие и качество</h2>
                 <Status tone={pub.quality_status === "pass" ? "success" : "warning"}>
@@ -1065,7 +976,7 @@ export default async function AnalyticsPage({
                 Районы не присваиваются; география — по координатам событий. Пары ID{" "}
                 <code>dddd.d</code> / <code>dddd.d0</code> помечены ◇, Silver не объединялся.
               </p>
-            </section>
+            </details>
           )}
         </div>
       </main>
@@ -1076,23 +987,31 @@ export default async function AnalyticsPage({
 
 /** Recorded research results: static evidence, independent of the filters above. */
 function Findings() {
-  const areas = Object.entries(FINDING_AREAS);
+  const findings = FINDINGS.filter((f) => findingPage(f) === "/analytics");
+  const areas = Object.entries(FINDING_AREAS).filter(([area]) =>
+    findings.some((f) => f.area === area),
+  );
   return (
     <section id="findings" className="findings-wrap" aria-labelledby="findings-title">
       <div className="section-title">
         <div>
           <h2 id="findings-title">Что мы проверили и что увидели</h2>
           <p>
-            Зафиксированные результаты исследований F2–F5 из evidence репозитория. Не зависят от
-            фильтров выше и не пересчитываются в интерфейсе.
+            Зафиксированные наблюдения о данных и поездках, F2/F3 и аналитическая часть decision
+            research. Не зависят от фильтров выше и не пересчитываются в интерфейсе.
           </p>
         </div>
         <div className="legend" style={{ marginTop: 0 }}>
           <Status tone="success">VERIFIED</Status>
-          <Status tone="warning">С ограничением</Status>
+          <Status tone="warning">LIMITED</Status>
           <Status tone="neutral">NOT VERIFIED</Status>
         </div>
       </div>
+      <EvidenceNote source="docs/evidence/f3-analytics.json" status="VERIFIED">
+        F3, 29.10.2026: независимая сверка Silver → Gold → API → HTML, 0 расхождений. 92 076 054
+        начала в окне 2024-10–2026-09; ещё 513 canonical строк начинаются вне этого окна. Это разные
+        популяции, а не потерянные поездки.
+      </EvidenceNote>
       <fieldset className="findings-filter segmented" aria-label="Область исследований">
         <label>
           <input
@@ -1102,19 +1021,19 @@ function Findings() {
             value="all"
             defaultChecked
           />
-          <span className="seg-label">Все · {FINDINGS.length}</span>
+          <span className="seg-label">Все · {findings.length}</span>
         </label>
         {areas.map(([area, label]) => (
           <label key={area}>
             <input className="seg-input" type="radio" name="finding-area" value={area} />
             <span className="seg-label">
-              {label} · {FINDINGS.filter((f) => f.area === area).length}
+              {label} · {findings.filter((f) => f.area === area).length}
             </span>
           </label>
         ))}
       </fieldset>
-      <div className="findings" data-findings={FINDINGS.length}>
-        {FINDINGS.map((f) => (
+      <div className="findings" data-findings={findings.length}>
+        {findings.map((f) => (
           <article key={f.id} className="finding" data-area={f.area} data-finding={f.id}>
             <div className="finding-top">
               <span className="finding-area">{FINDING_AREAS[f.area]}</span>
@@ -1123,9 +1042,10 @@ function Findings() {
             <span className="finding-value">{f.value}</span>
             <h3>{f.title}</h3>
             <p>{f.takeaway}</p>
+            <p className="note">{f.limitation}</p>
             <details>
-              <summary>Ограничение и источник</summary>
-              <p>{f.limitation}</p>
+              <summary>Период, популяция и источник</summary>
+              <p>{findingPopulation(f)}</p>
               <p>
                 <a href={evidenceHref(f.source)}>{f.source} ↗</a> · {f.recorded}
               </p>

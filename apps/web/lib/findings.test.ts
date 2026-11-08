@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
-import { EVIDENCE_REVISION, evidenceHref, FINDING_AREAS, FINDINGS } from "./findings.ts";
+import {
+  EVIDENCE_REVISION,
+  evidenceHref,
+  FINDING_AREAS,
+  FINDINGS,
+  FORECAST_STUDY,
+  findingPage,
+  findingPopulation,
+} from "./findings.ts";
 
 const repo = new URL("../../../", import.meta.url);
 
@@ -157,4 +165,88 @@ test("F5 claim is recorded replay with limited coverage, not live operational be
   assert.equal(scenario.status, "archival_replay");
   assert.equal(finding("f5-replay").status, "limited");
   assert.match(finding("f5-replay").limitation, /архивная симуляция/);
+});
+
+test("each finding has one primary destination and a stated population", () => {
+  const destinations = FINDINGS.map((f) => [f.id, findingPage(f)]);
+  assert.equal(new Set(destinations.map(([id]) => id)).size, FINDINGS.length);
+  assert.equal(destinations.filter(([, path]) => path === "/analytics").length, 5);
+  assert.equal(findingPage(finding("da-id-split")), "/stations");
+  for (const f of FINDINGS) {
+    assert.ok(findingPopulation(f).length > 30);
+    if (f.area === "forecast") assert.equal(findingPage(f), "/forecasts");
+    if (f.area === "scenario") assert.equal(findingPage(f), "/scenarios");
+  }
+  const f3 = JSON.parse(read("f3-analytics.json"));
+  assert.equal(f3.html_count, 92076054);
+  assert.equal(f3.reconciliation_mismatches, 0);
+  assert.equal(92076567 - f3.html_count, 513);
+});
+
+test("forecast demonstration is an exact small excerpt of frozen results for both tasks", () => {
+  const source = JSON.parse(read("f4-forecasting.json"));
+  assert.equal(FORECAST_STUDY.targets.length, 2);
+  assert.deepEqual(
+    FORECAST_STUDY.folds,
+    source.validation_splits.map((r: { origin_start: string; origin_end: string }) => ({
+      start: r.origin_start,
+      end: r.origin_end,
+    })),
+  );
+  for (const target of FORECAST_STUDY.targets) {
+    const decision = source.selection.decisions[target.target];
+    assert.equal(target.champion, "seasonal_naive");
+    assert.equal(target.champion, decision.champion);
+    assert.equal(target.models.length, 4);
+    for (const model of target.models) {
+      const final = source.final_results.find(
+        (r: { prediction_type: string; model_name: string }) =>
+          r.prediction_type === target.target && r.model_name === model.model,
+      );
+      assert.equal(model.final, final.metrics.all.mae);
+      assert.equal(model.n, final.metrics.all.n);
+      const folds = source.validation_results
+        .filter(
+          (r: { prediction_type: string; model_name: string }) =>
+            r.prediction_type === target.target && r.model_name === model.model,
+        )
+        .map((r: { metrics: { all: { mae: number } } }) => r.metrics.all.mae);
+      assert.deepEqual([...model.folds], folds);
+      assert.ok(
+        Math.abs(
+          model.validation - folds.reduce((n: number, x: number) => n + x, 0) / folds.length,
+        ) < 1e-12,
+      );
+      assert.deepEqual(
+        [...model.horizons],
+        Array.from({ length: 24 }, (_, i) => final.metrics[`horizon:${i + 1}`].mae),
+      );
+      const gate = decision.gates[model.model];
+      if (gate) {
+        assert.equal(gate.promote, false);
+        assert.equal(model.degraded, gate.degraded_segments.length);
+      }
+    }
+    for (const slice of target.slices) {
+      const actual = source.corrective_validation.pooled_error_slices.find(
+        (r: { prediction_type: string; name: string; slice: string }) =>
+          r.prediction_type === target.target && r.name === slice.name && r.slice === slice.slice,
+      );
+      for (const key of ["n", "mae", "bias"] as const) assert.equal(slice[key], actual[key]);
+    }
+    for (const ablation of target.ablation) {
+      const actual = source.corrective_validation.ablation.find(
+        (r: { prediction_type: string; reference: string; group: string }) =>
+          r.prediction_type === target.target &&
+          r.reference === "catboost_bounded" &&
+          r.group === ablation.group,
+      );
+      assert.ok(
+        Math.abs(
+          ablation.delta - actual.mae_delta_by_fold.reduce((n: number, x: number) => n + x, 0) / 4,
+        ) < 1e-12,
+      );
+      assert.equal(actual.identical_populations, true);
+    }
+  }
 });

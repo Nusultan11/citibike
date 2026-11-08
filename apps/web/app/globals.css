@@ -1806,3 +1806,34 @@ dl.facts dd {
     flex: 1 1 100%;
   }
 }
+
+.evidence-note {
+  margin-top: 14px;
+  line-height: 1.65;
+}
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+.explore-grid a {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+}
+.explore-grid span {
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.overview-kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 768px) {
+  .overview-kpis,
+  .explore-grid {
+    grid-template-columns: 1fr;
+  }
+}
